@@ -4,32 +4,23 @@ import * as React from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Heart, Plus } from "lucide-react"
-import { toast } from "sonner"
 import { cn, formatCurrency } from "@/lib/utils"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Badge } from "@/components/ui/badge"
 import type { Product } from "@/lib/products"
-import { useCart } from "@/components/cart-provider"
+import { useUiStore } from "@/hooks/use-ui-store"
 
-export function ProductCard({
-  product,
-  className,
-  priority,
-}: {
+interface ProductCardProps {
   product: Product
   className?: string
   priority?: boolean
-}) {
-  const { add, setOpen } = useCart()
-  const [wishlisted, setWishlisted] = React.useState(false)
+}
 
-  const handleQuickAdd = (e: React.MouseEvent) => {
-    e.preventDefault()
-    add(product)
-    toast(`${product.name} added`, {
-      description: `${product.collection} · ${formatCurrency(product.price)}`,
-    })
-  }
+export function ProductCard({ product, className, priority }: ProductCardProps) {
+  const { isWishlisted, toggleWishlist } = useUiStore()
+  const wishlisted = isWishlisted(product.id)
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? ""
 
   const badgeVariant =
     product.badge === "Limited Edition"
@@ -82,7 +73,7 @@ export function ProductCard({
           type="button"
           onClick={(e) => {
             e.preventDefault()
-            setWishlisted((w) => !w)
+            toggleWishlist(product.id)
           }}
           aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
           className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-background/80 text-foreground backdrop-blur transition-all hover:bg-background"
@@ -95,12 +86,18 @@ export function ProductCard({
           />
         </button>
 
-        {/* Quick Add */}
+        {/* Quick Add — Snipcart add-to-cart button */}
         <button
           type="button"
-          onClick={handleQuickAdd}
-          className="absolute inset-x-3 bottom-3 flex translate-y-2 items-center justify-center gap-2 bg-foreground py-3 text-[11px] uppercase tracking-[0.22em] text-background opacity-0 transition-all duration-500 hover:bg-foreground/90 group-hover:translate-y-0 group-hover:opacity-100"
+          onClick={(e) => e.preventDefault()}
+          className="snipcart-add-item absolute inset-x-3 bottom-3 flex translate-y-2 items-center justify-center gap-2 bg-foreground py-3 text-[11px] uppercase tracking-[0.22em] text-background opacity-0 transition-all duration-500 hover:bg-foreground/90 group-hover:translate-y-0 group-hover:opacity-100"
           aria-label={`Quick add ${product.name}`}
+          data-item-id={product.id}
+          data-item-name={product.name}
+          data-item-price={product.price}
+          data-item-url={`${siteUrl}/product/${product.slug}`}
+          data-item-image={product.image}
+          data-item-description={product.description}
         >
           <Plus className="h-3.5 w-3.5" />
           Quick Add

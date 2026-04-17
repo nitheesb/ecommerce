@@ -2,12 +2,13 @@ import { notFound } from "next/navigation"
 
 import { AnnouncementBar } from "@/components/announcement-bar"
 import { Breadcrumbs } from "@/components/breadcrumbs"
-import { CartDrawer } from "@/components/cart-drawer"
 import { Footer } from "@/components/footer"
 import { Navbar } from "@/components/navbar"
 import { ProductCare } from "@/components/product-care"
 import { CollectionGrid } from "@/components/collection-grid"
-import { products, type ProductCategory } from "@/lib/products"
+import { products as staticProducts, type Product, type ProductCategory } from "@/lib/products"
+import { sanityFetch } from "@/lib/sanity/client"
+import { productsByCategoryQuery } from "@/lib/sanity/queries"
 
 const categoryMeta: Record<
   ProductCategory,
@@ -53,12 +54,17 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
   }
 }
 
-export default function CollectionPage({ params }: { params: { slug: string } }) {
+export default async function CollectionPage({ params }: { params: { slug: string } }) {
   const category = slugToCategory[params.slug]
   if (!category) return notFound()
 
   const meta = categoryMeta[category]
-  const filtered = products.filter((p) => p.category === category)
+
+  const sanityProducts = await sanityFetch<Product[]>(productsByCategoryQuery, { category })
+  const products =
+    sanityProducts && sanityProducts.length > 0
+      ? sanityProducts
+      : staticProducts.filter((p) => p.category === category)
 
   return (
     <>
@@ -90,12 +96,11 @@ export default function CollectionPage({ params }: { params: { slug: string } })
           </div>
         </section>
 
-        <CollectionGrid products={filtered} />
+        <CollectionGrid products={products} />
 
         <ProductCare />
       </main>
       <Footer />
-      <CartDrawer />
     </>
   )
 }

@@ -1,22 +1,15 @@
-"use client"
-
-import { useEffect, useState } from "react"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import { ProductGrid } from "@/components/product-grid"
-import { ProductGridSkeleton } from "@/components/product-grid-skeleton"
-import { products } from "@/lib/products"
+import type { Product } from "@/lib/products"
 
-export function FeaturedGridSection() {
-  const [isLoading, setIsLoading] = useState(true)
+interface FeaturedGridSectionProps {
+  products: Product[]
+}
 
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 1200)
-    return () => clearTimeout(timer)
-  }, [])
-
+export function FeaturedGridSection({ products }: FeaturedGridSectionProps) {
   return (
     <section className="mx-auto max-w-7xl px-6 py-20 lg:px-12 lg:py-24">
       <div className="mb-6">
@@ -51,7 +44,7 @@ export function FeaturedGridSection() {
         </Link>
       </div>
 
-      {isLoading ? <ProductGridSkeleton /> : <ProductGrid products={products} />}
+      <ProductGrid products={products} />
     </section>
   )
 }

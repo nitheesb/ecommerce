@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next"
 import { Playfair_Display, Inter } from "next/font/google"
 import "./globals.css"
 import { cn } from "@/lib/utils"
-import { CartProvider } from "@/components/cart-provider"
+import { SnipcartProvider } from "@/components/snipcart-provider"
 import { Toaster } from "@/components/ui/toaster"
 
 const playfair = Playfair_Display({
@@ -65,10 +65,9 @@ export default function RootLayout({
       )}
     >
       <body className="min-h-screen bg-background text-foreground font-sans selection:bg-foreground selection:text-background">
-        <CartProvider>
-          {children}
-          <Toaster />
-        </CartProvider>
+        {children}
+        <SnipcartProvider />
+        <Toaster />
       </body>
     </html>
   )

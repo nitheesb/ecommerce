@@ -9,7 +9,7 @@ export function Hero() {
       className="relative -mt-16 flex min-h-[100svh] items-center justify-center overflow-hidden md:-mt-20"
     >
       {/* Background */}
-      <div className="absolute inset-0 -z-10">
+      <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 animate-kenburns">
           <Image
             src="/images/hero.jpg"

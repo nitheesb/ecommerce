@@ -13,6 +13,8 @@ export type Product = {
   description: string
 }
 
+export type ProductCategory = Product["category"]
+
 export const products: Product[] = [
   {
     id: "p1",

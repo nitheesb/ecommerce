@@ -9,12 +9,10 @@ import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { categories } from "@/lib/products"
-import { useCart } from "@/components/cart-provider"
 
 export function Navbar() {
   const [scrolled, setScrolled] = React.useState(false)
   const [openMenu, setOpenMenu] = React.useState<string | null>(null)
-  const { count, setOpen } = useCart()
 
   React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
@@ -105,16 +103,11 @@ export function Navbar() {
           <Button
             variant="ghost"
             size="icon"
-            aria-label={`Cart (${count} items)`}
-            onClick={() => setOpen(true)}
-            className="relative"
+            aria-label="Cart"
+            className="snipcart-checkout relative"
           >
             <ShoppingBag className="h-[18px] w-[18px]" />
-            {count > 0 && (
-              <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-foreground px-1 text-[9px] font-medium leading-none text-background">
-                {count}
-              </span>
-            )}
+            <span className="snipcart-items-count absolute -right-0.5 -top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-foreground px-1 text-[9px] font-medium leading-none text-background" />
           </Button>
         </div>
       </div>
