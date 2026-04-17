@@ -59,7 +59,7 @@ export function CategoriesSection() {
                 alt={`${cat.name} saree collection`}
                 fill
                 sizes="(min-width: 768px) 33vw, 100vw"
-                className="object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.04]"
+                className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
               />
               <div
                 className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-foreground/10 to-transparent"
