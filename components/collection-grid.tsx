@@ -1,0 +1,57 @@
+"use client"
+
+import { useEffect, useState } from "react"
+
+import { ProductGrid } from "@/components/product-grid"
+import { ProductGridSkeleton } from "@/components/product-grid-skeleton"
+import type { Product } from "@/lib/products"
+
+type SortKey = "featured" | "price-asc" | "price-desc"
+
+const sortOptions: { value: SortKey; label: string }[] = [
+  { value: "featured", label: "Featured" },
+  { value: "price-asc", label: "Price · Low to High" },
+  { value: "price-desc", label: "Price · High to Low" },
+]
+
+export function CollectionGrid({ products }: { products: Product[] }) {
+  const [isLoading, setIsLoading] = useState(true)
+  const [sort, setSort] = useState<SortKey>("featured")
+
+  useEffect(() => {
+    const t = setTimeout(() => setIsLoading(false), 900)
+    return () => clearTimeout(t)
+  }, [])
+
+  const sorted = [...products].sort((a, b) => {
+    if (sort === "price-asc") return a.price - b.price
+    if (sort === "price-desc") return b.price - a.price
+    return 0
+  })
+
+  return (
+    <section className="mx-auto max-w-7xl px-6 py-12 lg:px-12 lg:py-16">
+      <div className="mb-8 flex items-center justify-between gap-4 border-y border-border/60 py-4">
+        <p className="text-xs font-medium uppercase tracking-[0.24em] text-muted-foreground">
+          {products.length} {products.length === 1 ? "piece" : "pieces"}
+        </p>
+        <label className="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+          <span className="hidden sm:inline">Sort</span>
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value as SortKey)}
+            className="border-0 bg-transparent text-xs font-medium uppercase tracking-[0.2em] text-foreground focus:outline-none focus:ring-0"
+          >
+            {sortOptions.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
+      {isLoading ? <ProductGridSkeleton count={8} /> : <ProductGrid products={sorted} />}
+    </section>
+  )
+}
