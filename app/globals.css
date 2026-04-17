@@ -1,0 +1,147 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Thazhuval palette: Ivory, Sand, Slate + gold accent */
+    --background: 40 38% 97%;          /* Ivory #FBF8F1 */
+    --foreground: 210 18% 18%;         /* Slate #262E38 */
+
+    --card: 40 38% 97%;
+    --card-foreground: 210 18% 18%;
+
+    --popover: 40 38% 97%;
+    --popover-foreground: 210 18% 18%;
+
+    --primary: 210 18% 18%;            /* Slate */
+    --primary-foreground: 40 38% 97%;  /* Ivory */
+
+    --secondary: 36 30% 90%;           /* Sand light */
+    --secondary-foreground: 210 18% 18%;
+
+    --muted: 36 25% 92%;
+    --muted-foreground: 210 12% 40%;
+
+    --accent: 36 34% 82%;              /* Sand */
+    --accent-foreground: 210 18% 18%;
+
+    --destructive: 0 72% 42%;
+    --destructive-foreground: 40 38% 97%;
+
+    --border: 36 20% 85%;
+    --input: 36 20% 85%;
+    --ring: 210 18% 18%;
+
+    --radius: 0.25rem;
+
+    --gold: 38 48% 52%;                /* subtle gold accent */
+    --ivory: 40 38% 97%;
+    --sand: 36 34% 82%;
+    --slate-deep: 210 22% 14%;
+  }
+
+  .dark {
+    --background: 210 22% 10%;
+    --foreground: 40 38% 97%;
+    --card: 210 22% 10%;
+    --card-foreground: 40 38% 97%;
+    --popover: 210 22% 10%;
+    --popover-foreground: 40 38% 97%;
+    --primary: 40 38% 97%;
+    --primary-foreground: 210 22% 10%;
+    --secondary: 210 16% 18%;
+    --secondary-foreground: 40 38% 97%;
+    --muted: 210 16% 18%;
+    --muted-foreground: 36 20% 70%;
+    --accent: 210 16% 20%;
+    --accent-foreground: 40 38% 97%;
+    --destructive: 0 62% 42%;
+    --destructive-foreground: 40 38% 97%;
+    --border: 210 16% 20%;
+    --input: 210 16% 20%;
+    --ring: 40 38% 97%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    @apply bg-background text-foreground;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-feature-settings: "ss01", "cv11";
+  }
+  ::selection {
+    background: hsl(var(--slate-deep));
+    color: hsl(var(--ivory));
+  }
+}
+
+@layer utilities {
+  .font-serif-display {
+    font-family: var(--font-playfair), ui-serif, Georgia, serif;
+    font-feature-settings: "lnum", "pnum";
+    letter-spacing: -0.01em;
+  }
+
+  /* Scroll indicator */
+  @keyframes scrollDown {
+    0% {
+      transform: translateY(-6px);
+      opacity: 0;
+    }
+    30% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(14px);
+      opacity: 0;
+    }
+  }
+  .animate-scroll-indicator {
+    animation: scrollDown 2s ease-in-out infinite;
+  }
+
+  /* Marquee */
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  .animate-marquee {
+    animation: marquee 40s linear infinite;
+  }
+
+  /* Ken burns subtle for hero */
+  @keyframes kenburns {
+    0% { transform: scale(1.06) translate3d(0,0,0); }
+    100% { transform: scale(1.14) translate3d(-1%, -1%, 0); }
+  }
+  .animate-kenburns {
+    animation: kenburns 18s ease-in-out infinite alternate;
+  }
+
+  /* Shimmer for skeletons */
+  @keyframes shimmer {
+    0% { background-position: -400px 0; }
+    100% { background-position: 400px 0; }
+  }
+
+  .hairline {
+    background-image: linear-gradient(to right, transparent, hsl(var(--border)), transparent);
+    height: 1px;
+  }
+
+  .divider-ornament::before,
+  .divider-ornament::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, hsl(var(--border)), transparent);
+  }
+}
