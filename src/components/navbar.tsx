@@ -21,38 +21,43 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", onScroll)
   }, [])
 
+  const textColor = scrolled ? "text-foreground" : "text-background"
+  const textMuted = scrolled ? "text-foreground/70" : "text-background/70"
+  const iconHover = scrolled ? "hover:bg-foreground/5" : "hover:bg-background/10"
+
   return (
     <header
       className={cn(
         "sticky top-0 z-40 w-full transition-all duration-500",
         scrolled
-          ? "bg-background/75 backdrop-blur-xl supports-[backdrop-filter]:bg-background/65 border-b border-border/60 shadow-[0_1px_0_0_hsl(var(--border)/0.5)]"
+          ? "bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/70 border-b border-border/40 shadow-[0_1px_2px_0_rgba(0,0,0,0.03)]"
           : "bg-transparent"
       )}
       onMouseLeave={() => setOpenMenu(null)}
     >
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:h-20 md:px-8">
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-5 md:h-16 md:px-8">
         {/* Left: Mobile menu + desktop nav */}
-        <div className="flex items-center gap-2">
-          <MobileNav />
-          <nav className="hidden items-center gap-1 lg:flex">
+        <div className="flex items-center gap-1">
+          <MobileNav scrolled={scrolled} />
+          <nav className="hidden items-center gap-0.5 lg:flex">
             {categories.map((cat) => (
               <button
                 key={cat.title}
                 onMouseEnter={() => setOpenMenu(cat.title)}
                 onFocus={() => setOpenMenu(cat.title)}
                 className={cn(
-                  "relative px-4 py-2 text-[11px] font-medium uppercase tracking-[0.22em] transition-colors",
+                  "relative px-3.5 py-2 text-[10.5px] font-medium uppercase tracking-[0.2em] transition-colors duration-300",
                   openMenu === cat.title
-                    ? "text-foreground"
-                    : "text-foreground/70 hover:text-foreground"
+                    ? textColor
+                    : cn(textMuted, scrolled ? "hover:text-foreground" : "hover:text-background")
                 )}
                 aria-expanded={openMenu === cat.title}
               >
                 {cat.title}
                 <span
                   className={cn(
-                    "absolute inset-x-4 -bottom-0.5 h-px bg-foreground transition-transform duration-300 origin-left",
+                    "absolute inset-x-3.5 -bottom-0.5 h-px transition-transform duration-300 origin-left",
+                    scrolled ? "bg-foreground" : "bg-background",
                     openMenu === cat.title ? "scale-x-100" : "scale-x-0"
                   )}
                 />
@@ -60,13 +65,21 @@ export function Navbar() {
             ))}
             <Link
               href="/atelier"
-              className="px-4 py-2 text-[11px] font-medium uppercase tracking-[0.22em] text-foreground/70 transition-colors hover:text-foreground"
+              className={cn(
+                "px-3.5 py-2 text-[10.5px] font-medium uppercase tracking-[0.2em] transition-colors duration-300",
+                textMuted,
+                scrolled ? "hover:text-foreground" : "hover:text-background"
+              )}
             >
               Atelier
             </Link>
             <Link
               href="/journal"
-              className="px-4 py-2 text-[11px] font-medium uppercase tracking-[0.22em] text-foreground/70 transition-colors hover:text-foreground"
+              className={cn(
+                "px-3.5 py-2 text-[10.5px] font-medium uppercase tracking-[0.2em] transition-colors duration-300",
+                textMuted,
+                scrolled ? "hover:text-foreground" : "hover:text-background"
+              )}
             >
               Journal
             </Link>
@@ -79,44 +92,58 @@ export function Navbar() {
           className="absolute left-1/2 -translate-x-1/2 select-none text-center"
           aria-label="Thazhuval home"
         >
-          <div className="font-serif text-[22px] leading-none tracking-[0.24em] md:text-[26px]">
+          <div
+            className={cn(
+              "font-serif text-[20px] leading-none tracking-[0.22em] transition-colors duration-500 md:text-[24px]",
+              textColor
+            )}
+          >
             THAZHUVAL
           </div>
-          <div className="mt-1 hidden text-[9px] uppercase tracking-[0.4em] text-muted-foreground md:block">
+          <div
+            className={cn(
+              "mt-0.5 hidden text-[8px] uppercase tracking-[0.4em] transition-all duration-500 md:block",
+              scrolled
+                ? "text-muted-foreground opacity-100"
+                : "text-background/60 opacity-0"
+            )}
+          >
             House of the Embrace
           </div>
         </Link>
 
         {/* Right: actions */}
-        <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" aria-label="Search">
-            <Search className="h-[18px] w-[18px]" />
+        <div className="flex items-center gap-0.5">
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Search"
+            className={cn("h-9 w-9 transition-colors duration-300", textColor, iconHover)}
+          >
+            <Search className="h-[17px] w-[17px]" strokeWidth={1.5} />
           </Button>
           <Button
             variant="ghost"
             size="icon"
             aria-label="Account"
-            className="hidden md:inline-flex"
+            className={cn("hidden h-9 w-9 transition-colors duration-300 md:inline-flex", textColor, iconHover)}
           >
-            <User className="h-[18px] w-[18px]" />
+            <User className="h-[17px] w-[17px]" strokeWidth={1.5} />
           </Button>
           <Button
             variant="ghost"
             size="icon"
             aria-label="Cart"
-            className="snipcart-checkout relative"
+            className={cn("snipcart-checkout relative h-9 w-9 transition-colors duration-300", textColor, iconHover)}
           >
-            <ShoppingBag className="h-[18px] w-[18px]" />
+            <ShoppingBag className="h-[17px] w-[17px]" strokeWidth={1.5} />
             <span className="snipcart-items-count absolute -right-0.5 -top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-foreground px-1 text-[9px] font-medium leading-none text-background" />
           </Button>
         </div>
       </div>
 
       {/* Mega Menu */}
-      <MegaMenu
-        openMenu={openMenu}
-        onClose={() => setOpenMenu(null)}
-      />
+      <MegaMenu openMenu={openMenu} onClose={() => setOpenMenu(null)} />
     </header>
   )
 }
@@ -133,7 +160,7 @@ function MegaMenu({
   return (
     <div
       className={cn(
-        "absolute inset-x-0 top-full hidden overflow-hidden border-b border-border/60 bg-background/95 backdrop-blur-xl transition-all duration-500 lg:block",
+        "absolute inset-x-0 top-full hidden overflow-hidden border-b border-border/40 bg-background/95 backdrop-blur-xl transition-all duration-500 lg:block",
         openMenu
           ? "pointer-events-auto translate-y-0 opacity-100"
           : "pointer-events-none -translate-y-2 opacity-0"
@@ -235,14 +262,22 @@ function MegaMenu({
   )
 }
 
-function MobileNav() {
+function MobileNav({ scrolled }: { scrolled: boolean }) {
   const [open, setOpen] = React.useState(false)
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Open menu">
-          <Menu className="h-5 w-5" />
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn(
+            "h-9 w-9 lg:hidden transition-colors duration-300",
+            scrolled ? "text-foreground hover:bg-foreground/5" : "text-background hover:bg-background/10"
+          )}
+          aria-label="Open menu"
+        >
+          <Menu className="h-5 w-5" strokeWidth={1.5} />
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="w-[88vw] max-w-sm p-0">
@@ -281,26 +316,17 @@ function MobileNav() {
             </Accordion>
             <div className="mt-6 space-y-4">
               <SheetClose asChild>
-                <Link
-                  href="/atelier"
-                  className="block font-serif text-base"
-                >
+                <Link href="/atelier" className="block font-serif text-base">
                   Atelier
                 </Link>
               </SheetClose>
               <SheetClose asChild>
-                <Link
-                  href="/journal"
-                  className="block font-serif text-base"
-                >
+                <Link href="/journal" className="block font-serif text-base">
                   Journal
                 </Link>
               </SheetClose>
               <SheetClose asChild>
-                <Link
-                  href="/appointment"
-                  className="block font-serif text-base"
-                >
+                <Link href="/appointment" className="block font-serif text-base">
                   Book an Appointment
                 </Link>
               </SheetClose>
