@@ -1,43 +1,206 @@
 "use client"
 
-import * as React from "react"
+import { useRef, useLayoutEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
+import gsap from "gsap"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { Button } from "@/components/ui/button"
 
+gsap.registerPlugin(ScrollTrigger)
+
 export function Hero() {
-  const [scrollY, setScrollY] = React.useState(0)
+  const heroRef = useRef<HTMLElement>(null)
+  const imageRef = useRef<HTMLDivElement>(null)
+  const vignetteRef = useRef<HTMLDivElement>(null)
+  const eyebrowRef = useRef<HTMLDivElement>(null)
+  const line1Ref = useRef<HTMLSpanElement>(null)
+  const line2Ref = useRef<HTMLSpanElement>(null)
+  const paraRef = useRef<HTMLParagraphElement>(null)
+  const ctaRef = useRef<HTMLDivElement>(null)
+  const scrollIndicRef = useRef<HTMLDivElement>(null)
 
-  React.useEffect(() => {
-    let ticking = false
-    const onScroll = () => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          setScrollY(window.scrollY)
-          ticking = false
-        })
-        ticking = true
-      }
-    }
-    window.addEventListener("scroll", onScroll, { passive: true })
-    return () => window.removeEventListener("scroll", onScroll)
+  useLayoutEffect(() => {
+    const ctx = gsap.context(() => {
+      const hero = heroRef.current
+      const image = imageRef.current
+      const vignette = vignetteRef.current
+      const eyebrow = eyebrowRef.current
+      const line1 = line1Ref.current
+      const line2 = line2Ref.current
+      const para = paraRef.current
+      const cta = ctaRef.current
+      const scrollIndic = scrollIndicRef.current
+
+      if (!hero || !image || !vignette || !eyebrow || !line1 || !line2 || !para || !cta || !scrollIndic) return
+
+      // ── Initial states ──
+      gsap.set(image, { scale: 1.3, filter: "blur(8px)" })
+      gsap.set(vignette, { opacity: 1 })
+      gsap.set(eyebrow, { opacity: 0, y: 20 })
+      gsap.set([line1, line2], { clipPath: "inset(100% 0 0 0)", y: 40 })
+      gsap.set(para, { opacity: 0, y: 30 })
+      gsap.set(cta, { opacity: 0, y: 30 })
+      gsap.set(scrollIndic, { opacity: 0, y: 10 })
+
+      // Hairlines inside eyebrow
+      const hairlines = eyebrow.querySelectorAll<HTMLSpanElement>(".hero-hairline")
+      gsap.set(hairlines, { width: 0, opacity: 0 })
+
+      // ── Intro timeline ──
+      const intro = gsap.timeline({ delay: 0.3 })
+
+      // Cinematic camera settle
+      intro.to(image, {
+        scale: 1.05,
+        filter: "blur(0px)",
+        duration: 2,
+        ease: "power3.out",
+      })
+
+      // Dramatic vignette reveal
+      intro.to(vignette, {
+        opacity: 0.85,
+        duration: 1.8,
+        ease: "power2.out",
+      }, 0)
+
+      // Eyebrow fade in
+      intro.to(eyebrow, {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: "power2.out",
+      }, 0.8)
+
+      // Hairlines slide in
+      intro.to(hairlines, {
+        width: 40,
+        opacity: 1,
+        duration: 0.6,
+        stagger: 0.15,
+        ease: "power2.out",
+      }, 1.0)
+
+      // Masked text reveal — line 1
+      intro.to(line1, {
+        clipPath: "inset(0% 0 0 0)",
+        y: 0,
+        duration: 1,
+        ease: "power4.out",
+      }, 1.1)
+
+      // Masked text reveal — line 2
+      intro.to(line2, {
+        clipPath: "inset(0% 0 0 0)",
+        y: 0,
+        duration: 1,
+        ease: "power4.out",
+      }, 1.35)
+
+      // Paragraph
+      intro.to(para, {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: "power2.out",
+      }, 1.7)
+
+      // CTA buttons
+      intro.to(cta, {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: "power2.out",
+      }, 1.9)
+
+      // Scroll indicator
+      intro.to(scrollIndic, {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+        ease: "power2.out",
+      }, 2.2)
+
+      // ── Scroll-driven parallax timeline ──
+      const scrollTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: hero,
+          start: "top top",
+          end: "bottom top",
+          scrub: 0.8,
+        },
+      })
+
+      // Image: deep parallax zoom
+      scrollTl.to(image, {
+        yPercent: 30,
+        scale: 1.2,
+        ease: "none",
+      }, 0)
+
+      // Vignette darkens
+      scrollTl.to(vignette, {
+        opacity: 1,
+        ease: "none",
+      }, 0)
+
+      // Scroll indicator: fast exit
+      scrollTl.to(scrollIndic, {
+        opacity: 0,
+        ease: "none",
+      }, 0)
+
+      // Eyebrow: fast exit
+      scrollTl.to(eyebrow, {
+        y: -80,
+        opacity: 0,
+        ease: "none",
+      }, 0)
+
+      // Heading line 1: parallax exit
+      scrollTl.to(line1, {
+        y: -120,
+        opacity: 0,
+        ease: "none",
+      }, 0.05)
+
+      // Heading line 2: slightly different speed
+      scrollTl.to(line2, {
+        y: -100,
+        opacity: 0,
+        ease: "none",
+      }, 0.08)
+
+      // Paragraph
+      scrollTl.to(para, {
+        y: -60,
+        opacity: 0,
+        ease: "none",
+      }, 0.05)
+
+      // CTAs
+      scrollTl.to(cta, {
+        y: -40,
+        opacity: 0,
+        ease: "none",
+      }, 0.1)
+    }, heroRef)
+
+    return () => ctx.revert()
   }, [])
-
-  const imageTransform = `translateY(${scrollY * 0.35}px)`
-  const contentOpacity = Math.max(0, 1 - scrollY / 700)
-  const contentTransform = `translateY(${scrollY * 0.15}px)`
-  const scrollIndicatorOpacity = Math.max(0, 1 - scrollY / 200)
 
   return (
     <section
+      ref={heroRef}
       aria-label="The Art of the Embrace"
       className="relative -mt-14 flex min-h-[100svh] items-center justify-center overflow-hidden md:-mt-16"
     >
       {/* Background with parallax */}
       <div className="absolute inset-0 z-0">
         <div
-          className="absolute inset-[-20%] animate-kenburns will-change-transform"
-          style={{ transform: imageTransform }}
+          ref={imageRef}
+          className="absolute inset-[-20%] will-change-transform"
         >
           <Image
             src="/images/saree-3-b.jpg"
@@ -50,6 +213,7 @@ export function Hero() {
         </div>
         {/* Cinematic vignette */}
         <div
+          ref={vignetteRef}
           aria-hidden
           className="absolute inset-0 bg-gradient-to-b from-foreground/25 via-transparent to-foreground/50"
         />
@@ -61,33 +225,40 @@ export function Hero() {
 
       {/* Top hairline + eyebrow */}
       <div
+        ref={eyebrowRef}
         className="absolute inset-x-0 top-20 z-10 flex justify-center md:top-24"
-        style={{ opacity: contentOpacity, transform: contentTransform }}
       >
         <div className="flex items-center gap-4 text-background/85">
-          <span className="h-px w-10 bg-background/70" />
-          <span className="text-[10px] font-medium uppercase tracking-[0.42em] animate-fade-up">
+          <span className="hero-hairline h-px bg-background/70" />
+          <span className="text-[10px] font-medium uppercase tracking-[0.42em]">
             Autumn / Winter Edit · MMXXVI
           </span>
-          <span className="h-px w-10 bg-background/70" />
+          <span className="hero-hairline h-px bg-background/70" />
         </div>
       </div>
 
-      {/* Centered copy with parallax fade */}
-      <div
-        className="relative z-10 mx-auto max-w-4xl px-6 text-center text-background"
-        style={{ opacity: contentOpacity, transform: contentTransform }}
-      >
-        <h1 className="font-serif text-5xl leading-[1.02] tracking-[-0.015em] md:text-7xl lg:text-[88px] text-balance animate-fade-up">
-          The Art of the
-          <span className="block italic text-[hsl(var(--sand))]">Embrace</span>
+      {/* Centered copy */}
+      <div className="relative z-10 mx-auto max-w-4xl px-6 text-center text-background">
+        <h1 className="font-serif text-5xl leading-[1.02] tracking-[-0.015em] md:text-7xl lg:text-[88px] text-balance">
+          <span ref={line1Ref} className="block will-change-transform">
+            The Art of the
+          </span>
+          <span ref={line2Ref} className="block italic text-[hsl(var(--sand))] will-change-transform">
+            Embrace
+          </span>
         </h1>
-        <p className="mx-auto mt-6 max-w-xl text-sm leading-relaxed text-background/85 md:text-base text-pretty animate-fade-up [animation-delay:200ms]">
+        <p
+          ref={paraRef}
+          className="mx-auto mt-6 max-w-xl text-sm leading-relaxed text-background/85 md:text-base text-pretty"
+        >
           Heirloom sarees, hand-woven by master artisans. Each weave a quiet
           embrace — of memory, of ritual, of the wearer.
         </p>
 
-        <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4 animate-fade-up [animation-delay:400ms]">
+        <div
+          ref={ctaRef}
+          className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4"
+        >
           <Button asChild size="lg" variant="ivory" className="min-w-[220px]">
             <Link href="/collections/heritage">Explore the Heritage Edit</Link>
           </Button>
@@ -104,8 +275,8 @@ export function Hero() {
 
       {/* Scroll indicator */}
       <div
+        ref={scrollIndicRef}
         className="absolute bottom-10 left-1/2 z-10 -translate-x-1/2 text-background/85"
-        style={{ opacity: scrollIndicatorOpacity }}
       >
         <div className="flex flex-col items-center gap-3">
           <span className="text-[10px] uppercase tracking-[0.38em]">Scroll</span>

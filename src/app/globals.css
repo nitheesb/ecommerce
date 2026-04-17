@@ -117,15 +117,6 @@
     animation: marquee 40s linear infinite;
   }
 
-  /* Ken burns subtle for hero */
-  @keyframes kenburns {
-    0% { transform: scale(1.06) translate3d(0,0,0); }
-    100% { transform: scale(1.14) translate3d(-1%, -1%, 0); }
-  }
-  .animate-kenburns {
-    animation: kenburns 18s ease-in-out infinite alternate;
-  }
-
   /* Shimmer for skeletons */
   @keyframes shimmer {
     0% { background-position: -400px 0; }
