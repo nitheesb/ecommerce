@@ -12,6 +12,7 @@ gsap.registerPlugin(ScrollTrigger)
 export function Hero() {
   const heroRef = useRef<HTMLElement>(null)
   const imageRef = useRef<HTMLDivElement>(null)
+  const fixedBgRef = useRef<HTMLDivElement>(null)
   const vignetteRef = useRef<HTMLDivElement>(null)
   const eyebrowRef = useRef<HTMLDivElement>(null)
   const line1Ref = useRef<HTMLSpanElement>(null)
@@ -33,6 +34,9 @@ export function Hero() {
       const scrollIndic = scrollIndicRef.current
 
       if (!hero || !image || !vignette || !eyebrow || !line1 || !line2 || !para || !cta || !scrollIndic) return
+
+      const fixedBg = fixedBgRef.current
+      if (!fixedBg) return
 
       // ── Initial states ──
       gsap.set(image, { scale: 1.3, filter: "blur(8px)" })
@@ -132,10 +136,9 @@ export function Hero() {
         },
       })
 
-      // Image: deep parallax zoom
+      // Image: subtle zoom as page scrolls over
       scrollTl.to(image, {
-        yPercent: 30,
-        scale: 1.2,
+        scale: 1.15,
         ease: "none",
       }, 0)
 
@@ -185,6 +188,14 @@ export function Hero() {
         opacity: 0,
         ease: "none",
       }, 0.1)
+
+      // Hide fixed background once hero is scrolled past
+      ScrollTrigger.create({
+        trigger: hero,
+        start: "bottom top",
+        onEnterBack: () => gsap.set(fixedBg, { visibility: "visible" }),
+        onLeave: () => gsap.set(fixedBg, { visibility: "hidden" }),
+      })
     }, heroRef)
 
     return () => ctx.revert()
@@ -194,13 +205,13 @@ export function Hero() {
     <section
       ref={heroRef}
       aria-label="The Art of the Embrace"
-      className="relative -mt-14 flex min-h-[100svh] items-center justify-center overflow-hidden md:-mt-16"
+      className="relative -mt-14 min-h-[100svh] md:-mt-16"
     >
-      {/* Background with parallax */}
-      <div className="absolute inset-0 z-0">
+      {/* Fixed background — stays in place while page scrolls over it */}
+      <div ref={fixedBgRef} className="fixed inset-0 z-0">
         <div
           ref={imageRef}
-          className="absolute inset-[-20%] will-change-transform"
+          className="absolute inset-[-10%] will-change-transform"
         >
           <Image
             src="/images/saree-3-b.jpg"
@@ -223,10 +234,13 @@ export function Hero() {
         />
       </div>
 
+      {/* Content overlay — positioned over fixed background */}
+      <div className="relative z-10 flex min-h-[100svh] flex-col items-center justify-center">
+
       {/* Top hairline + eyebrow */}
       <div
         ref={eyebrowRef}
-        className="absolute inset-x-0 top-20 z-10 flex justify-center md:top-24"
+        className="absolute inset-x-0 top-20 flex justify-center md:top-24"
       >
         <div className="flex items-center gap-4 text-background/85">
           <span className="hero-hairline h-px bg-background/70" />
@@ -238,7 +252,7 @@ export function Hero() {
       </div>
 
       {/* Centered copy */}
-      <div className="relative z-10 mx-auto max-w-4xl px-6 text-center text-background">
+      <div className="relative mx-auto max-w-4xl px-6 text-center text-background">
         <h1 className="font-serif text-5xl leading-[1.02] tracking-[-0.015em] md:text-7xl lg:text-[88px] text-balance">
           <span ref={line1Ref} className="block will-change-transform">
             The Art of the
@@ -276,7 +290,7 @@ export function Hero() {
       {/* Scroll indicator */}
       <div
         ref={scrollIndicRef}
-        className="absolute bottom-10 left-1/2 z-10 -translate-x-1/2 text-background/85"
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 text-background/85"
       >
         <div className="flex flex-col items-center gap-3">
           <span className="text-[10px] uppercase tracking-[0.38em]">Scroll</span>
@@ -285,6 +299,8 @@ export function Hero() {
           </div>
         </div>
       </div>
+
+      </div>{/* end content overlay */}
     </section>
   )
 }

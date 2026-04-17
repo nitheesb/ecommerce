@@ -20,12 +20,16 @@ export default async function HomePage() {
       <Navbar />
       <main>
         <Hero />
-        <CategoriesSection />
-        <FeaturedGridSection products={products} />
-        <EditorialSection />
-        <ProductCare />
+        <div className="relative z-10 bg-background">
+          <CategoriesSection />
+          <FeaturedGridSection products={products} />
+          <EditorialSection />
+          <ProductCare />
+        </div>
       </main>
-      <Footer />
+      <div className="relative z-10 bg-background">
+        <Footer />
+      </div>
     </>
   )
 }
