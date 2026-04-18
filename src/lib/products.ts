@@ -131,7 +131,24 @@ export const products: Product[] = [
 
 export const categories = [
   {
-    title: "Silk",
+    title: "Best Sellers",
+    blurb: "Our most loved pieces",
+    href: "/collections/bestsellers",
+    items: [] as { label: string; href: string }[],
+  },
+  {
+    title: "Cotton Sarees",
+    blurb: "Handloom, Khadi, Jamdani",
+    href: "/collections/cotton",
+    items: [
+      { label: "Handloom Cotton", href: "/collections/cotton/handloom" },
+      { label: "Khadi", href: "/collections/cotton/khadi" },
+      { label: "Jamdani", href: "/collections/cotton/jamdani" },
+      { label: "Chettinad", href: "/collections/cotton/chettinad" },
+    ],
+  },
+  {
+    title: "Silk Sarees",
     blurb: "Kanjeevaram, Banarasi, Chanderi",
     href: "/collections/silk",
     items: [
@@ -143,27 +160,14 @@ export const categories = [
     ],
   },
   {
-    title: "Cotton",
-    blurb: "Handloom, Khadi, Linen blends",
-    href: "/collections/cotton",
+    title: "Fancy Sarees",
+    blurb: "Patola, Paithani, Designer",
+    href: "/collections/fancy",
     items: [
-      { label: "Handloom Cotton", href: "/collections/cotton/handloom" },
-      { label: "Khadi", href: "/collections/cotton/khadi" },
-      { label: "Jamdani", href: "/collections/cotton/jamdani" },
-      { label: "Chettinad", href: "/collections/cotton/chettinad" },
-      { label: "Linen Blend", href: "/collections/cotton/linen" },
-    ],
-  },
-  {
-    title: "Heritage",
-    blurb: "Bridal, Patola, Archival weaves",
-    href: "/collections/heritage",
-    items: [
-      { label: "Bridal Couture", href: "/collections/heritage/bridal" },
-      { label: "Patola", href: "/collections/heritage/patola" },
-      { label: "Paithani", href: "/collections/heritage/paithani" },
-      { label: "The Archive", href: "/collections/heritage/archive" },
-      { label: "Atelier Bespoke", href: "/collections/heritage/bespoke" },
+      { label: "Patola", href: "/collections/fancy/patola" },
+      { label: "Paithani", href: "/collections/fancy/paithani" },
+      { label: "Bridal Couture", href: "/collections/fancy/bridal" },
+      { label: "Designer", href: "/collections/fancy/designer" },
     ],
   },
 ] as const

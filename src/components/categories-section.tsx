@@ -10,69 +10,29 @@ gsap.registerPlugin(ScrollTrigger)
 
 const shopCategories = [
   {
-    name: "Kanjeevaram",
-    image: "/images/saree-1-a.jpg",
-    href: "/collections/silk/kanjeevaram",
-  },
-  {
-    name: "Banarasi",
-    image: "/images/saree-3-a.jpg",
-    href: "/collections/silk/banarasi",
-  },
-  {
-    name: "Chanderi",
-    image: "/images/saree-5-a.jpg",
-    href: "/collections/silk/chanderi",
-  },
-  {
-    name: "Handloom",
-    image: "/images/saree-2-a.jpg",
-    href: "/collections/cotton/handloom",
-  },
-  {
-    name: "Patola",
-    image: "/images/saree-7-a.jpg",
-    href: "/collections/heritage/patola",
-  },
-  {
-    name: "Bridal",
+    name: "Best Sellers",
     image: "/images/saree-4-a.jpg",
-    href: "/collections/heritage/bridal",
+    href: "/collections/bestsellers",
   },
   {
-    name: "Raw Silk",
-    image: "/images/saree-8-a.jpg",
-    href: "/collections/silk/raw",
+    name: "Cotton Sarees",
+    image: "/images/saree-2-a.jpg",
+    href: "/collections/cotton",
   },
   {
-    name: "Khadi",
-    image: "/images/saree-6-a.jpg",
-    href: "/collections/cotton/khadi",
+    name: "Silk Sarees",
+    image: "/images/saree-1-a.jpg",
+    href: "/collections/silk",
   },
   {
-    name: "Tussar",
-    image: "/images/saree-1-b.jpg",
-    href: "/collections/silk/tussar",
-  },
-  {
-    name: "Jamdani",
-    image: "/images/saree-3-b.jpg",
-    href: "/collections/cotton/jamdani",
-  },
-  {
-    name: "Paithani",
-    image: "/images/saree-7-b.jpg",
-    href: "/collections/heritage/paithani",
-  },
-  {
-    name: "Chettinad",
-    image: "/images/saree-6-b.jpg",
-    href: "/collections/cotton/chettinad",
+    name: "Fancy Sarees",
+    image: "/images/saree-3-a.jpg",
+    href: "/collections/fancy",
   },
 ]
 
-// Duplicate for seamless infinite loop
-const loopedCategories = [...shopCategories, ...shopCategories]
+// Triplicate for seamless infinite loop (4 items need more copies)
+const loopedCategories = [...shopCategories, ...shopCategories, ...shopCategories]
 
 const AUTO_SPEED = 0.4 // px per frame
 const DRAG_EASE = 0.92 // momentum decay
@@ -136,8 +96,8 @@ export function CategoriesSection() {
     const track = trackRef.current
     if (!track) return
 
-    // Measure one set width (half the track since we duplicated)
-    state.current.singleSetWidth = track.scrollWidth / 2
+    // Measure one set width (one-third of track since we tripled)
+    state.current.singleSetWidth = track.scrollWidth / 3
     state.current.animId = requestAnimationFrame(loop)
 
     return () => cancelAnimationFrame(state.current.animId)

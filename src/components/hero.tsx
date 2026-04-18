@@ -204,7 +204,7 @@ export function Hero() {
   return (
     <section
       ref={heroRef}
-      aria-label="The Art of the Embrace"
+      aria-label="More than a saree — it's an embrace"
       className="relative -mt-14 min-h-[100svh] md:-mt-16"
     >
       {/* Fixed background — stays in place while page scrolls over it */}
@@ -245,7 +245,7 @@ export function Hero() {
         <div className="flex items-center gap-4 text-background/85">
           <span className="hero-hairline h-px bg-background/70" />
           <span className="text-[10px] font-medium uppercase tracking-[0.42em]">
-            Autumn / Winter Edit · MMXXVI
+            House of Thazhuval
           </span>
           <span className="hero-hairline h-px bg-background/70" />
         </div>
@@ -255,18 +255,19 @@ export function Hero() {
       <div className="relative mx-auto max-w-4xl px-6 text-center text-background">
         <h1 className="font-serif text-5xl leading-[1.02] tracking-[-0.015em] md:text-7xl lg:text-[88px] text-balance">
           <span ref={line1Ref} className="block will-change-transform">
-            The Art of the
+            More than a saree...
           </span>
           <span ref={line2Ref} className="block italic text-[hsl(var(--sand))] will-change-transform">
-            Embrace
+            it&apos;s an embrace.
           </span>
         </h1>
         <p
           ref={paraRef}
           className="mx-auto mt-6 max-w-xl text-sm leading-relaxed text-background/85 md:text-base text-pretty"
         >
-          Heirloom sarees, hand-woven by master artisans. Each weave a quiet
-          embrace — of memory, of ritual, of the wearer.
+          Thazhuval means &lsquo;embrace&rsquo; — a feeling of comfort, love, and
+          belonging. Soft fabrics, thoughtful craftsmanship, pieces that
+          don&apos;t just dress you — they hold you.
         </p>
 
         <div
@@ -274,7 +275,7 @@ export function Hero() {
           className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4"
         >
           <Button asChild size="lg" variant="ivory" className="min-w-[220px]">
-            <Link href="/collections/heritage">Explore the Heritage Edit</Link>
+            <Link href="/collections">Shop Now</Link>
           </Button>
           <Button
             asChild
@@ -282,7 +283,7 @@ export function Hero() {
             variant="outline"
             className="min-w-[200px] border-background/70 text-background hover:bg-background hover:text-foreground"
           >
-            <Link href="/collections/silk">Shop Silk</Link>
+            <Link href="/our-story">Our Story</Link>
           </Button>
         </div>
       </div>

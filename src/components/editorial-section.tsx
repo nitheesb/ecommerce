@@ -23,22 +23,27 @@ export function EditorialSection() {
         </div>
         <div className="order-1 flex flex-col justify-center md:order-2">
           <p className="text-[11px] font-medium uppercase tracking-[0.32em] text-muted-foreground">
-            The Art of the Embrace
+            Our Story
           </p>
           <h2 className="mt-5 text-balance font-serif text-4xl leading-[1.1] tracking-tight md:text-5xl lg:text-6xl">
-            Six yards of poetry, woven across generations.
+            What is Thazhuval?
           </h2>
           <p className="mt-6 max-w-lg text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
-            Every Thazhuval saree is a quiet conversation between the weaver and the wearer. We work
-            directly with master craftsmen across Kanchipuram, Banaras, and Chanderi — preserving
-            techniques that are centuries old, and stories that are uniquely yours.
+            Thazhuval means &lsquo;embrace&rsquo; &mdash; a feeling of comfort, love, and belonging.
+            At House of Thazhuval, every saree is designed to feel like that embrace. From soft fabrics
+            to thoughtful craftsmanship, we create pieces that don&apos;t just dress you &mdash; they hold you.
+          </p>
+          <p className="mt-4 max-w-lg text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
+            Six yards of poetry, woven across generations by master artisans across Kanchipuram,
+            Banaras, and Chanderi &mdash; preserving techniques that are centuries old, and stories
+            that are uniquely yours.
           </p>
           <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:gap-8">
             <Link
-              href="/heritage"
+              href="/our-story"
               className="group inline-flex items-center gap-2 text-sm font-medium uppercase tracking-[0.18em] text-foreground underline-offset-8 hover:underline"
             >
-              Our Heritage
+              Discover Our Story
               <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
             </Link>
             <Link

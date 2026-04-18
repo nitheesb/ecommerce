@@ -39,29 +39,44 @@ export function Navbar() {
         <div className="flex items-center gap-1">
           <MobileNav scrolled={scrolled} />
           <nav className="hidden items-center gap-0.5 lg:flex">
-            {categories.map((cat) => (
-              <button
-                key={cat.title}
-                onMouseEnter={() => setOpenMenu(cat.title)}
-                onFocus={() => setOpenMenu(cat.title)}
-                className={cn(
-                  "relative px-3.5 py-2 text-[10.5px] font-medium uppercase tracking-[0.2em] transition-colors duration-300",
-                  openMenu === cat.title
-                    ? textColor
-                    : cn(textMuted, scrolled ? "hover:text-foreground" : "hover:text-background")
-                )}
-                aria-expanded={openMenu === cat.title}
-              >
-                {cat.title}
-                <span
+            {categories.map((cat) =>
+              cat.items.length > 0 ? (
+                <button
+                  key={cat.title}
+                  onMouseEnter={() => setOpenMenu(cat.title)}
+                  onFocus={() => setOpenMenu(cat.title)}
                   className={cn(
-                    "absolute inset-x-3.5 -bottom-0.5 h-px transition-transform duration-300 origin-left",
-                    scrolled ? "bg-foreground" : "bg-background",
-                    openMenu === cat.title ? "scale-x-100" : "scale-x-0"
+                    "relative px-3.5 py-2 text-[10.5px] font-medium uppercase tracking-[0.2em] transition-colors duration-300",
+                    openMenu === cat.title
+                      ? textColor
+                      : cn(textMuted, scrolled ? "hover:text-foreground" : "hover:text-background")
                   )}
-                />
-              </button>
-            ))}
+                  aria-expanded={openMenu === cat.title}
+                >
+                  {cat.title}
+                  <span
+                    className={cn(
+                      "absolute inset-x-3.5 -bottom-0.5 h-px transition-transform duration-300 origin-left",
+                      scrolled ? "bg-foreground" : "bg-background",
+                      openMenu === cat.title ? "scale-x-100" : "scale-x-0"
+                    )}
+                  />
+                </button>
+              ) : (
+                <Link
+                  key={cat.title}
+                  href={cat.href}
+                  onMouseEnter={() => setOpenMenu(null)}
+                  className={cn(
+                    "px-3.5 py-2 text-[10.5px] font-medium uppercase tracking-[0.2em] transition-colors duration-300",
+                    textMuted,
+                    scrolled ? "hover:text-foreground" : "hover:text-background"
+                  )}
+                >
+                  {cat.title}
+                </Link>
+              )
+            )}
             <Link
               href="/our-story"
               className={cn(
@@ -231,12 +246,12 @@ function MobileNav({ scrolled }: { scrolled: boolean }) {
           <div className="border-b border-border/60 px-6 py-5">
             <p className="font-serif text-lg tracking-[0.22em]">THAZHUVAL</p>
             <p className="mt-1 text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-              The Art of the Embrace
+              The Embrace
             </p>
           </div>
           <div className="flex-1 overflow-y-auto px-6 py-6">
             <Accordion type="single" collapsible className="w-full">
-              {categories.map((cat) => (
+              {categories.filter((cat) => cat.items.length > 0).map((cat) => (
                 <AccordionItem key={cat.title} value={cat.title}>
                   <AccordionTrigger className="font-serif text-base normal-case tracking-normal">
                     {cat.title}
@@ -261,6 +276,13 @@ function MobileNav({ scrolled }: { scrolled: boolean }) {
               ))}
             </Accordion>
             <div className="mt-6 space-y-4">
+              {categories.filter((cat) => cat.items.length === 0).map((cat) => (
+                <SheetClose key={cat.title} asChild>
+                  <Link href={cat.href} className="block font-serif text-base">
+                    {cat.title}
+                  </Link>
+                </SheetClose>
+              ))}
               <SheetClose asChild>
                 <Link href="/our-story" className="block font-serif text-base">
                   Our Story

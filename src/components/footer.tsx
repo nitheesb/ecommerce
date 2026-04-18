@@ -7,10 +7,10 @@ const footerNav = [
   {
     title: "Shop",
     links: [
-      { label: "Silk Sarees", href: "/collections/silk" },
+      { label: "Best Sellers", href: "/collections/bestsellers" },
       { label: "Cotton Sarees", href: "/collections/cotton" },
-      { label: "Heritage Sarees", href: "/collections/heritage" },
-      { label: "Bridal", href: "/collections/bridal" },
+      { label: "Silk Sarees", href: "/collections/silk" },
+      { label: "Fancy Sarees", href: "/collections/fancy" },
       { label: "Gift Cards", href: "/gift-cards" },
     ],
   },
