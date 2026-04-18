@@ -25,7 +25,7 @@ const shopCategories = [
     href: "/collections/silk/chanderi",
   },
   {
-    name: "Handloom Cotton",
+    name: "Handloom",
     image: "/images/saree-2-a.jpg",
     href: "/collections/cotton/handloom",
   },
@@ -74,20 +74,19 @@ const shopCategories = [
 export function CategoriesSection() {
   const sectionRef = useRef<HTMLElement>(null)
   const headingRef = useRef<HTMLDivElement>(null)
-  const gridRef = useRef<HTMLDivElement>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      const section = sectionRef.current
       const heading = headingRef.current
-      const grid = gridRef.current
-      if (!section || !heading || !grid) return
+      const scrollContainer = scrollRef.current
+      if (!heading || !scrollContainer) return
 
-      const tiles = grid.querySelectorAll<HTMLElement>(".category-tile")
+      const tiles = scrollContainer.querySelectorAll<HTMLElement>(".category-tile")
 
       // Initial states
-      gsap.set(heading.children, { opacity: 0, y: 30 })
-      gsap.set(tiles, { opacity: 0, y: 60, scale: 0.95 })
+      gsap.set(heading.children, { opacity: 0, y: 24 })
+      gsap.set(tiles, { opacity: 0, x: 40 })
 
       // Heading reveal
       ScrollTrigger.create({
@@ -98,29 +97,24 @@ export function CategoriesSection() {
           gsap.to(heading.children, {
             opacity: 1,
             y: 0,
-            duration: 0.8,
-            stagger: 0.15,
+            duration: 0.7,
+            stagger: 0.12,
             ease: "power3.out",
           })
         },
       })
 
-      // Staggered tile reveal
+      // Staggered tile slide-in from right
       ScrollTrigger.create({
-        trigger: grid,
-        start: "top 80%",
+        trigger: scrollContainer,
+        start: "top 82%",
         once: true,
         onEnter: () => {
           gsap.to(tiles, {
             opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.7,
-            stagger: {
-              amount: 0.6,
-              grid: "auto",
-              from: "start",
-            },
+            x: 0,
+            duration: 0.6,
+            stagger: 0.06,
             ease: "power3.out",
           })
         },
@@ -131,50 +125,46 @@ export function CategoriesSection() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="mx-auto max-w-7xl px-6 py-20 lg:px-12 lg:py-28">
+    <section ref={sectionRef} className="py-20 lg:py-28">
       {/* Section heading */}
-      <div ref={headingRef} className="mb-12 text-center md:mb-16">
+      <div ref={headingRef} className="mx-auto max-w-7xl px-6 mb-10 md:mb-12 lg:px-12">
         <p className="text-[11px] font-medium uppercase tracking-[0.32em] text-muted-foreground">
           Shop by Category
         </p>
-        <h2 className="mt-4 font-serif text-4xl leading-[1.05] tracking-tight md:text-5xl lg:text-6xl">
+        <h2 className="mt-3 font-serif text-3xl leading-[1.1] tracking-tight md:text-4xl lg:text-5xl">
           Explore Our Weaves
         </h2>
-        <p className="mx-auto mt-5 max-w-lg text-pretty leading-relaxed text-muted-foreground">
-          From ceremonial Kanjeevarams to everyday handlooms — find the weave that speaks to you.
-        </p>
       </div>
 
-      {/* Category grid */}
+      {/* Horizontally scrollable row */}
       <div
-        ref={gridRef}
-        className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:gap-5 lg:grid-cols-4 lg:gap-6"
+        ref={scrollRef}
+        className="flex gap-4 overflow-x-auto px-6 pb-4 scrollbar-hide lg:px-12 md:gap-5"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
         {shopCategories.map((cat) => (
           <Link
             key={cat.name}
             href={cat.href}
-            className="category-tile group block"
+            className="category-tile group shrink-0"
           >
-            <div className="relative aspect-[4/5] overflow-hidden rounded-sm bg-muted">
+            <div className="relative h-36 w-28 overflow-hidden rounded-lg bg-muted sm:h-44 sm:w-34 md:h-48 md:w-36">
               <Image
                 src={cat.image}
-                alt={`${cat.name} saree collection`}
+                alt={`${cat.name} saree`}
                 fill
-                sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
-                className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
+                sizes="144px"
+                className="object-cover object-top transition-transform duration-500 ease-out group-hover:scale-[1.08]"
               />
-              {/* Subtle bottom gradient for depth */}
+              {/* Hover overlay */}
               <div
-                className="absolute inset-0 bg-gradient-to-t from-foreground/20 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+                className="absolute inset-0 bg-foreground/0 transition-colors duration-300 group-hover:bg-foreground/10"
                 aria-hidden
               />
             </div>
-            <div className="mt-3 text-center">
-              <h3 className="text-xs font-medium uppercase tracking-[0.18em] text-foreground/80 transition-colors duration-300 group-hover:text-foreground sm:text-[13px]">
-                {cat.name}
-              </h3>
-            </div>
+            <p className="mt-2.5 text-center text-[11px] font-medium uppercase tracking-[0.14em] text-foreground/70 transition-colors duration-300 group-hover:text-foreground sm:text-xs">
+              {cat.name}
+            </p>
           </Link>
         ))}
       </div>
