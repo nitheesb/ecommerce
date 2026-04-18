@@ -16,7 +16,7 @@ export function FeaturedGridSection({ products }: FeaturedGridSectionProps) {
         <Breadcrumbs
           items={[
             { label: "Home", href: "/" },
-            { label: "The Atelier", href: "/collections" },
+            { label: "Shop All", href: "/collections" },
             { label: "New Arrivals" },
           ]}
         />

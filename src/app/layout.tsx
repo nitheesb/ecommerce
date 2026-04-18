@@ -32,6 +32,8 @@ export const metadata: Metadata = {
     type: "website",
     url: "https://thazhuval.com",
   },
+  authors: [{ name: "nitheesbalaji" }],
+  creator: "nitheesbalaji",
   keywords: [
     "Thazhuval",
     "House of Thazhuval",

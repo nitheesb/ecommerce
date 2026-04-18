@@ -63,24 +63,24 @@ export function Navbar() {
               </button>
             ))}
             <Link
-              href="/atelier"
+              href="/our-story"
               className={cn(
                 "px-3.5 py-2 text-[10.5px] font-medium uppercase tracking-[0.2em] transition-colors duration-300",
                 textMuted,
                 scrolled ? "hover:text-foreground" : "hover:text-background"
               )}
             >
-              Atelier
+              Our Story
             </Link>
             <Link
-              href="/journal"
+              href="/new-arrivals"
               className={cn(
                 "px-3.5 py-2 text-[10.5px] font-medium uppercase tracking-[0.2em] transition-colors duration-300",
                 textMuted,
                 scrolled ? "hover:text-foreground" : "hover:text-background"
               )}
             >
-              Journal
+              New Arrivals
             </Link>
           </nav>
         </div>
@@ -107,7 +107,7 @@ export function Navbar() {
                 : "text-background/60 opacity-0"
             )}
           >
-            House of the Embrace
+            House of Thazhuval
           </div>
         </Link>
 
@@ -262,13 +262,13 @@ function MobileNav({ scrolled }: { scrolled: boolean }) {
             </Accordion>
             <div className="mt-6 space-y-4">
               <SheetClose asChild>
-                <Link href="/atelier" className="block font-serif text-base">
-                  Atelier
+                <Link href="/our-story" className="block font-serif text-base">
+                  Our Story
                 </Link>
               </SheetClose>
               <SheetClose asChild>
-                <Link href="/journal" className="block font-serif text-base">
-                  Journal
+                <Link href="/new-arrivals" className="block font-serif text-base">
+                  New Arrivals
                 </Link>
               </SheetClose>
               <SheetClose asChild>

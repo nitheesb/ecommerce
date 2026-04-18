@@ -15,11 +15,11 @@ const footerNav = [
     ],
   },
   {
-    title: "Atelier",
+    title: "House of Thazhuval",
     links: [
-      { label: "Our Heritage", href: "/heritage" },
+      { label: "Our Story", href: "/our-story" },
       { label: "The Artisans", href: "/artisans" },
-      { label: "Journal", href: "/journal" },
+      { label: "New Arrivals", href: "/new-arrivals" },
       { label: "Private Consultations", href: "/consultations" },
     ],
   },
@@ -118,6 +118,7 @@ export function Footer() {
               Accessibility
             </Link>
             <span className="uppercase tracking-[0.28em]">Crafted in India</span>
+            <span>Designed by nitheesbalaji</span>
           </div>
         </div>
       </div>
