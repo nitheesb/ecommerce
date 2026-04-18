@@ -1,22 +1,19 @@
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
-import Image from "next/image"
-import Link from "next/link"
 
 import { AnnouncementBar } from "@/components/announcement-bar"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import { Footer } from "@/components/footer"
 import { Navbar } from "@/components/navbar"
 import { ProductCare } from "@/components/product-care"
-import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { formatCurrency } from "@/lib/utils"
 import { sanityFetch } from "@/lib/sanity/client"
 import { productBySlugQuery, allProductSlugsQuery } from "@/lib/sanity/queries"
 import { products as staticProducts, type Product } from "@/lib/products"
 import type { IProduct } from "@/types"
 import { ProductActions } from "./product-actions"
+import { ProductGallery } from "./product-gallery"
 
 // ---------------------------------------------------------------------------
 // Static params
@@ -135,44 +132,27 @@ function SanityProductDetail({ product }: { product: IProduct }) {
 
           <div className="mt-8 grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-16">
             {/* Image Gallery */}
-            <div className="space-y-4">
-              <div className="relative overflow-hidden bg-muted">
-                <AspectRatio ratio={4 / 5}>
-                  <Image
-                    src={mainImageUrl}
-                    alt={product.mainImage?.alt ?? `${product.title} saree`}
-                    fill
-                    priority
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                    className="object-cover"
-                    {...(lqip ? { placeholder: "blur", blurDataURL: lqip } : {})}
-                  />
-                </AspectRatio>
-                {product.badge && (
-                  <Badge variant={badgeVariant as any} className="absolute left-4 top-4">
-                    {product.badge}
-                  </Badge>
-                )}
-              </div>
-              {product.imageGallery && product.imageGallery.length > 0 && (
-                <div className="grid grid-cols-2 gap-4">
-                  {product.imageGallery.map((img, i) => (
-                    <div key={img.asset?._ref ?? i} className="relative overflow-hidden bg-muted">
-                      <AspectRatio ratio={4 / 5}>
-                        <Image
-                          src={img.url ?? "/images/hero.jpg"}
-                          alt={img.alt ?? `${product.title} gallery image ${i + 1}`}
-                          fill
-                          sizes="(max-width: 1024px) 50vw, 25vw"
-                          className="object-cover"
-                          {...(img.lqip ? { placeholder: "blur", blurDataURL: img.lqip } : {})}
-                        />
-                      </AspectRatio>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+            <ProductGallery
+              images={[
+                {
+                  src: mainImageUrl,
+                  alt: product.mainImage?.alt ?? `${product.title} saree`,
+                  lqip: lqip ?? undefined,
+                  sizes: "(max-width: 1024px) 100vw, 50vw",
+                },
+                ...(product.imageGallery ?? []).map((img, i) => ({
+                  src: img.url ?? "/images/hero.jpg",
+                  alt: img.alt ?? `${product.title} gallery image ${i + 1}`,
+                  lqip: img.lqip ?? undefined,
+                  sizes: "(max-width: 1024px) 50vw, 25vw",
+                })),
+              ]}
+              badge={
+                product.badge
+                  ? { text: product.badge, variant: badgeVariant }
+                  : undefined
+              }
+            />
 
             {/* Product Info */}
             <div className="flex flex-col">
@@ -259,36 +239,28 @@ function StaticProductDetail({ product }: { product: Product }) {
 
           <div className="mt-8 grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-16">
             {/* Images */}
-            <div className="space-y-4">
-              <div className="relative overflow-hidden bg-muted">
-                <AspectRatio ratio={4 / 5}>
-                  <Image
-                    src={product.image}
-                    alt={`${product.name} — ${product.collection} saree`}
-                    fill
-                    priority
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                    className="object-cover"
-                  />
-                </AspectRatio>
-                {product.badge && (
-                  <Badge variant={badgeVariant as any} className="absolute left-4 top-4">
-                    {product.badge}
-                  </Badge>
-                )}
-              </div>
-              <div className="relative overflow-hidden bg-muted">
-                <AspectRatio ratio={4 / 5}>
-                  <Image
-                    src={product.hoverImage}
-                    alt={`${product.name} — alternate view`}
-                    fill
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                    className="object-cover"
-                  />
-                </AspectRatio>
-              </div>
-            </div>
+            <ProductGallery
+              images={[
+                {
+                  src: product.image,
+                  alt: `${product.name} — ${product.collection} saree`,
+                  sizes: "(max-width: 1024px) 100vw, 50vw",
+                },
+                {
+                  src: product.hoverImage,
+                  alt: `${product.name} — alternate view`,
+                  sizes: "(max-width: 1024px) 100vw, 50vw",
+                },
+              ]}
+              badge={
+                product.badge
+                  ? {
+                      text: product.badge,
+                      variant: badgeVariant,
+                    }
+                  : undefined
+              }
+            />
 
             {/* Product Info */}
             <div className="flex flex-col">

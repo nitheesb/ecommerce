@@ -6,6 +6,7 @@ import Link from "next/link"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { Button } from "@/components/ui/button"
+import { MagneticButton } from "@/components/magnetic-button"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -282,17 +283,21 @@ export function Hero() {
           ref={ctaRef}
           className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4"
         >
-          <Button asChild size="lg" variant="ivory" className="min-w-[220px]">
-            <Link href="/collections">Shop Now</Link>
-          </Button>
-          <Button
-            asChild
-            size="lg"
-            variant="outline"
-            className="min-w-[200px] border-background/70 text-background hover:bg-background hover:text-foreground"
-          >
-            <Link href="/our-story">Our Story</Link>
-          </Button>
+          <MagneticButton>
+            <Button asChild size="lg" variant="ivory" className="min-w-[220px]">
+              <Link href="/collections">Shop Now</Link>
+            </Button>
+          </MagneticButton>
+          <MagneticButton>
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="min-w-[200px] border-background/70 text-background hover:bg-background hover:text-foreground"
+            >
+              <Link href="/our-story">Our Story</Link>
+            </Button>
+          </MagneticButton>
         </div>
       </div>
 
