@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import Link from "next/link"
-import Image from "next/image"
 import { Menu, Search, User, ShoppingBag } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -160,103 +159,50 @@ function MegaMenu({
   return (
     <div
       className={cn(
-        "absolute inset-x-0 top-full hidden overflow-hidden border-b border-border/40 bg-background/95 backdrop-blur-xl transition-all duration-500 lg:block",
+        "absolute inset-x-0 top-full hidden overflow-hidden transition-all duration-400 lg:block",
         openMenu
           ? "pointer-events-auto translate-y-0 opacity-100"
-          : "pointer-events-none -translate-y-2 opacity-0"
+          : "pointer-events-none -translate-y-1 opacity-0"
       )}
       onMouseLeave={onClose}
     >
-      <div className="mx-auto grid max-w-7xl grid-cols-12 gap-10 px-8 py-12">
-        {active && (
-          <>
-            <div className="col-span-3">
-              <p className="font-serif text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
-                {active.title}
-              </p>
-              <h3 className="mt-3 font-serif text-3xl leading-tight text-balance">
-                {active.blurb}
-              </h3>
-              <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-                A curated selection of our finest {active.title.toLowerCase()}{" "}
-                weaves, hand-picked by our atelier.
-              </p>
-              <Link
-                href={active.href}
-                className="mt-6 inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] hover:text-foreground/70"
-              >
-                Shop all {active.title}
-                <span aria-hidden>—</span>
-              </Link>
-            </div>
+      {/* Dark frosted panel */}
+      <div className="border-b border-background/10 bg-foreground/90 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl items-start gap-16 px-8 py-8">
+          {active && (
+            <>
+              {/* Left: category + shop all link */}
+              <div className="min-w-[160px] shrink-0">
+                <p className="text-[10px] font-medium uppercase tracking-[0.3em] text-background/50">
+                  {active.title}
+                </p>
+                <Link
+                  href={active.href}
+                  className="mt-3 inline-flex items-center gap-2 font-serif text-lg text-background transition-colors hover:text-background/70"
+                >
+                  Shop All
+                  <span className="text-background/40" aria-hidden>→</span>
+                </Link>
+              </div>
 
-            <div className="col-span-4">
-              <p className="mb-4 text-[10px] uppercase tracking-[0.28em] text-muted-foreground">
-                By Weave
-              </p>
-              <ul className="space-y-3">
+              {/* Vertical separator */}
+              <div className="h-20 w-px bg-background/10 self-center" />
+
+              {/* Right: weave links in a horizontal flow */}
+              <div className="flex flex-1 flex-wrap items-center gap-x-8 gap-y-3">
                 {active.items.map((item) => (
-                  <li key={item.href}>
-                    <Link
-                      href={item.href}
-                      className="group flex items-center justify-between border-b border-transparent py-1 font-serif text-lg transition-colors hover:border-foreground/30"
-                    >
-                      {item.label}
-                      <span className="translate-x-[-4px] text-muted-foreground opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100">
-                        —
-                      </span>
-                    </Link>
-                  </li>
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="text-[11px] font-medium uppercase tracking-[0.18em] text-background/70 transition-colors duration-200 hover:text-background"
+                  >
+                    {item.label}
+                  </Link>
                 ))}
-              </ul>
-            </div>
-
-            <div className="col-span-5 grid grid-cols-2 gap-4">
-              <Link
-                href={active.href}
-                className="group relative block overflow-hidden bg-muted"
-              >
-                <div className="relative aspect-[4/5]">
-                  <Image
-                    src="/images/saree-4-a.jpg"
-                    alt="Featured bridal Kanjeevaram"
-                    fill
-                    sizes="(max-width: 1024px) 0vw, 20vw"
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-foreground/50 via-transparent to-transparent" />
-                </div>
-                <div className="absolute inset-x-5 bottom-5 text-background">
-                  <p className="text-[10px] uppercase tracking-[0.28em] opacity-80">
-                    The Bridal Edit
-                  </p>
-                  <p className="mt-1 font-serif text-lg">Anaika, in ivory</p>
-                </div>
-              </Link>
-              <Link
-                href="/collections/heritage/patola"
-                className="group relative block overflow-hidden bg-muted"
-              >
-                <div className="relative aspect-[4/5]">
-                  <Image
-                    src="/images/saree-7-a.jpg"
-                    alt="Featured Patola heritage weave"
-                    fill
-                    sizes="(max-width: 1024px) 0vw, 20vw"
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-foreground/50 via-transparent to-transparent" />
-                </div>
-                <div className="absolute inset-x-5 bottom-5 text-background">
-                  <p className="text-[10px] uppercase tracking-[0.28em] opacity-80">
-                    Limited Edition
-                  </p>
-                  <p className="mt-1 font-serif text-lg">The Patan Archive</p>
-                </div>
-              </Link>
-            </div>
-          </>
-        )}
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   )
