@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useLayoutEffect } from "react"
+import { useRef, useEffect, useCallback } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import gsap from "gsap"
@@ -71,61 +71,158 @@ const shopCategories = [
   },
 ]
 
+// Duplicate for seamless infinite loop
+const loopedCategories = [...shopCategories, ...shopCategories]
+
+const AUTO_SPEED = 0.4 // px per frame
+const DRAG_EASE = 0.92 // momentum decay
+
 export function CategoriesSection() {
   const sectionRef = useRef<HTMLElement>(null)
   const headingRef = useRef<HTMLDivElement>(null)
-  const scrollRef = useRef<HTMLDivElement>(null)
+  const trackRef = useRef<HTMLDivElement>(null)
 
-  useLayoutEffect(() => {
-    const ctx = gsap.context(() => {
-      const heading = headingRef.current
-      const scrollContainer = scrollRef.current
-      if (!heading || !scrollContainer) return
+  // Mutable state for the animation loop (no re-renders needed)
+  const state = useRef({
+    x: 0,
+    targetX: 0,
+    dragging: false,
+    dragStartX: 0,
+    dragStartScrollX: 0,
+    velocity: 0,
+    lastPointerX: 0,
+    hasDragged: false,
+    singleSetWidth: 0,
+    animId: 0,
+  })
 
-      const tiles = scrollContainer.querySelectorAll<HTMLElement>(".category-tile")
+  const loop = useCallback(() => {
+    const s = state.current
+    const track = trackRef.current
+    if (!track) return
 
-      // Initial states
-      gsap.set(heading.children, { opacity: 0, y: 24 })
-      gsap.set(tiles, { opacity: 0, x: 40 })
+    if (!s.dragging) {
+      // Auto-scroll when not dragging
+      s.targetX -= AUTO_SPEED
 
-      // Heading reveal
-      ScrollTrigger.create({
-        trigger: heading,
-        start: "top 85%",
-        once: true,
-        onEnter: () => {
-          gsap.to(heading.children, {
-            opacity: 1,
-            y: 0,
-            duration: 0.7,
-            stagger: 0.12,
-            ease: "power3.out",
-          })
-        },
-      })
+      // Apply momentum from drag release
+      if (Math.abs(s.velocity) > 0.5) {
+        s.targetX += s.velocity
+        s.velocity *= DRAG_EASE
+      } else {
+        s.velocity = 0
+      }
+    }
 
-      // Staggered tile slide-in from right
-      ScrollTrigger.create({
-        trigger: scrollContainer,
-        start: "top 82%",
-        once: true,
-        onEnter: () => {
-          gsap.to(tiles, {
-            opacity: 1,
-            x: 0,
-            duration: 0.6,
-            stagger: 0.06,
-            ease: "power3.out",
-          })
-        },
-      })
-    }, sectionRef)
+    // Smooth lerp toward target
+    s.x += (s.targetX - s.x) * 0.1
 
-    return () => ctx.revert()
+    // Seamless wrap: when we've scrolled one full set, reset
+    if (s.singleSetWidth > 0) {
+      if (s.x <= -s.singleSetWidth) {
+        s.x += s.singleSetWidth
+        s.targetX += s.singleSetWidth
+      } else if (s.x > 0) {
+        s.x -= s.singleSetWidth
+        s.targetX -= s.singleSetWidth
+      }
+    }
+
+    track.style.transform = `translate3d(${s.x}px, 0, 0)`
+    s.animId = requestAnimationFrame(loop)
+  }, [])
+
+  useEffect(() => {
+    const track = trackRef.current
+    if (!track) return
+
+    // Measure one set width (half the track since we duplicated)
+    state.current.singleSetWidth = track.scrollWidth / 2
+    state.current.animId = requestAnimationFrame(loop)
+
+    return () => cancelAnimationFrame(state.current.animId)
+  }, [loop])
+
+  // Pointer events for universal drag (mouse, touch, trackpad)
+  useEffect(() => {
+    const track = trackRef.current
+    if (!track) return
+
+    const parent = track.parentElement!
+
+    const onPointerDown = (e: PointerEvent) => {
+      const s = state.current
+      s.dragging = true
+      s.hasDragged = false
+      s.dragStartX = e.clientX
+      s.dragStartScrollX = s.targetX
+      s.lastPointerX = e.clientX
+      s.velocity = 0
+      parent.setPointerCapture(e.pointerId)
+    }
+
+    const onPointerMove = (e: PointerEvent) => {
+      const s = state.current
+      if (!s.dragging) return
+      const dx = e.clientX - s.dragStartX
+      if (Math.abs(dx) > 3) s.hasDragged = true
+      s.velocity = e.clientX - s.lastPointerX
+      s.lastPointerX = e.clientX
+      s.targetX = s.dragStartScrollX + dx
+    }
+
+    const onPointerUp = (e: PointerEvent) => {
+      state.current.dragging = false
+      parent.releasePointerCapture(e.pointerId)
+    }
+
+    parent.addEventListener("pointerdown", onPointerDown)
+    parent.addEventListener("pointermove", onPointerMove)
+    parent.addEventListener("pointerup", onPointerUp)
+    parent.addEventListener("pointercancel", onPointerUp)
+
+    return () => {
+      parent.removeEventListener("pointerdown", onPointerDown)
+      parent.removeEventListener("pointermove", onPointerMove)
+      parent.removeEventListener("pointerup", onPointerUp)
+      parent.removeEventListener("pointercancel", onPointerUp)
+    }
+  }, [])
+
+  // Block link clicks if user dragged
+  const handleClick = useCallback((e: React.MouseEvent) => {
+    if (state.current.hasDragged) {
+      e.preventDefault()
+    }
+  }, [])
+
+  // GSAP heading reveal
+  useEffect(() => {
+    const heading = headingRef.current
+    if (!heading) return
+
+    gsap.set(heading.children, { opacity: 0, y: 24 })
+
+    const trigger = ScrollTrigger.create({
+      trigger: heading,
+      start: "top 85%",
+      once: true,
+      onEnter: () => {
+        gsap.to(heading.children, {
+          opacity: 1,
+          y: 0,
+          duration: 0.7,
+          stagger: 0.12,
+          ease: "power3.out",
+        })
+      },
+    })
+
+    return () => trigger.kill()
   }, [])
 
   return (
-    <section ref={sectionRef} className="py-20 lg:py-28">
+    <section ref={sectionRef} className="py-20 lg:py-24 overflow-hidden">
       {/* Section heading */}
       <div ref={headingRef} className="mx-auto max-w-7xl px-6 mb-10 md:mb-12 lg:px-12">
         <p className="text-[11px] font-medium uppercase tracking-[0.32em] text-muted-foreground">
@@ -136,37 +233,37 @@ export function CategoriesSection() {
         </h2>
       </div>
 
-      {/* Horizontally scrollable row */}
+      {/* Infinite marquee track — draggable */}
       <div
-        ref={scrollRef}
-        className="flex gap-4 overflow-x-auto px-6 pb-4 scrollbar-hide lg:px-12 md:gap-5"
-        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+        className="relative select-none cursor-grab active:cursor-grabbing touch-pan-y"
+        style={{ WebkitUserSelect: "none" }}
       >
-        {shopCategories.map((cat) => (
-          <Link
-            key={cat.name}
-            href={cat.href}
-            className="category-tile group shrink-0"
-          >
-            <div className="relative h-36 w-28 overflow-hidden rounded-lg bg-muted sm:h-44 sm:w-34 md:h-48 md:w-36">
-              <Image
-                src={cat.image}
-                alt={`${cat.name} saree`}
-                fill
-                sizes="144px"
-                className="object-cover object-top transition-transform duration-500 ease-out group-hover:scale-[1.08]"
-              />
-              {/* Hover overlay */}
-              <div
-                className="absolute inset-0 bg-foreground/0 transition-colors duration-300 group-hover:bg-foreground/10"
-                aria-hidden
-              />
-            </div>
-            <p className="mt-2.5 text-center text-[11px] font-medium uppercase tracking-[0.14em] text-foreground/70 transition-colors duration-300 group-hover:text-foreground sm:text-xs">
-              {cat.name}
-            </p>
-          </Link>
-        ))}
+        <div ref={trackRef} className="flex gap-8 will-change-transform pl-6 lg:pl-12 md:gap-10">
+          {loopedCategories.map((cat, i) => (
+            <Link
+              key={`${cat.name}-${i}`}
+              href={cat.href}
+              onClick={handleClick}
+              draggable={false}
+              className="group shrink-0 flex flex-col items-center gap-3"
+            >
+              {/* Circular image — zoomed into fabric */}
+              <div className="relative h-24 w-24 overflow-hidden rounded-full bg-muted ring-1 ring-border/30 transition-shadow duration-300 group-hover:ring-foreground/20 group-hover:shadow-lg sm:h-28 sm:w-28 md:h-32 md:w-32">
+                <Image
+                  src={cat.image}
+                  alt={`${cat.name} weave`}
+                  fill
+                  sizes="128px"
+                  draggable={false}
+                  className="object-cover scale-[2.2] object-[center_30%] transition-transform duration-500 ease-out group-hover:scale-[2.4]"
+                />
+              </div>
+              <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-foreground/60 transition-colors duration-300 group-hover:text-foreground sm:text-[11px]">
+                {cat.name}
+              </span>
+            </Link>
+          ))}
+        </div>
       </div>
     </section>
   )
