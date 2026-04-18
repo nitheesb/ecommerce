@@ -11,7 +11,7 @@ interface FeaturedGridSectionProps {
 
 export function FeaturedGridSection({ products }: FeaturedGridSectionProps) {
   return (
-    <section className="mx-auto max-w-7xl px-6 py-20 lg:px-12 lg:py-24">
+    <section className="mx-auto max-w-7xl px-6 pt-10 pb-20 lg:px-12 lg:pt-12 lg:pb-24">
       <div className="mb-6">
         <Breadcrumbs
           items={[

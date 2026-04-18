@@ -222,7 +222,7 @@ export function CategoriesSection() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="py-20 lg:py-24 overflow-hidden">
+    <section ref={sectionRef} className="pt-20 pb-14 lg:pt-24 lg:pb-16 overflow-hidden border-b border-border/40">
       {/* Section heading */}
       <div ref={headingRef} className="mx-auto max-w-7xl px-6 mb-10 md:mb-12 lg:px-12">
         <p className="text-[11px] font-medium uppercase tracking-[0.32em] text-muted-foreground">
