@@ -214,23 +214,23 @@ export function Hero() {
           className="absolute inset-[-10%] will-change-transform"
         >
           <Image
-            src="/images/saree-3-b.jpg"
-            alt="An editorial portrait of a woman draped in an ivory silk saree"
+            src="/images/hero-cover.jpg"
+            alt="A woman in a red and gold saree standing in a golden mustard field"
             fill
             priority
             sizes="100vw"
             className="object-cover"
           />
         </div>
-        {/* Cinematic vignette */}
+        {/* Cinematic vignette — stronger for bright image */}
         <div
           ref={vignetteRef}
           aria-hidden
-          className="absolute inset-0 bg-gradient-to-b from-foreground/25 via-transparent to-foreground/50"
+          className="absolute inset-0 bg-gradient-to-b from-foreground/40 via-foreground/20 to-foreground/60"
         />
         <div
           aria-hidden
-          className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_40%,_rgba(17,22,30,0.4)_100%)]"
+          className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_30%,_rgba(17,22,30,0.5)_100%)]"
         />
       </div>
 
