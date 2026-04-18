@@ -77,26 +77,6 @@ export function Navbar() {
                 </Link>
               )
             )}
-            <Link
-              href="/our-story"
-              className={cn(
-                "px-3.5 py-2 text-[10.5px] font-medium uppercase tracking-[0.2em] transition-colors duration-300",
-                textMuted,
-                scrolled ? "hover:text-foreground" : "hover:text-background"
-              )}
-            >
-              Our Story
-            </Link>
-            <Link
-              href="/new-arrivals"
-              className={cn(
-                "px-3.5 py-2 text-[10.5px] font-medium uppercase tracking-[0.2em] transition-colors duration-300",
-                textMuted,
-                scrolled ? "hover:text-foreground" : "hover:text-background"
-              )}
-            >
-              New Arrivals
-            </Link>
           </nav>
         </div>
 
@@ -126,8 +106,18 @@ export function Navbar() {
           </div>
         </Link>
 
-        {/* Right: actions */}
+        {/* Right: story link + actions */}
         <div className="flex items-center gap-0.5">
+          <Link
+            href="/our-story"
+            className={cn(
+              "hidden px-3.5 py-2 text-[10.5px] font-medium uppercase tracking-[0.2em] transition-colors duration-300 lg:inline-flex",
+              textMuted,
+              scrolled ? "hover:text-foreground" : "hover:text-background"
+            )}
+          >
+            Our Story
+          </Link>
           <Button
             variant="ghost"
             size="icon"

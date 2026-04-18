@@ -20,15 +20,15 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL("https://thazhuval.com"),
   title: {
-    default: "Thazhuval — The Art of the Embrace",
+    default: "House of Thazhuval — More Than a Saree, It's an Embrace",
     template: "%s · Thazhuval",
   },
   description:
-    "House of Thazhuval. Heirloom sarees, hand-woven by master artisans. Silk, Cotton and Heritage weaves — each a quiet embrace.",
+    "House of Thazhuval. More than a saree — it's an embrace. Soft fabrics, thoughtful craftsmanship, pieces that hold you.",
   openGraph: {
-    title: "Thazhuval — The Art of the Embrace",
+    title: "House of Thazhuval — More Than a Saree, It's an Embrace",
     description:
-      "Heirloom sarees, hand-woven by master artisans. Silk, Cotton and Heritage weaves.",
+      "Thazhuval means 'embrace'. Soft fabrics, thoughtful craftsmanship, sarees that hold you.",
     type: "website",
     url: "https://thazhuval.com",
   },

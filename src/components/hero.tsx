@@ -127,6 +127,7 @@ export function Hero() {
       }, 2.2)
 
       // ── Scroll-driven parallax timeline ──
+      // Each element exits at a different speed + blur for cinematic depth
       const scrollTl = gsap.timeline({
         scrollTrigger: {
           trigger: hero,
@@ -136,9 +137,9 @@ export function Hero() {
         },
       })
 
-      // Image: subtle zoom as page scrolls over
+      // Image: slow zoom creates depth
       scrollTl.to(image, {
-        scale: 1.15,
+        scale: 1.18,
         ease: "none",
       }, 0)
 
@@ -148,44 +149,51 @@ export function Hero() {
         ease: "none",
       }, 0)
 
-      // Scroll indicator: fast exit
+      // Scroll indicator: instant exit
       scrollTl.to(scrollIndic, {
         opacity: 0,
         ease: "none",
       }, 0)
 
-      // Eyebrow: fast exit
+      // Eyebrow: fast exit with blur
       scrollTl.to(eyebrow, {
-        y: -80,
+        y: -100,
         opacity: 0,
+        filter: "blur(8px)",
         ease: "none",
       }, 0)
 
-      // Heading line 1: parallax exit
+      // Heading line 1: deep parallax with scale + blur
       scrollTl.to(line1, {
+        y: -160,
+        opacity: 0,
+        scale: 0.9,
+        filter: "blur(6px)",
+        ease: "none",
+      }, 0.03)
+
+      // Heading line 2: different speed for split effect
+      scrollTl.to(line2, {
         y: -120,
         opacity: 0,
+        scale: 0.92,
+        filter: "blur(6px)",
         ease: "none",
-      }, 0.05)
+      }, 0.07)
 
-      // Heading line 2: slightly different speed
-      scrollTl.to(line2, {
-        y: -100,
-        opacity: 0,
-        ease: "none",
-      }, 0.08)
-
-      // Paragraph
+      // Paragraph: medium exit with blur
       scrollTl.to(para, {
-        y: -60,
+        y: -80,
         opacity: 0,
+        filter: "blur(4px)",
         ease: "none",
-      }, 0.05)
+      }, 0.04)
 
-      // CTAs
+      // CTAs: gentle exit
       scrollTl.to(cta, {
-        y: -40,
+        y: -50,
         opacity: 0,
+        filter: "blur(3px)",
         ease: "none",
       }, 0.1)
 
