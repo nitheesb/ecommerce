@@ -1,3 +1,7 @@
+"use client"
+
+import { useState } from "react"
+import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const defaultMessages = [
@@ -15,16 +19,20 @@ export function Marquee({
   messages?: string[]
   className?: string
 }) {
+  const [dismissed, setDismissed] = useState(false)
   const items = [...messages, ...messages]
+
+  if (dismissed) return null
+
   return (
     <div
       className={cn(
-        "relative flex overflow-hidden border-y border-border/60 bg-[hsl(var(--slate-deep))] text-background",
+        "group/marquee relative flex overflow-hidden border-y border-border/60 bg-[hsl(var(--slate-deep))] text-background",
         className
       )}
       aria-label="Brand announcements"
     >
-      <div className="flex animate-marquee whitespace-nowrap will-change-transform">
+      <div className="flex animate-marquee whitespace-nowrap will-change-transform group-hover/marquee:[animation-play-state:paused]">
         {items.map((m, i) => (
           <span
             key={i}
@@ -38,6 +46,14 @@ export function Marquee({
           </span>
         ))}
       </div>
+      <button
+        type="button"
+        onClick={() => setDismissed(true)}
+        aria-label="Dismiss announcements"
+        className="absolute right-3 top-1/2 z-10 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full text-background/60 transition-colors hover:text-background"
+      >
+        <X className="h-3 w-3" />
+      </button>
     </div>
   )
 }

@@ -4,6 +4,7 @@ import "./globals.css"
 import { cn } from "@/lib/utils"
 import { SnipcartProvider } from "@/components/snipcart-provider"
 import { Toaster } from "@/components/ui/toaster"
+import { ClientOverlays } from "@/components/client-overlays"
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -67,6 +68,7 @@ export default function RootLayout({
       )}
     >
       <body className="min-h-screen bg-background text-foreground font-sans selection:bg-foreground selection:text-background">
+        <ClientOverlays />
         {children}
         <SnipcartProvider />
         <Toaster />

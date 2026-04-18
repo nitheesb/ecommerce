@@ -3,7 +3,7 @@
 import * as React from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { Heart, Plus } from "lucide-react"
+import { Heart, Plus, Eye } from "lucide-react"
 import { cn, formatCurrency } from "@/lib/utils"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Badge } from "@/components/ui/badge"
@@ -14,11 +14,13 @@ interface ProductCardProps {
   product: Product
   className?: string
   priority?: boolean
+  onQuickView?: (product: Product) => void
 }
 
-export function ProductCard({ product, className, priority }: ProductCardProps) {
+export function ProductCard({ product, className, priority, onQuickView }: ProductCardProps) {
   const { isWishlisted, toggleWishlist } = useUiStore()
   const wishlisted = isWishlisted(product.id)
+  const [imageLoaded, setImageLoaded] = React.useState(false)
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? ""
 
@@ -38,6 +40,10 @@ export function ProductCard({ product, className, priority }: ProductCardProps) 
     >
       <div className="relative overflow-hidden bg-muted">
         <AspectRatio ratio={4 / 5}>
+          {/* Skeleton shimmer */}
+          {!imageLoaded && (
+            <div className="absolute inset-0 z-10 animate-pulse bg-gradient-to-r from-muted via-muted-foreground/5 to-muted" />
+          )}
           {/* Primary image */}
           <Image
             src={product.image}
@@ -45,7 +51,11 @@ export function ProductCard({ product, className, priority }: ProductCardProps) 
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             priority={priority}
-            className="object-cover transition-all duration-700 ease-out group-hover:scale-[1.03] group-hover:opacity-0"
+            onLoad={() => setImageLoaded(true)}
+            className={cn(
+              "object-cover transition-all duration-700 ease-out group-hover:scale-[1.03] group-hover:opacity-0",
+              !imageLoaded && "opacity-0"
+            )}
           />
           {/* Hover image */}
           <Image
@@ -69,22 +79,37 @@ export function ProductCard({ product, className, priority }: ProductCardProps) 
         )}
 
         {/* Wishlist */}
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault()
-            toggleWishlist(product.id)
-          }}
-          aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
-          className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-background/80 text-foreground backdrop-blur transition-all hover:bg-background"
-        >
-          <Heart
-            className={cn(
-              "h-[14px] w-[14px] transition-all",
-              wishlisted && "fill-foreground"
-            )}
-          />
-        </button>
+        <div className="absolute right-3 top-3 flex flex-col gap-2">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault()
+              toggleWishlist(product.id)
+            }}
+            aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-background/80 text-foreground backdrop-blur transition-all hover:bg-background"
+          >
+            <Heart
+              className={cn(
+                "h-[14px] w-[14px] transition-all",
+                wishlisted && "fill-foreground"
+              )}
+            />
+          </button>
+          {onQuickView && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault()
+                onQuickView(product)
+              }}
+              aria-label={`Quick view ${product.name}`}
+              className="flex h-9 w-9 translate-y-1 items-center justify-center rounded-full bg-background/80 text-foreground backdrop-blur opacity-0 transition-all duration-300 hover:bg-background group-hover:translate-y-0 group-hover:opacity-100"
+            >
+              <Eye className="h-[14px] w-[14px]" />
+            </button>
+          )}
+        </div>
 
         {/* Quick Add — Snipcart add-to-cart button */}
         <button
