@@ -46,7 +46,7 @@ export function Navbar() {
                   onMouseEnter={() => setOpenMenu(cat.title)}
                   onFocus={() => setOpenMenu(cat.title)}
                   className={cn(
-                    "relative px-3.5 py-2 text-[10.5px] font-medium uppercase tracking-[0.2em] transition-colors duration-300",
+                    "relative px-2.5 py-2 text-[10px] font-medium uppercase tracking-[0.16em] transition-colors duration-300",
                     openMenu === cat.title
                       ? textColor
                       : cn(textMuted, scrolled ? "hover:text-foreground" : "hover:text-background")
@@ -56,7 +56,7 @@ export function Navbar() {
                   {cat.title}
                   <span
                     className={cn(
-                      "absolute inset-x-3.5 -bottom-0.5 h-px transition-transform duration-300 origin-left",
+                      "absolute inset-x-2.5 -bottom-0.5 h-px transition-transform duration-300 origin-left",
                       scrolled ? "bg-foreground" : "bg-background",
                       openMenu === cat.title ? "scale-x-100" : "scale-x-0"
                     )}
@@ -68,7 +68,7 @@ export function Navbar() {
                   href={cat.href}
                   onMouseEnter={() => setOpenMenu(null)}
                   className={cn(
-                    "px-3.5 py-2 text-[10.5px] font-medium uppercase tracking-[0.2em] transition-colors duration-300",
+                    "px-2.5 py-2 text-[10px] font-medium uppercase tracking-[0.16em] transition-colors duration-300",
                     textMuted,
                     scrolled ? "hover:text-foreground" : "hover:text-background"
                   )}
@@ -111,7 +111,7 @@ export function Navbar() {
           <Link
             href="/our-story"
             className={cn(
-              "hidden px-3.5 py-2 text-[10.5px] font-medium uppercase tracking-[0.2em] transition-colors duration-300 lg:inline-flex",
+              "hidden px-2.5 py-2 text-[10px] font-medium uppercase tracking-[0.16em] transition-colors duration-300 lg:inline-flex",
               textMuted,
               scrolled ? "hover:text-foreground" : "hover:text-background"
             )}

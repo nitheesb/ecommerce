@@ -21,7 +21,7 @@ export function ScrollProgress() {
   }, [])
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 h-[2px]">
+    <div className="fixed top-0 left-0 right-0 z-[60] h-[2px] pointer-events-none">
       <div
         ref={barRef}
         className="h-full w-full origin-left bg-[hsl(var(--gold))]"
