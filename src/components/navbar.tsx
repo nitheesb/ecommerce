@@ -241,7 +241,7 @@ function MobileNav({ scrolled }: { scrolled: boolean }) {
           </div>
           <div className="flex-1 overflow-y-auto px-6 py-6">
             <Accordion type="single" collapsible className="w-full">
-              {categories.filter((cat) => cat.items.length > 0).map((cat) => (
+              {categories.map((cat) => (
                 <AccordionItem key={cat.title} value={cat.title}>
                   <AccordionTrigger className="font-serif text-base normal-case tracking-normal">
                     {cat.title}
@@ -266,13 +266,6 @@ function MobileNav({ scrolled }: { scrolled: boolean }) {
               ))}
             </Accordion>
             <div className="mt-6 space-y-4">
-              {categories.filter((cat) => cat.items.length === 0).map((cat) => (
-                <SheetClose key={cat.title} asChild>
-                  <Link href={cat.href} className="block font-serif text-base">
-                    {cat.title}
-                  </Link>
-                </SheetClose>
-              ))}
               <SheetClose asChild>
                 <Link href="/our-story" className="block font-serif text-base">
                   Our Story

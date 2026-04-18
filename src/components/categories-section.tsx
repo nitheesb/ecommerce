@@ -9,30 +9,28 @@ import { ScrollTrigger } from "gsap/ScrollTrigger"
 gsap.registerPlugin(ScrollTrigger)
 
 const shopCategories = [
-  {
-    name: "Best Sellers",
-    image: "/images/saree-4-a.jpg",
-    href: "/collections/bestsellers",
-  },
-  {
-    name: "Cotton Sarees",
-    image: "/images/saree-2-a.jpg",
-    href: "/collections/cotton",
-  },
-  {
-    name: "Silk Sarees",
-    image: "/images/saree-1-a.jpg",
-    href: "/collections/silk",
-  },
-  {
-    name: "Fancy Sarees",
-    image: "/images/saree-3-a.jpg",
-    href: "/collections/fancy",
-  },
+  { name: "Pure Zari Kanchipuram", image: "/images/saree-1-a.jpg", href: "/collections/pure-zari-kanchipuram" },
+  { name: "Soft Silks", image: "/images/saree-2-a.jpg", href: "/collections/soft-silks" },
+  { name: "Crepe", image: "/images/saree-3-a.jpg", href: "/collections/crepe" },
+  { name: "Chiffon", image: "/images/saree-4-a.jpg", href: "/collections/chiffon" },
+  { name: "Tussar", image: "/images/saree-5-a.jpg", href: "/collections/tussar" },
+  { name: "Organza", image: "/images/saree-6-a.jpg", href: "/collections/organza" },
+  { name: "Georgette", image: "/images/saree-7-a.jpg", href: "/collections/georgette" },
+  { name: "Paithani", image: "/images/saree-8-a.jpg", href: "/collections/paithani" },
+  { name: "Silk Cotton", image: "/images/saree-1-b.jpg", href: "/collections/silk-cotton" },
+  { name: "Banarasi Silk", image: "/images/saree-2-b.jpg", href: "/collections/banarasi-silk" },
+  { name: "Banarasi Katan Silk", image: "/images/saree-3-b.jpg", href: "/collections/banarasi-katan-silk" },
+  { name: "Pink Sarees", image: "/images/saree-4-b.jpg", href: "/collections/pink-sarees" },
+  { name: "Kanchipuram Tissue Silk", image: "/images/saree-5-b.jpg", href: "/collections/kanchipuram-tissue-silk" },
+  { name: "Bangalore Silk", image: "/images/saree-6-b.jpg", href: "/collections/bangalore-silk" },
+  { name: "Ikats", image: "/images/saree-7-b.jpg", href: "/collections/ikats" },
+  { name: "Brocade Kanchipuram", image: "/images/saree-8-b.jpg", href: "/collections/brocade-kanchipuram" },
+  { name: "Cotton", image: "/images/saree-1-a.jpg", href: "/collections/cotton" },
+  { name: "Chanderi", image: "/images/saree-2-a.jpg", href: "/collections/chanderi" },
 ]
 
-// Triplicate for seamless infinite loop (4 items need more copies)
-const loopedCategories = [...shopCategories, ...shopCategories, ...shopCategories]
+// Duplicate for seamless infinite loop
+const loopedCategories = [...shopCategories, ...shopCategories]
 
 const AUTO_SPEED = 0.4 // px per frame
 const DRAG_EASE = 0.92 // momentum decay
@@ -96,8 +94,8 @@ export function CategoriesSection() {
     const track = trackRef.current
     if (!track) return
 
-    // Measure one set width (one-third of track since we tripled)
-    state.current.singleSetWidth = track.scrollWidth / 3
+    // Measure one set width (half of track since we doubled)
+    state.current.singleSetWidth = track.scrollWidth / 2
     state.current.animId = requestAnimationFrame(loop)
 
     return () => cancelAnimationFrame(state.current.animId)
