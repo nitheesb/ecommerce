@@ -1,5 +1,4 @@
 import { AnnouncementBar } from "@/components/announcement-bar"
-import { CategoriesSection } from "@/components/categories-section"
 import { EditorialSection } from "@/components/editorial-section"
 import { FeaturedGridSection } from "@/components/featured-grid-section"
 import { Footer } from "@/components/footer"
@@ -21,7 +20,6 @@ export default async function HomePage() {
       <main>
         <Hero />
         <div className="relative z-10 bg-background">
-          <CategoriesSection />
           <FeaturedGridSection products={products} />
           <EditorialSection />
           <ProductCare />

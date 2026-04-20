@@ -39,6 +39,17 @@ export function Navbar() {
         <div className="flex items-center gap-1">
           <MobileNav scrolled={scrolled} />
           <nav className="hidden items-center gap-0.5 lg:flex">
+            <Link
+              href="/"
+              onMouseEnter={() => setOpenMenu(null)}
+              className={cn(
+                "px-2.5 py-2 text-[10px] font-medium uppercase tracking-[0.16em] transition-colors duration-300",
+                textMuted,
+                scrolled ? "hover:text-foreground" : "hover:text-background"
+              )}
+            >
+              Home
+            </Link>
             {categories.map((cat) =>
               cat.items.length > 0 ? (
                 <button
@@ -77,6 +88,17 @@ export function Navbar() {
                 </Link>
               )
             )}
+            <Link
+              href="/our-story"
+              onMouseEnter={() => setOpenMenu(null)}
+              className={cn(
+                "px-2.5 py-2 text-[10px] font-medium uppercase tracking-[0.16em] transition-colors duration-300",
+                textMuted,
+                scrolled ? "hover:text-foreground" : "hover:text-background"
+              )}
+            >
+              Our Story
+            </Link>
           </nav>
         </div>
 
@@ -106,18 +128,8 @@ export function Navbar() {
           </div>
         </Link>
 
-        {/* Right: story link + actions */}
+        {/* Right: actions */}
         <div className="flex items-center gap-0.5">
-          <Link
-            href="/our-story"
-            className={cn(
-              "hidden px-2.5 py-2 text-[10px] font-medium uppercase tracking-[0.16em] transition-colors duration-300 lg:inline-flex",
-              textMuted,
-              scrolled ? "hover:text-foreground" : "hover:text-background"
-            )}
-          >
-            Our Story
-          </Link>
           <Button
             variant="ghost"
             size="icon"
@@ -240,6 +252,11 @@ function MobileNav({ scrolled }: { scrolled: boolean }) {
             </p>
           </div>
           <div className="flex-1 overflow-y-auto px-6 py-6">
+            <SheetClose asChild>
+              <Link href="/" className="mb-4 block font-serif text-base">
+                Home
+              </Link>
+            </SheetClose>
             <Accordion type="single" collapsible className="w-full">
               {categories.map((cat) => (
                 <AccordionItem key={cat.title} value={cat.title}>
@@ -271,24 +288,14 @@ function MobileNav({ scrolled }: { scrolled: boolean }) {
                   Our Story
                 </Link>
               </SheetClose>
-              <SheetClose asChild>
-                <Link href="/new-arrivals" className="block font-serif text-base">
-                  New Arrivals
-                </Link>
-              </SheetClose>
-              <SheetClose asChild>
-                <Link href="/appointment" className="block font-serif text-base">
-                  Book an Appointment
-                </Link>
-              </SheetClose>
             </div>
           </div>
           <div className="border-t border-border/60 px-6 py-5">
             <p className="text-[10px] uppercase tracking-[0.28em] text-muted-foreground">
-              Concierge
+              Contact Us
             </p>
             <p className="mt-2 font-serif text-sm">
-              +91 80 4567 8901 · care@thazhuval.com
+              houseofthazhuval@gmail.com
             </p>
           </div>
         </div>

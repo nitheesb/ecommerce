@@ -9,26 +9,18 @@ import { ScrollTrigger } from "gsap/ScrollTrigger"
 
 gsap.registerPlugin(ScrollTrigger)
 
-const stats = [
-  { value: 42, suffix: "", label: "Master Weavers" },
-  { value: 1200, suffix: "+", label: "Hours per Saree" },
-  { value: 12, suffix: "", label: "Heritage Regions" },
-]
-
 export function EditorialSection() {
   const sectionRef = useRef<HTMLElement>(null)
   const imageWrapRef = useRef<HTMLDivElement>(null)
   const imageRef = useRef<HTMLDivElement>(null)
   const textRef = useRef<HTMLDivElement>(null)
-  const statsRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const section = sectionRef.current
     const imageWrap = imageWrapRef.current
     const image = imageRef.current
     const text = textRef.current
-    const statsEl = statsRef.current
-    if (!section || !imageWrap || !image || !text || !statsEl) return
+    if (!section || !imageWrap || !image || !text) return
 
     // Image parallax
     gsap.to(image, {
@@ -57,29 +49,6 @@ export function EditorialSection() {
           duration: 0.7,
           stagger: 0.12,
           ease: "power3.out",
-        })
-      },
-    })
-
-    // Counter animation on stats
-    const counters = statsEl.querySelectorAll<HTMLElement>(".stat-number")
-    ScrollTrigger.create({
-      trigger: statsEl,
-      start: "top 85%",
-      once: true,
-      onEnter: () => {
-        counters.forEach((el) => {
-          const target = parseInt(el.dataset.value || "0", 10)
-          const suffix = el.dataset.suffix || ""
-          const obj = { val: 0 }
-          gsap.to(obj, {
-            val: target,
-            duration: 2,
-            ease: "power2.out",
-            onUpdate: () => {
-              el.textContent = Math.round(obj.val).toLocaleString() + suffix
-            },
-          })
         })
       },
     })
@@ -139,23 +108,6 @@ export function EditorialSection() {
               Meet the Artisans
               <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
             </Link>
-          </div>
-
-          <div ref={statsRef} className="reveal-item mt-14 grid grid-cols-3 gap-6 border-t border-border/60 pt-10">
-            {stats.map((stat) => (
-              <div key={stat.label}>
-                <p
-                  className="stat-number font-serif text-3xl tracking-tight"
-                  data-value={stat.value}
-                  data-suffix={stat.suffix}
-                >
-                  0{stat.suffix}
-                </p>
-                <p className="mt-1 text-xs uppercase tracking-[0.18em] text-muted-foreground">
-                  {stat.label}
-                </p>
-              </div>
-            ))}
           </div>
         </div>
       </div>

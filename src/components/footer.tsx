@@ -1,125 +1,98 @@
 import Link from "next/link"
+import { Instagram } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 
-const footerNav = [
-  {
-    title: "Shop",
-    links: [
-      { label: "Silk Sarees", href: "/collections/silk" },
-      { label: "Cotton & Handloom", href: "/collections/cotton" },
-      { label: "Lightweight", href: "/collections/lightweight" },
-      { label: "New Arrivals", href: "/new-arrivals" },
-      { label: "Gift Cards", href: "/gift-cards" },
-    ],
-  },
-  {
-    title: "House of Thazhuval",
-    links: [
-      { label: "Our Story", href: "/our-story" },
-      { label: "The Artisans", href: "/artisans" },
-      { label: "New Arrivals", href: "/new-arrivals" },
-      { label: "Private Consultations", href: "/consultations" },
-    ],
-  },
-  {
-    title: "Support",
-    links: [
-      { label: "Contact", href: "/contact" },
-      { label: "Shipping & Returns", href: "/shipping" },
-      { label: "Saree Care", href: "/care" },
-      { label: "Size Guide", href: "/size-guide" },
-      { label: "FAQ", href: "/faq" },
-    ],
-  },
+const quickLinks = [
+  { label: "Search", href: "/search" },
+  { label: "Privacy Policy", href: "/privacy" },
+  { label: "Refund Policy", href: "/refund-policy" },
+  { label: "Shipping Policy", href: "/shipping" },
+  { label: "Terms of Service", href: "/terms" },
+  { label: "Contact Information", href: "/contact" },
 ]
 
 export function Footer() {
   return (
     <footer className="border-t border-border/60 bg-foreground text-background">
-      <div className="mx-auto max-w-7xl px-6 py-20 lg:px-12">
-        <div className="grid grid-cols-1 gap-14 md:grid-cols-[1.3fr_2fr] md:gap-20">
+      <div className="mx-auto max-w-7xl px-6 py-16 lg:px-12">
+        <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 md:grid-cols-3 md:gap-16">
+          {/* Quick Links */}
           <div>
-            <Link href="/" className="inline-flex items-baseline gap-2">
-              <span className="font-serif text-4xl leading-none tracking-tight">Thazhuval</span>
-              <span className="text-[10px] uppercase tracking-[0.3em] text-background/60">
-                Est. 2019
-              </span>
-            </Link>
-            <p className="mt-6 max-w-sm text-pretty text-base leading-relaxed text-background/70">
-              House of Thazhuval &mdash; a sanctuary for the handwoven saree. We preserve the quiet
-              art of the embrace, one thread at a time.
-            </p>
-            <form className="mt-10 max-w-sm">
-              <label
-                htmlFor="newsletter"
-                className="text-[10px] font-medium uppercase tracking-[0.28em] text-background/60"
-              >
-                Letters from the Loom
-              </label>
-              <div className="mt-3 flex items-center gap-0 border-b border-background/40 focus-within:border-background">
-                <input
-                  id="newsletter"
-                  type="email"
-                  placeholder="your@email.com"
-                  className="flex-1 bg-transparent py-2 text-sm text-background placeholder:text-background/50 focus:outline-none"
-                />
-                <Button
-                  type="submit"
-                  variant="ghost"
-                  size="sm"
-                  className="shrink-0 text-background hover:bg-background/10 hover:text-background"
-                >
-                  Subscribe
-                </Button>
-              </div>
-              <p className="mt-3 text-xs text-background/50">
-                Stories, new arrivals, and invitations to private previews.
-              </p>
-            </form>
+            <h3 className="text-base font-medium text-background">Quick Links</h3>
+            <ul className="mt-5 flex flex-col gap-3">
+              {quickLinks.map((link) => (
+                <li key={link.label}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-background/70 underline-offset-4 transition-colors hover:text-background hover:underline"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
 
-          <div className="grid grid-cols-2 gap-10 sm:grid-cols-3">
-            {footerNav.map((col) => (
-              <div key={col.title}>
-                <h3 className="text-[10px] font-medium uppercase tracking-[0.28em] text-background/60">
-                  {col.title}
-                </h3>
-                <ul className="mt-5 flex flex-col gap-3">
-                  {col.links.map((link) => (
-                    <li key={link.label}>
-                      <Link
-                        href={link.href}
-                        className="text-sm text-background/85 underline-offset-4 transition-colors hover:text-background hover:underline"
-                      >
-                        {link.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+          {/* Contact Us */}
+          <div>
+            <h3 className="text-base font-medium text-background">Contact Us</h3>
+            <a
+              href="mailto:houseofthazhuval@gmail.com"
+              className="mt-5 block text-sm text-background/70 underline-offset-4 transition-colors hover:text-background hover:underline"
+            >
+              houseofthazhuval@gmail.com
+            </a>
+          </div>
+
+          {/* Our Mission */}
+          <div>
+            <h3 className="text-base font-medium text-background">Our Mission</h3>
+            <p className="mt-5 text-sm leading-relaxed text-background/70">
+              To create handcrafted sarees that celebrate tradition, craftsmanship, and
+              individuality &mdash; bringing timeless elegance and comfort to every woman.
+            </p>
           </div>
         </div>
 
-        <Separator className="my-12 bg-background/15" />
+        <Separator className="my-10 bg-background/15" />
 
-        <div className="flex flex-col items-start justify-between gap-4 text-xs text-background/60 sm:flex-row sm:items-center">
+        {/* Subscribe + Instagram */}
+        <div className="flex flex-col items-start justify-between gap-8 sm:flex-row sm:items-end">
+          <form className="w-full max-w-sm">
+            <p className="text-sm font-medium text-background">Subscribe to our emails</p>
+            <div className="mt-3 flex items-center gap-0 border border-background/40 focus-within:border-background">
+              <input
+                type="email"
+                placeholder="Email"
+                className="flex-1 bg-transparent px-3 py-2.5 text-sm text-background placeholder:text-background/50 focus:outline-none"
+              />
+              <Button
+                type="submit"
+                variant="ghost"
+                size="sm"
+                className="shrink-0 px-3 text-background hover:bg-background/10 hover:text-background"
+                aria-label="Subscribe"
+              >
+                &rarr;
+              </Button>
+            </div>
+          </form>
+
+          <a
+            href="https://instagram.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-background/70 transition-colors hover:text-background"
+            aria-label="Instagram"
+          >
+            <Instagram className="h-5 w-5" strokeWidth={1.5} />
+          </a>
+        </div>
+
+        <div className="mt-8 text-xs text-background/50">
           <p>&copy; {new Date().getFullYear()} House of Thazhuval. All rights reserved.</p>
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-            <Link href="/privacy" className="hover:text-background">
-              Privacy
-            </Link>
-            <Link href="/terms" className="hover:text-background">
-              Terms
-            </Link>
-            <Link href="/accessibility" className="hover:text-background">
-              Accessibility
-            </Link>
-            <span className="uppercase tracking-[0.28em]">Crafted in India</span>
-            <span>Designed by nitheesbalaji</span>
-          </div>
         </div>
       </div>
     </footer>
