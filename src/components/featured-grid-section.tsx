@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useMemo } from "react"
 import Link from "next/link"
-import { ArrowRight } from "lucide-react"
+import { ArrowRight, SlidersHorizontal, X } from "lucide-react"
 
 import { ProductGrid } from "@/components/product-grid"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
@@ -23,6 +23,7 @@ export function FeaturedGridSection({ products }: FeaturedGridSectionProps) {
   const [selectedFabrics, setSelectedFabrics] = useState<string[]>([])
   const [selectedOccasions, setSelectedOccasions] = useState<string[]>([])
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 130000])
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
 
   const toggleFilter = useCallback(
     (value: string, selected: string[], setSelected: (v: string[]) => void) => {
@@ -75,6 +76,9 @@ export function FeaturedGridSection({ products }: FeaturedGridSectionProps) {
     })
   }, [products, selectedFabrics, selectedOccasions, priceRange])
 
+  const activeFilterCount =
+    selectedFabrics.length + selectedOccasions.length + (priceRange[0] > 0 || priceRange[1] < 130000 ? 1 : 0)
+
   return (
     <section className="mx-auto max-w-7xl px-6 pt-16 pb-20 lg:px-12 lg:pt-20 lg:pb-24">
       {/* Shop All Sarees heading */}
@@ -89,10 +93,38 @@ export function FeaturedGridSection({ products }: FeaturedGridSectionProps) {
         </Link>
       </div>
 
+      {/* Mobile filter toggle */}
+      <div className="mb-6 flex items-center gap-3 lg:hidden">
+        <button
+          onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
+          className="inline-flex items-center gap-2 border border-border px-4 py-2.5 text-[11px] font-medium uppercase tracking-[0.18em] transition-colors hover:bg-secondary/50"
+        >
+          {mobileFiltersOpen ? (
+            <X className="h-3.5 w-3.5" />
+          ) : (
+            <SlidersHorizontal className="h-3.5 w-3.5" />
+          )}
+          Filters
+          {activeFilterCount > 0 && (
+            <span className="ml-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-foreground px-1 text-[9px] text-background">
+              {activeFilterCount}
+            </span>
+          )}
+        </button>
+        {hasFilters && (
+          <button
+            onClick={clearAll}
+            className="text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground"
+          >
+            Clear all
+          </button>
+        )}
+      </div>
+
       <div className="flex flex-col gap-10 lg:flex-row lg:gap-12">
-        {/* Filters sidebar */}
-        <aside className="w-full shrink-0 lg:w-[220px]">
-          <div className="flex items-center justify-between mb-2">
+        {/* Filters sidebar — hidden on mobile unless toggled */}
+        <aside className={`w-full shrink-0 lg:block lg:w-[220px] ${mobileFiltersOpen ? "block" : "hidden lg:block"}`}>
+          <div className="hidden items-center justify-between mb-2 lg:flex">
             <h3 className="text-base font-medium">Filters</h3>
             {hasFilters && (
               <button
