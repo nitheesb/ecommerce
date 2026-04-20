@@ -50,7 +50,7 @@ export function FeaturedGridSection({ products }: FeaturedGridSectionProps) {
   }, [])
 
   return (
-    <section className="mx-auto max-w-7xl px-6 pt-10 pb-20 lg:px-12 lg:pt-12 lg:pb-24">
+    <section className="mx-auto max-w-7xl px-6 pt-16 pb-20 lg:px-12 lg:pt-20 lg:pb-24">
       {/* Shop All Sarees heading */}
       <div className="mb-10 flex items-center justify-between border-b border-border/40 pb-6">
         <h2 className="font-serif text-3xl tracking-tight md:text-4xl">Shop All Sarees</h2>
