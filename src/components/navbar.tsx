@@ -89,17 +89,6 @@ export function Navbar({ solid = false }: { solid?: boolean }) {
                 </Link>
               )
             )}
-            <Link
-              href="/our-story"
-              onMouseEnter={() => setOpenMenu(null)}
-              className={cn(
-                "whitespace-nowrap px-2 py-2 text-[10px] font-medium uppercase tracking-[0.14em] transition-colors duration-300",
-                textMuted,
-                scrolled ? "hover:text-foreground" : "hover:text-background"
-              )}
-            >
-              Our Story
-            </Link>
           </nav>
         </div>
 
@@ -129,8 +118,19 @@ export function Navbar({ solid = false }: { solid?: boolean }) {
           </div>
         </Link>
 
-        {/* Right: actions */}
+        {/* Right: Our Story + actions */}
         <div className="flex items-center justify-end gap-0.5">
+          <Link
+            href="/our-story"
+            onMouseEnter={() => setOpenMenu(null)}
+            className={cn(
+              "hidden whitespace-nowrap px-2.5 py-2 text-[10px] font-medium uppercase tracking-[0.14em] transition-colors duration-300 lg:inline-flex",
+              textMuted,
+              scrolled ? "hover:text-foreground" : "hover:text-background"
+            )}
+          >
+            Our Story
+          </Link>
           <Button
             variant="ghost"
             size="icon"

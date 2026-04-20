@@ -2,11 +2,8 @@
 
 import { useRef, useLayoutEffect } from "react"
 import Image from "next/image"
-import Link from "next/link"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
-import { Button } from "@/components/ui/button"
-import { MagneticButton } from "@/components/magnetic-button"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -19,7 +16,6 @@ export function Hero() {
   const line1Ref = useRef<HTMLSpanElement>(null)
   const line2Ref = useRef<HTMLSpanElement>(null)
   const paraRef = useRef<HTMLParagraphElement>(null)
-  const ctaRef = useRef<HTMLDivElement>(null)
   const scrollIndicRef = useRef<HTMLDivElement>(null)
 
   useLayoutEffect(() => {
@@ -31,10 +27,9 @@ export function Hero() {
       const line1 = line1Ref.current
       const line2 = line2Ref.current
       const para = paraRef.current
-      const cta = ctaRef.current
       const scrollIndic = scrollIndicRef.current
 
-      if (!hero || !image || !vignette || !eyebrow || !line1 || !line2 || !para || !cta || !scrollIndic) return
+      if (!hero || !image || !vignette || !eyebrow || !line1 || !line2 || !para || !scrollIndic) return
 
       const fixedBg = fixedBgRef.current
       if (!fixedBg) return
@@ -45,7 +40,6 @@ export function Hero() {
       gsap.set(eyebrow, { opacity: 0, y: 20 })
       gsap.set([line1, line2], { clipPath: "inset(100% 0 0 0)", y: 40 })
       gsap.set(para, { opacity: 0, y: 30 })
-      gsap.set(cta, { opacity: 0, y: 30 })
       gsap.set(scrollIndic, { opacity: 0, y: 10 })
 
       // Hairlines inside eyebrow
@@ -111,21 +105,13 @@ export function Hero() {
         ease: "power2.out",
       }, 1.7)
 
-      // CTA buttons
-      intro.to(cta, {
-        opacity: 1,
-        y: 0,
-        duration: 0.8,
-        ease: "power2.out",
-      }, 1.9)
-
       // Scroll indicator
       intro.to(scrollIndic, {
         opacity: 1,
         y: 0,
         duration: 0.6,
         ease: "power2.out",
-      }, 2.2)
+      }, 2.0)
 
       // ── Scroll-driven parallax timeline ──
       // Each element exits at a different speed + blur for cinematic depth
@@ -189,14 +175,6 @@ export function Hero() {
         filter: "blur(4px)",
         ease: "none",
       }, 0.04)
-
-      // CTAs: gentle exit
-      scrollTl.to(cta, {
-        y: -50,
-        opacity: 0,
-        filter: "blur(3px)",
-        ease: "none",
-      }, 0.1)
 
       // Hide fixed background once hero is scrolled past
       ScrollTrigger.create({
@@ -278,38 +256,17 @@ export function Hero() {
           belonging. Soft fabrics, thoughtful craftsmanship, pieces that
           don&apos;t just dress you — they hold you.
         </p>
-
-        <div
-          ref={ctaRef}
-          className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4"
-        >
-          <MagneticButton>
-            <Button asChild size="lg" variant="ivory" className="min-w-[220px]">
-              <Link href="/collections">Shop Now</Link>
-            </Button>
-          </MagneticButton>
-          <MagneticButton>
-            <Button
-              asChild
-              size="lg"
-              variant="outline"
-              className="min-w-[200px] border-background/70 text-background hover:bg-background hover:text-foreground"
-            >
-              <Link href="/our-story">Our Story</Link>
-            </Button>
-          </MagneticButton>
-        </div>
       </div>
 
-      {/* Scroll indicator */}
+      {/* Scroll indicator — subtle, bottom right */}
       <div
         ref={scrollIndicRef}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 text-background/85"
+        className="absolute bottom-8 right-8 text-background/50"
       >
-        <div className="flex flex-col items-center gap-3">
-          <span className="text-[10px] uppercase tracking-[0.38em]">Scroll</span>
-          <div className="relative h-10 w-[18px] rounded-full border border-background/60">
-            <span className="absolute left-1/2 top-2 h-1.5 w-[2px] -translate-x-1/2 rounded-full bg-background/85 animate-scroll-indicator" />
+        <div className="flex flex-col items-center gap-2">
+          <span className="text-[9px] uppercase tracking-[0.3em]">Scroll</span>
+          <div className="relative h-8 w-[14px] rounded-full border border-background/40">
+            <span className="absolute left-1/2 top-1.5 h-1 w-[1.5px] -translate-x-1/2 rounded-full bg-background/60 animate-scroll-indicator" />
           </div>
         </div>
       </div>

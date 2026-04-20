@@ -88,17 +88,6 @@ export function QuickView({ product, onClose }: QuickViewProps) {
             {product.description}
           </p>
 
-          {/* Palette */}
-          <div className="mt-4 flex items-center gap-2">
-            {product.palette.map((c) => (
-              <span
-                key={c}
-                className="h-4 w-4 rounded-full ring-1 ring-foreground/10"
-                style={{ backgroundColor: c }}
-              />
-            ))}
-          </div>
-
           <div className="mt-6 flex flex-col gap-3">
             <button
               type="button"

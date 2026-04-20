@@ -8,11 +8,6 @@ import { ProductGrid } from "@/components/product-grid"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import type { Product } from "@/lib/products"
 
-const colorOptions = [
-  "Black", "Blue", "Cream", "Green", "Grey", "Ivory", "Maroon", "Mustard",
-  "Olive Green", "Peach", "Pink", "Purple", "Red", "Violet", "White", "Yellow",
-]
-
 const fabricOptions = [
   "Cotton", "Linen", "Modal", "Silk", "Soft Silks", "Tussar",
   "Silk Cotton", "Crepe", "Chiffon", "Organza", "Georgette",
@@ -25,7 +20,6 @@ interface FeaturedGridSectionProps {
 }
 
 export function FeaturedGridSection({ products }: FeaturedGridSectionProps) {
-  const [selectedColors, setSelectedColors] = useState<string[]>([])
   const [selectedFabrics, setSelectedFabrics] = useState<string[]>([])
   const [selectedOccasions, setSelectedOccasions] = useState<string[]>([])
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 130000])
@@ -40,10 +34,9 @@ export function FeaturedGridSection({ products }: FeaturedGridSectionProps) {
   )
 
   const hasFilters =
-    selectedColors.length > 0 || selectedFabrics.length > 0 || selectedOccasions.length > 0
+    selectedFabrics.length > 0 || selectedOccasions.length > 0
 
   const clearAll = useCallback(() => {
-    setSelectedColors([])
     setSelectedFabrics([])
     setSelectedOccasions([])
     setPriceRange([0, 130000])
@@ -78,29 +71,7 @@ export function FeaturedGridSection({ products }: FeaturedGridSectionProps) {
             )}
           </div>
 
-          <Accordion type="multiple" defaultValue={["colour"]}>
-            {/* Colour */}
-            <AccordionItem value="colour">
-              <AccordionTrigger className="text-sm normal-case tracking-normal">
-                Colour
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="flex flex-col gap-2.5">
-                  {colorOptions.map((color) => (
-                    <label key={color} className="flex items-center gap-2.5 cursor-pointer text-sm">
-                      <input
-                        type="checkbox"
-                        checked={selectedColors.includes(color)}
-                        onChange={() => toggleFilter(color, selectedColors, setSelectedColors)}
-                        className="h-3.5 w-3.5 rounded-sm border border-border accent-foreground"
-                      />
-                      <span className="text-foreground/80">{color}</span>
-                    </label>
-                  ))}
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-
+          <Accordion type="multiple" defaultValue={["fabric"]}>
             {/* Price */}
             <AccordionItem value="price">
               <AccordionTrigger className="text-sm normal-case tracking-normal">

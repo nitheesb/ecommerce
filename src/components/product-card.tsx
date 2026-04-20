@@ -150,18 +150,6 @@ export function ProductCard({ product, className, priority, onQuickView }: Produ
           )}
         </div>
       </div>
-
-      {/* palette dots */}
-      <div className="mt-2 flex items-center gap-1.5 px-0.5">
-        {product.palette.map((c) => (
-          <span
-            key={c}
-            className="h-2.5 w-2.5 rounded-full ring-1 ring-foreground/10"
-            style={{ backgroundColor: c }}
-            aria-hidden
-          />
-        ))}
-      </div>
     </Link>
   )
 }

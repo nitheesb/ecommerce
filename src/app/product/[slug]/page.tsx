@@ -178,20 +178,6 @@ function SanityProductDetail({ product }: { product: IProduct }) {
                 {product.description}
               </p>
 
-              {/* Palette */}
-              {product.palette && product.palette.length > 0 && (
-                <div className="mt-6 flex items-center gap-2">
-                  {product.palette.map((c) => (
-                    <span
-                      key={c}
-                      className="h-6 w-6 rounded-full ring-1 ring-foreground/10"
-                      style={{ backgroundColor: c }}
-                      aria-hidden
-                    />
-                  ))}
-                </div>
-              )}
-
               {/* Variant selection + Buy Button (client component) */}
               <ProductActions product={product} />
 
