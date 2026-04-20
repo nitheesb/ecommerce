@@ -49,6 +49,24 @@ export default function ContactPage() {
             </div>
 
             <div>
+              <h2 className="text-base font-medium text-foreground">Social Media</h2>
+              <p className="mt-2">
+                Stay connected with us on social media for the latest updates, promotions, and more:
+              </p>
+              <p className="mt-3">
+                <strong>Instagram:</strong>{" "}
+                <a
+                  href="https://instagram.com/houseofthazhuval"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-foreground underline underline-offset-4"
+                >
+                  @houseofthazhuval
+                </a>
+              </p>
+            </div>
+
+            <div>
               <h2 className="text-base font-medium text-foreground">Business Inquiries</h2>
               <p className="mt-2">
                 For business-related inquiries, collaborations, or partnership opportunities,

@@ -30,13 +30,24 @@ export default function TermsPage() {
                 the terms &ldquo;we&rdquo;, &ldquo;us&rdquo;, and &ldquo;our&rdquo; refer to House of Thazhuval.
               </p>
               <p className="mt-2">
+                House of Thazhuval offers this website, including all information, tools, and services
+                available from this site to you, the user, conditioned upon your acceptance of all terms,
+                conditions, policies, and notices stated here.
+              </p>
+              <p className="mt-2">
                 By visiting our site and/or purchasing something from us, you engage in our
-                &ldquo;Service&rdquo; and agree to be bound by the following Terms of Service. These
-                Terms apply to all users of the site, including browsers, customers, merchants,
+                &ldquo;Service&rdquo; and agree to be bound by the following Terms of Service
+                (&ldquo;Terms&rdquo;), including additional policies referenced herein or available
+                by hyperlink.
+              </p>
+              <p className="mt-2">
+                These Terms apply to all users of the site, including browsers, customers, merchants,
                 and contributors.
               </p>
               <p className="mt-2">
                 If you do not agree to these Terms, you may not access the website or use any services.
+              </p>
+              <p className="mt-2">
                 We reserve the right to update or modify these Terms at any time. Continued use of the
                 site after changes constitutes acceptance of those changes.
               </p>
@@ -45,89 +56,200 @@ export default function TermsPage() {
             <div>
               <h2 className="text-base font-medium text-foreground">1. Online Store Terms</h2>
               <p className="mt-2">
-                By agreeing to these Terms, you confirm that you are of legal age in your jurisdiction.
-                You may not use our products for any illegal or unauthorized purpose. You must not transmit
-                any worms, viruses, or destructive code. A breach of any of the Terms will result in
-                immediate termination of your services.
+                By using this site, you confirm that you are of legal age in your jurisdiction or have
+                given consent for any minor dependents to use this site.
+              </p>
+              <p className="mt-2">
+                You may not use our products for any illegal or unauthorized purpose.
+              </p>
+              <p className="mt-2">
+                You must not transmit any viruses, malware, or harmful code.
+              </p>
+              <p className="mt-2">
+                Violation of any Terms will result in termination of services.
               </p>
             </div>
 
             <div>
               <h2 className="text-base font-medium text-foreground">2. General Conditions</h2>
               <p className="mt-2">
-                We reserve the right to refuse service to anyone for any reason at any time. Content
-                (not including credit card information) may be transferred unencrypted. You agree not
-                to reproduce, duplicate, or exploit any portion of the Service without express written
-                permission.
+                We reserve the right to refuse service to anyone at any time.
+              </p>
+              <p className="mt-2">
+                Your content (excluding credit card information) may be transferred unencrypted over networks.
+              </p>
+              <p className="mt-2">
+                Credit card information is always encrypted.
+              </p>
+              <p className="mt-2">
+                You agree not to reproduce, duplicate, sell, or exploit any part of the service without
+                written permission.
               </p>
             </div>
 
             <div>
               <h2 className="text-base font-medium text-foreground">3. Accuracy of Information</h2>
               <p className="mt-2">
-                We are not responsible if information made available on this site is not accurate,
-                complete, or current. We reserve the right to modify the contents of this site at any time.
+                We are not responsible if information on this site is inaccurate or outdated. Content is
+                for general reference only.
+              </p>
+              <p className="mt-2">
+                We reserve the right to modify content at any time without obligation to update it.
               </p>
             </div>
 
             <div>
               <h2 className="text-base font-medium text-foreground">4. Pricing &amp; Service Modifications</h2>
               <p className="mt-2">
-                Prices for our products are subject to change without notice. We reserve the right to
-                modify or discontinue the Service at any time without notice.
+                Prices are subject to change without notice.
+              </p>
+              <p className="mt-2">
+                We may modify or discontinue services at any time without liability.
               </p>
             </div>
 
             <div>
               <h2 className="text-base font-medium text-foreground">5. Products &amp; Services</h2>
               <p className="mt-2">
-                Certain products or services may be available exclusively online through the website.
-                These may have limited quantities and are subject to return only according to our
-                Refund Policy. We have made every effort to display colors and images of products
-                accurately. We reserve the right to limit quantities and to cancel orders at our discretion.
+                Certain products are available exclusively online and may be limited in quantity.
+              </p>
+              <p className="mt-2">
+                Products are subject to return only according to our Refund Policy.
+              </p>
+              <p className="mt-2">
+                We aim to display product colors and images accurately but cannot guarantee exact screen
+                representation.
+              </p>
+              <p className="mt-2">
+                We reserve the right to limit or cancel orders at our discretion.
               </p>
             </div>
 
             <div>
               <h2 className="text-base font-medium text-foreground">6. Billing &amp; Account Information</h2>
               <p className="mt-2">
-                We reserve the right to refuse any order. You agree to provide current, complete, and
-                accurate purchase and account information for all purchases made at our store.
+                We reserve the right to refuse or cancel any order.
+              </p>
+              <p className="mt-2">
+                You agree to provide accurate and updated account and purchase information.
+              </p>
+              <p className="mt-2">
+                We may contact you regarding order updates and cancellations.
               </p>
             </div>
 
             <div>
-              <h2 className="text-base font-medium text-foreground">7. Prohibited Uses</h2>
+              <h2 className="text-base font-medium text-foreground">7. Optional Tools</h2>
               <p className="mt-2">
-                You are prohibited from using the site for any unlawful purpose, to solicit others to
-                perform unlawful acts, to violate any regulations, to infringe upon our intellectual
-                property rights, to harass or discriminate, to submit false information, to upload
-                malware, or to interfere with the security features of the Service.
+                We may provide third-party tools without monitoring or control.
+              </p>
+              <p className="mt-2">
+                Use of such tools is at your own risk.
               </p>
             </div>
 
             <div>
-              <h2 className="text-base font-medium text-foreground">8. Limitation of Liability</h2>
+              <h2 className="text-base font-medium text-foreground">8. Third-Party Links</h2>
               <p className="mt-2">
-                We do not guarantee that your use of our service will be uninterrupted, timely, secure,
-                or error-free. The service and all products are provided &ldquo;as is&rdquo; and
-                &ldquo;as available&rdquo;. In no event shall House of Thazhuval be liable for any
-                indirect, incidental, special, or consequential damages.
+                We are not responsible for third-party websites or content linked on our site.
               </p>
             </div>
 
             <div>
-              <h2 className="text-base font-medium text-foreground">9. Governing Law</h2>
+              <h2 className="text-base font-medium text-foreground">9. User Comments &amp; Feedback</h2>
               <p className="mt-2">
-                These Terms of Service shall be governed by and construed in accordance with the
-                laws of <strong>India</strong>.
+                We may use any feedback or submissions provided by users without restriction.
+              </p>
+              <p className="mt-2">
+                We are not responsible for user-generated content.
               </p>
             </div>
 
             <div>
-              <h2 className="text-base font-medium text-foreground">10. Contact Information</h2>
+              <h2 className="text-base font-medium text-foreground">10. Personal Information</h2>
               <p className="mt-2">
-                Questions about the Terms of Service should be sent to us at{" "}
+                Your submission of personal information is governed by our Privacy Policy.
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-base font-medium text-foreground">11. Errors &amp; Omissions</h2>
+              <p className="mt-2">
+                We reserve the right to correct errors or inaccuracies at any time, including after an
+                order is placed.
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-base font-medium text-foreground">12. Prohibited Uses</h2>
+              <p className="mt-2">
+                You are prohibited from using this site for unlawful, abusive, harmful, or unauthorized
+                activities.
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-base font-medium text-foreground">13. Disclaimer &amp; Limitation of Liability</h2>
+              <p className="mt-2">
+                We do not guarantee uninterrupted or error-free service.
+              </p>
+              <p className="mt-2">
+                All products and services are provided &ldquo;as is&rdquo; and &ldquo;as available.&rdquo;
+              </p>
+              <p className="mt-2">
+                House of Thazhuval shall not be liable for any indirect or consequential damages arising
+                from use of the service or products.
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-base font-medium text-foreground">14. Indemnification</h2>
+              <p className="mt-2">
+                You agree to indemnify and hold harmless House of Thazhuval from any claims arising from
+                your violation of these Terms.
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-base font-medium text-foreground">15. Severability</h2>
+              <p className="mt-2">
+                If any provision is found unenforceable, the remaining provisions remain valid.
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-base font-medium text-foreground">16. Termination</h2>
+              <p className="mt-2">
+                We may terminate access to services at any time for violation of Terms.
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-base font-medium text-foreground">17. Entire Agreement</h2>
+              <p className="mt-2">
+                These Terms, along with policies on this site, constitute the entire agreement between
+                you and House of Thazhuval.
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-base font-medium text-foreground">18. Governing Law</h2>
+              <p className="mt-2">
+                These Terms are governed by the laws of <strong>India</strong>.
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-base font-medium text-foreground">19. Changes to Terms</h2>
+              <p className="mt-2">
+                We may update these Terms at any time. Continued use of the site means acceptance of changes.
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-base font-medium text-foreground">20. Contact Information</h2>
+              <p className="mt-2">
+                For questions regarding these Terms:{" "}
                 <a href="mailto:houseofthazhuval@gmail.com" className="text-foreground underline underline-offset-4">
                   houseofthazhuval@gmail.com
                 </a>
