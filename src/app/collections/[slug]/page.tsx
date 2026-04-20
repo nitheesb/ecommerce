@@ -69,7 +69,7 @@ export default async function CollectionPage({ params }: { params: { slug: strin
   return (
     <>
       <AnnouncementBar />
-      <Navbar />
+      <Navbar solid />
       <main>
         <section className="border-b border-border/60 bg-secondary/30">
           <div className="mx-auto max-w-7xl px-6 pb-12 pt-10 lg:px-12 lg:pb-16 lg:pt-14">

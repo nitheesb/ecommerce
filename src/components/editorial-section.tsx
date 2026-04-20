@@ -93,19 +93,12 @@ export function EditorialSection() {
             Banaras, and Chanderi &mdash; preserving techniques that are centuries old, and stories
             that are uniquely yours.
           </p>
-          <div className="reveal-item mt-10 flex flex-col gap-4 sm:flex-row sm:gap-8">
+          <div className="reveal-item mt-10">
             <Link
               href="/our-story"
               className="group inline-flex items-center gap-2 text-sm font-medium uppercase tracking-[0.18em] text-foreground underline-offset-8 hover:underline"
             >
               Discover Our Story
-              <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-            </Link>
-            <Link
-              href="/artisans"
-              className="group inline-flex items-center gap-2 text-sm font-medium uppercase tracking-[0.18em] text-muted-foreground underline-offset-8 hover:text-foreground hover:underline"
-            >
-              Meet the Artisans
               <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
             </Link>
           </div>

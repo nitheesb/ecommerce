@@ -9,16 +9,17 @@ import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/s
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { categories } from "@/lib/products"
 
-export function Navbar() {
-  const [scrolled, setScrolled] = React.useState(false)
+export function Navbar({ solid = false }: { solid?: boolean }) {
+  const [scrolled, setScrolled] = React.useState(solid)
   const [openMenu, setOpenMenu] = React.useState<string | null>(null)
 
   React.useEffect(() => {
+    if (solid) return // Always use solid styling
     const onScroll = () => setScrolled(window.scrollY > 24)
     onScroll()
     window.addEventListener("scroll", onScroll, { passive: true })
     return () => window.removeEventListener("scroll", onScroll)
-  }, [])
+  }, [solid])
 
   const textColor = scrolled ? "text-foreground" : "text-background"
   const textMuted = scrolled ? "text-foreground/70" : "text-background/70"

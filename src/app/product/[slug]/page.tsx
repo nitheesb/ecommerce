@@ -119,7 +119,7 @@ function SanityProductDetail({ product }: { product: IProduct }) {
   return (
     <>
       <AnnouncementBar />
-      <Navbar />
+      <Navbar solid />
       <main>
         <div className="mx-auto max-w-7xl px-6 py-8 lg:px-12">
           <Breadcrumbs
@@ -226,7 +226,7 @@ function StaticProductDetail({ product }: { product: Product }) {
   return (
     <>
       <AnnouncementBar />
-      <Navbar />
+      <Navbar solid />
       <main>
         <div className="mx-auto max-w-7xl px-6 py-8 lg:px-12">
           <Breadcrumbs
