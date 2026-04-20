@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useMemo } from "react"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 
@@ -34,7 +34,7 @@ export function FeaturedGridSection({ products }: FeaturedGridSectionProps) {
   )
 
   const hasFilters =
-    selectedFabrics.length > 0 || selectedOccasions.length > 0
+    selectedFabrics.length > 0 || selectedOccasions.length > 0 || priceRange[0] > 0 || priceRange[1] < 130000
 
   const clearAll = useCallback(() => {
     setSelectedFabrics([])
@@ -42,13 +42,46 @@ export function FeaturedGridSection({ products }: FeaturedGridSectionProps) {
     setPriceRange([0, 130000])
   }, [])
 
+  const filteredProducts = useMemo(() => {
+    return products.filter((product) => {
+      // Price filter
+      if (product.price < priceRange[0] || product.price > priceRange[1]) return false
+
+      // Fabric filter — match against category or collection
+      if (selectedFabrics.length > 0) {
+        const matchesFabric = selectedFabrics.some(
+          (fabric) =>
+            product.category.toLowerCase() === fabric.toLowerCase() ||
+            product.collection.toLowerCase().includes(fabric.toLowerCase())
+        )
+        if (!matchesFabric) return false
+      }
+
+      // Occasion filter — match against badge or collection keywords
+      if (selectedOccasions.length > 0) {
+        const matchesOccasion = selectedOccasions.some((occasion) => {
+          if (occasion === "Dailywear") {
+            return product.category === "Cotton" || product.price < 15000
+          }
+          if (occasion === "Festive") {
+            return product.category === "Silk" || product.category === "Heritage" || product.price >= 15000
+          }
+          return false
+        })
+        if (!matchesOccasion) return false
+      }
+
+      return true
+    })
+  }, [products, selectedFabrics, selectedOccasions, priceRange])
+
   return (
     <section className="mx-auto max-w-7xl px-6 pt-16 pb-20 lg:px-12 lg:pt-20 lg:pb-24">
       {/* Shop All Sarees heading */}
       <div className="mb-10 flex items-center justify-between border-b border-border/40 pb-6">
         <h2 className="font-serif text-3xl tracking-tight md:text-4xl">Shop All Sarees</h2>
         <Link
-          href="/collections"
+          href="/collections/all-sarees"
           className="group inline-flex items-center gap-2 text-sm font-medium uppercase tracking-[0.18em] text-foreground underline-offset-8 hover:underline"
         >
           Shop All
@@ -78,24 +111,42 @@ export function FeaturedGridSection({ products }: FeaturedGridSectionProps) {
                 Price
               </AccordionTrigger>
               <AccordionContent>
-                <div className="space-y-3">
-                  <input
-                    type="range"
-                    min={0}
-                    max={130000}
-                    step={500}
-                    value={priceRange[1]}
-                    onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
-                    className="w-full accent-foreground"
-                  />
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <span className="rounded border border-border px-2 py-1 text-xs">
-                      &#x20B9; {priceRange[0].toLocaleString("en-IN")}
-                    </span>
-                    <span>to</span>
-                    <span className="rounded border border-border px-2 py-1 text-xs">
-                      &#x20B9; {priceRange[1].toLocaleString("en-IN")}
-                    </span>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span>Min</span>
+                      <span>&#x20B9; {priceRange[0].toLocaleString("en-IN")}</span>
+                    </label>
+                    <input
+                      type="range"
+                      min={0}
+                      max={130000}
+                      step={500}
+                      value={priceRange[0]}
+                      onChange={(e) => {
+                        const min = Number(e.target.value)
+                        setPriceRange([Math.min(min, priceRange[1]), priceRange[1]])
+                      }}
+                      className="w-full accent-foreground"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span>Max</span>
+                      <span>&#x20B9; {priceRange[1].toLocaleString("en-IN")}</span>
+                    </label>
+                    <input
+                      type="range"
+                      min={0}
+                      max={130000}
+                      step={500}
+                      value={priceRange[1]}
+                      onChange={(e) => {
+                        const max = Number(e.target.value)
+                        setPriceRange([priceRange[0], Math.max(max, priceRange[0])])
+                      }}
+                      className="w-full accent-foreground"
+                    />
                   </div>
                 </div>
               </AccordionContent>
@@ -149,7 +200,19 @@ export function FeaturedGridSection({ products }: FeaturedGridSectionProps) {
 
         {/* Product grid */}
         <div className="flex-1 min-w-0">
-          <ProductGrid products={products} />
+          {filteredProducts.length > 0 ? (
+            <ProductGrid products={filteredProducts} />
+          ) : (
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+              <p className="font-serif text-2xl">No sarees match your filters</p>
+              <p className="mt-3 text-sm text-muted-foreground">
+                Try adjusting your filters or{" "}
+                <button onClick={clearAll} className="underline underline-offset-4 hover:text-foreground">
+                  clear all filters
+                </button>
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </section>

@@ -15,9 +15,10 @@ interface ProductCardProps {
   className?: string
   priority?: boolean
   onQuickView?: (product: Product) => void
+  hideQuickAdd?: boolean
 }
 
-export function ProductCard({ product, className, priority, onQuickView }: ProductCardProps) {
+export function ProductCard({ product, className, priority, onQuickView, hideQuickAdd = false }: ProductCardProps) {
   const { isWishlisted, toggleWishlist } = useUiStore()
   const wishlisted = isWishlisted(product.id)
   const [imageLoaded, setImageLoaded] = React.useState(false)
@@ -112,21 +113,23 @@ export function ProductCard({ product, className, priority, onQuickView }: Produ
         </div>
 
         {/* Quick Add — Snipcart add-to-cart button */}
-        <button
-          type="button"
-          onClick={(e) => e.preventDefault()}
-          className="snipcart-add-item absolute inset-x-3 bottom-3 flex translate-y-2 items-center justify-center gap-2 bg-foreground py-3 text-[11px] uppercase tracking-[0.22em] text-background opacity-0 transition-all duration-500 hover:bg-foreground/90 group-hover:translate-y-0 group-hover:opacity-100"
-          aria-label={`Quick add ${product.name}`}
-          data-item-id={product.id}
-          data-item-name={product.name}
-          data-item-price={product.price}
-          data-item-url={`${siteUrl}/product/${product.slug}`}
-          data-item-image={product.image}
-          data-item-description={product.description}
-        >
-          <Plus className="h-3.5 w-3.5" />
-          Quick Add
-        </button>
+        {!hideQuickAdd && (
+          <button
+            type="button"
+            onClick={(e) => e.preventDefault()}
+            className="snipcart-add-item absolute inset-x-3 bottom-3 flex translate-y-2 items-center justify-center gap-2 bg-foreground py-3 text-[11px] uppercase tracking-[0.22em] text-background opacity-0 transition-all duration-500 hover:bg-foreground/90 group-hover:translate-y-0 group-hover:opacity-100"
+            aria-label={`Quick add ${product.name}`}
+            data-item-id={product.id}
+            data-item-name={product.name}
+            data-item-price={product.price}
+            data-item-url={`${siteUrl}/product/${product.slug}`}
+            data-item-image={product.image}
+            data-item-description={product.description}
+          >
+            <Plus className="h-3.5 w-3.5" />
+            Quick Add
+          </button>
+        )}
       </div>
 
       {/* Meta */}

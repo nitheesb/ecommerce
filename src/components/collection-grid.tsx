@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Link from "next/link"
 
 import { ProductGrid } from "@/components/product-grid"
 import { ProductGridSkeleton } from "@/components/product-grid-skeleton"
@@ -10,8 +11,8 @@ type SortKey = "featured" | "price-asc" | "price-desc"
 
 const sortOptions: { value: SortKey; label: string }[] = [
   { value: "featured", label: "Featured" },
-  { value: "price-asc", label: "Price · Low to High" },
-  { value: "price-desc", label: "Price · High to Low" },
+  { value: "price-asc", label: "Price \u00b7 Low to High" },
+  { value: "price-desc", label: "Price \u00b7 High to Low" },
 ]
 
 export function CollectionGrid({ products }: { products: Product[] }) {
@@ -28,6 +29,23 @@ export function CollectionGrid({ products }: { products: Product[] }) {
     if (sort === "price-desc") return b.price - a.price
     return 0
   })
+
+  if (!isLoading && products.length === 0) {
+    return (
+      <section className="mx-auto max-w-7xl px-6 py-20 lg:px-12 text-center">
+        <p className="font-serif text-3xl">No pieces found in this collection</p>
+        <p className="mt-4 text-sm text-muted-foreground">
+          This collection is being curated. In the meantime, explore our other sarees.
+        </p>
+        <Link
+          href="/collections/all-sarees"
+          className="mt-8 inline-block bg-foreground px-8 py-3 text-[11px] font-medium uppercase tracking-[0.22em] text-background transition-colors hover:bg-foreground/90"
+        >
+          Browse All Sarees
+        </Link>
+      </section>
+    )
+  }
 
   return (
     <section className="mx-auto max-w-7xl px-6 py-12 lg:px-12 lg:py-16">

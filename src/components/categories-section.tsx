@@ -45,10 +45,12 @@ export function CategoriesSection() {
     targetX: 0,
     dragging: false,
     dragStartX: 0,
+    dragStartY: 0,
     dragStartScrollX: 0,
     velocity: 0,
     lastPointerX: 0,
     hasDragged: false,
+    dragDirection: null as "horizontal" | "vertical" | null,
     singleSetWidth: 0,
     animId: 0,
   })
@@ -111,26 +113,43 @@ export function CategoriesSection() {
       const s = state.current
       s.dragging = true
       s.hasDragged = false
+      s.dragDirection = null
       s.dragStartX = e.clientX
+      s.dragStartY = e.clientY
       s.dragStartScrollX = s.targetX
       s.lastPointerX = e.clientX
       s.velocity = 0
-      parent.setPointerCapture(e.pointerId)
     }
 
     const onPointerMove = (e: PointerEvent) => {
       const s = state.current
       if (!s.dragging) return
+
       const dx = e.clientX - s.dragStartX
-      if (Math.abs(dx) > 3) s.hasDragged = true
-      s.velocity = e.clientX - s.lastPointerX
-      s.lastPointerX = e.clientX
-      s.targetX = s.dragStartScrollX + dx
+      const dy = e.clientY - s.dragStartY
+
+      // Determine drag direction once we have enough movement
+      if (!s.dragDirection && (Math.abs(dx) > 5 || Math.abs(dy) > 5)) {
+        s.dragDirection = Math.abs(dx) > Math.abs(dy) ? "horizontal" : "vertical"
+      }
+
+      // If vertical, release the drag so native scroll works
+      if (s.dragDirection === "vertical") {
+        s.dragging = false
+        return
+      }
+
+      if (s.dragDirection === "horizontal") {
+        e.preventDefault()
+        s.hasDragged = true
+        s.velocity = e.clientX - s.lastPointerX
+        s.lastPointerX = e.clientX
+        s.targetX = s.dragStartScrollX + dx
+      }
     }
 
-    const onPointerUp = (e: PointerEvent) => {
+    const onPointerUp = () => {
       state.current.dragging = false
-      parent.releasePointerCapture(e.pointerId)
     }
 
     parent.addEventListener("pointerdown", onPointerDown)

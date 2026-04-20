@@ -54,7 +54,7 @@ export function ProductGrid({ products }: { products: Product[] }) {
       >
         {products.map((p, i) => (
           <div key={p.id} className="product-card-item">
-            <ProductCard product={p} priority={i < 4} onQuickView={handleQuickView} />
+            <ProductCard product={p} priority={i < 4} onQuickView={handleQuickView} hideQuickAdd />
           </div>
         ))}
       </div>

@@ -18,7 +18,7 @@ export default async function HomePage() {
     <>
       <AnnouncementBar />
       <Navbar />
-      <main>
+      <main id="main-content">
         <Hero />
         <div className="relative z-10 bg-background">
           <CategoriesSection />

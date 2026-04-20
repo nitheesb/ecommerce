@@ -1,7 +1,6 @@
 import type { Metadata } from "next"
-import { AnnouncementBar } from "@/components/announcement-bar"
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
+import { Breadcrumbs } from "@/components/breadcrumbs"
+import { InnerPageShell } from "@/components/inner-page-shell"
 
 export const metadata: Metadata = {
   title: "Terms of Service",
@@ -10,11 +9,15 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <>
-      <AnnouncementBar />
-      <Navbar solid />
-      <main>
+    <InnerPageShell>
         <section className="mx-auto max-w-3xl px-6 py-16 lg:px-12 lg:py-24">
+          <Breadcrumbs
+            items={[
+              { label: "Home", href: "/" },
+              { label: "Terms of Service" },
+            ]}
+            className="mb-8"
+          />
           <h1 className="font-serif text-4xl leading-[1.1] tracking-tight md:text-5xl">
             Terms of Service
           </h1>
@@ -132,8 +135,6 @@ export default function TermsPage() {
             </div>
           </div>
         </section>
-      </main>
-      <Footer />
-    </>
+    </InnerPageShell>
   )
 }

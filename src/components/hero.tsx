@@ -213,7 +213,7 @@ export function Hero() {
         <div
           ref={vignetteRef}
           aria-hidden
-          className="absolute inset-0 bg-gradient-to-b from-foreground/40 via-foreground/20 to-foreground/60"
+          className="absolute inset-0 bg-gradient-to-b from-foreground/50 via-foreground/30 to-foreground/70"
         />
         <div
           aria-hidden
@@ -229,9 +229,9 @@ export function Hero() {
         ref={eyebrowRef}
         className="absolute inset-x-0 top-20 flex justify-center md:top-24"
       >
-        <div className="flex items-center gap-4 text-background/85">
+        <div className="flex items-center gap-4 text-background/90">
           <span className="hero-hairline h-px bg-background/70" />
-          <span className="text-[10px] font-medium uppercase tracking-[0.42em]">
+          <span className="text-[11px] font-medium uppercase tracking-[0.32em]">
             House of Thazhuval
           </span>
           <span className="hero-hairline h-px bg-background/70" />
@@ -250,7 +250,7 @@ export function Hero() {
         </h1>
         <p
           ref={paraRef}
-          className="mx-auto mt-6 max-w-xl text-sm leading-relaxed text-background/85 md:text-base text-pretty"
+          className="mx-auto mt-6 max-w-xl text-sm leading-relaxed text-background/90 md:text-base text-pretty"
         >
           Thazhuval means &lsquo;embrace&rsquo; — a feeling of comfort, love, and
           belonging. Soft fabrics, thoughtful craftsmanship, pieces that

@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { Menu, Search, User, ShoppingBag } from "lucide-react"
+import { Menu, Search, ShoppingBag } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet"
@@ -20,6 +20,15 @@ export function Navbar({ solid = false }: { solid?: boolean }) {
     window.addEventListener("scroll", onScroll, { passive: true })
     return () => window.removeEventListener("scroll", onScroll)
   }, [solid])
+
+  React.useEffect(() => {
+    if (!openMenu) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpenMenu(null)
+    }
+    document.addEventListener("keydown", onKey)
+    return () => document.removeEventListener("keydown", onKey)
+  }, [openMenu])
 
   const textColor = scrolled ? "text-foreground" : "text-background"
   const textMuted = scrolled ? "text-foreground/70" : "text-background/70"
@@ -57,6 +66,7 @@ export function Navbar({ solid = false }: { solid?: boolean }) {
                   key={cat.title}
                   onMouseEnter={() => setOpenMenu(cat.title)}
                   onFocus={() => setOpenMenu(cat.title)}
+                  aria-haspopup="true"
                   className={cn(
                     "relative whitespace-nowrap px-2 py-2 text-[10px] font-medium uppercase tracking-[0.14em] transition-colors duration-300",
                     openMenu === cat.title
@@ -132,20 +142,15 @@ export function Navbar({ solid = false }: { solid?: boolean }) {
             Our Story
           </Link>
           <Button
+            asChild
             variant="ghost"
             size="icon"
             aria-label="Search"
             className={cn("h-9 w-9 transition-colors duration-300", textColor, iconHover)}
           >
-            <Search className="h-[17px] w-[17px]" strokeWidth={1.5} />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Account"
-            className={cn("hidden h-9 w-9 transition-colors duration-300 md:inline-flex", textColor, iconHover)}
-          >
-            <User className="h-[17px] w-[17px]" strokeWidth={1.5} />
+            <Link href="/search">
+              <Search className="h-[17px] w-[17px]" strokeWidth={1.5} />
+            </Link>
           </Button>
           <Button
             variant="ghost"
@@ -176,8 +181,8 @@ function MegaMenu({
 
   return (
     <div
+      role="menu"
       className={cn(
-        "absolute inset-x-0 top-full hidden overflow-hidden transition-all duration-400 lg:block",
         openMenu
           ? "pointer-events-auto translate-y-0 opacity-100"
           : "pointer-events-none -translate-y-1 opacity-0"

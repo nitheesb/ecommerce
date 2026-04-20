@@ -1,8 +1,7 @@
 import type { Metadata } from "next"
 import { Search as SearchIcon } from "lucide-react"
-import { AnnouncementBar } from "@/components/announcement-bar"
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
+import { Breadcrumbs } from "@/components/breadcrumbs"
+import { InnerPageShell } from "@/components/inner-page-shell"
 
 export const metadata: Metadata = {
   title: "Search",
@@ -11,11 +10,15 @@ export const metadata: Metadata = {
 
 export default function SearchPage() {
   return (
-    <>
-      <AnnouncementBar />
-      <Navbar solid />
-      <main>
+    <InnerPageShell>
         <section className="mx-auto max-w-2xl px-6 py-16 lg:px-12 lg:py-24">
+          <Breadcrumbs
+            items={[
+              { label: "Home", href: "/" },
+              { label: "Search" },
+            ]}
+            className="mb-8"
+          />
           <h1 className="text-center font-serif text-4xl leading-[1.1] tracking-tight md:text-5xl">
             Search
           </h1>
@@ -32,8 +35,6 @@ export default function SearchPage() {
             Try searching for &ldquo;silk&rdquo;, &ldquo;cotton&rdquo;, or &ldquo;festive&rdquo;
           </p>
         </section>
-      </main>
-      <Footer />
-    </>
+    </InnerPageShell>
   )
 }

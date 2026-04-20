@@ -1,10 +1,8 @@
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 
-import { AnnouncementBar } from "@/components/announcement-bar"
 import { Breadcrumbs } from "@/components/breadcrumbs"
-import { Footer } from "@/components/footer"
-import { Navbar } from "@/components/navbar"
+import { InnerPageShell } from "@/components/inner-page-shell"
 import { ProductCare } from "@/components/product-care"
 import { Separator } from "@/components/ui/separator"
 import { formatCurrency } from "@/lib/utils"
@@ -117,10 +115,7 @@ function SanityProductDetail({ product }: { product: IProduct }) {
       : "outline"
 
   return (
-    <>
-      <AnnouncementBar />
-      <Navbar solid />
-      <main>
+    <InnerPageShell>
         <div className="mx-auto max-w-7xl px-6 py-8 lg:px-12">
           <Breadcrumbs
             items={[
@@ -187,9 +182,7 @@ function SanityProductDetail({ product }: { product: IProduct }) {
             </div>
           </div>
         </div>
-      </main>
-      <Footer />
-    </>
+    </InnerPageShell>
   )
 }
 
@@ -210,10 +203,7 @@ function StaticProductDetail({ product }: { product: Product }) {
       : "outline"
 
   return (
-    <>
-      <AnnouncementBar />
-      <Navbar solid />
-      <main>
+    <InnerPageShell>
         <div className="mx-auto max-w-7xl px-6 py-8 lg:px-12">
           <Breadcrumbs
             items={[
@@ -329,8 +319,6 @@ function StaticProductDetail({ product }: { product: Product }) {
             </div>
           </div>
         </div>
-      </main>
-      <Footer />
-    </>
+    </InnerPageShell>
   )
 }

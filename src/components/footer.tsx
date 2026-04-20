@@ -1,5 +1,9 @@
+"use client"
+
+import { useState } from "react"
 import Link from "next/link"
 import { Instagram } from "lucide-react"
+import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
@@ -14,6 +18,17 @@ const quickLinks = [
 ]
 
 export function Footer() {
+  const [email, setEmail] = useState("")
+
+  function handleSubscribe(e: React.FormEvent) {
+    e.preventDefault()
+    if (!email.trim()) return
+    toast.success("Thank you for subscribing!", {
+      description: "You\u2019ll hear from us soon.",
+    })
+    setEmail("")
+  }
+
   return (
     <footer className="border-t border-border/60 bg-foreground text-background">
       <div className="mx-auto max-w-7xl px-6 py-16 lg:px-12">
@@ -60,12 +75,15 @@ export function Footer() {
 
         {/* Subscribe + Instagram */}
         <div className="flex flex-col items-start justify-between gap-8 sm:flex-row sm:items-end">
-          <form className="w-full max-w-sm">
+          <form className="w-full max-w-sm" onSubmit={handleSubscribe}>
             <p className="text-sm font-medium text-background">Subscribe to our emails</p>
             <div className="mt-3 flex items-center gap-0 border border-background/40 focus-within:border-background">
               <input
                 type="email"
+                required
                 placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="flex-1 bg-transparent px-3 py-2.5 text-sm text-background placeholder:text-background/50 focus:outline-none"
               />
               <Button
@@ -81,7 +99,7 @@ export function Footer() {
           </form>
 
           <a
-            href="https://instagram.com"
+            href="https://instagram.com/houseofthazhuval"
             target="_blank"
             rel="noopener noreferrer"
             className="flex h-9 w-9 items-center justify-center rounded-full text-background/70 transition-colors hover:text-background"

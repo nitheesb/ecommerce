@@ -1,9 +1,7 @@
 import { notFound } from "next/navigation"
 
-import { AnnouncementBar } from "@/components/announcement-bar"
 import { Breadcrumbs } from "@/components/breadcrumbs"
-import { Footer } from "@/components/footer"
-import { Navbar } from "@/components/navbar"
+import { InnerPageShell } from "@/components/inner-page-shell"
 import { ProductCare } from "@/components/product-care"
 import { CollectionGrid } from "@/components/collection-grid"
 import { products as staticProducts, type Product, type ProductCategory } from "@/lib/products"
@@ -369,16 +367,13 @@ export default async function CollectionPage({ params }: { params: { slug: strin
   }
 
   return (
-    <>
-      <AnnouncementBar />
-      <Navbar solid />
-      <main>
+    <InnerPageShell>
         <section className="border-b border-border/60 bg-secondary/30">
           <div className="mx-auto max-w-7xl px-6 pb-12 pt-10 lg:px-12 lg:pb-16 lg:pt-14">
             <Breadcrumbs
               items={[
                 { label: "Home", href: "/" },
-                { label: "Collections", href: "/collections" },
+                { label: "Collections", href: "/collections/all-sarees" },
                 { label: meta.title },
               ]}
             />
@@ -401,8 +396,6 @@ export default async function CollectionPage({ params }: { params: { slug: strin
         <CollectionGrid products={products} />
 
         <ProductCare />
-      </main>
-      <Footer />
-    </>
+    </InnerPageShell>
   )
 }
