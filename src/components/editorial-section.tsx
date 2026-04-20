@@ -36,7 +36,7 @@ export function EditorialSection() {
 
     // Text reveal
     const textChildren = text.querySelectorAll<HTMLElement>(".reveal-item")
-    gsap.set(textChildren, { opacity: 0, y: 30 })
+    gsap.set(textChildren, { opacity: 0, y: 30, clipPath: "inset(100% 0 0 0)" })
 
     ScrollTrigger.create({
       trigger: text,
@@ -46,9 +46,11 @@ export function EditorialSection() {
         gsap.to(textChildren, {
           opacity: 1,
           y: 0,
-          duration: 0.7,
+          clipPath: "inset(0% 0 0 0)",
+          duration: 0.8,
           stagger: 0.12,
           ease: "power3.out",
+          clearProps: "clipPath",
         })
       },
     })
@@ -57,7 +59,7 @@ export function EditorialSection() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="border-t border-border/60 bg-secondary/40">
+    <section ref={sectionRef} className="relative border-t border-border/60 bg-secondary/40 weave-texture">
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 py-20 md:grid-cols-2 md:gap-16 lg:px-12 lg:py-28">
         <div ref={imageWrapRef} className="relative order-2 aspect-[4/5] overflow-hidden md:order-1">
           <div ref={imageRef} className="absolute inset-[-30px] will-change-transform">

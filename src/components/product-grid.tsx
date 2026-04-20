@@ -26,7 +26,7 @@ export function ProductGrid({ products }: { products: Product[] }) {
     if (!grid) return
 
     const cards = grid.querySelectorAll<HTMLElement>(".product-card-item")
-    gsap.set(cards, { opacity: 0, y: 50 })
+    gsap.set(cards, { opacity: 0, y: 30, clipPath: "inset(100% 0 0 0)" })
 
     const trigger = ScrollTrigger.create({
       trigger: grid,
@@ -36,9 +36,11 @@ export function ProductGrid({ products }: { products: Product[] }) {
         gsap.to(cards, {
           opacity: 1,
           y: 0,
-          duration: 0.7,
+          clipPath: "inset(0% 0 0 0)",
+          duration: 0.8,
           stagger: 0.1,
           ease: "power3.out",
+          clearProps: "clipPath",
         })
       },
     })

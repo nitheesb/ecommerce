@@ -145,6 +145,58 @@
     background: linear-gradient(to right, transparent, hsl(var(--border)), transparent);
   }
 
+  /* Silk thread loader — draw animation */
+  @keyframes threadDraw {
+    0% { stroke-dashoffset: 200; }
+    100% { stroke-dashoffset: 0; }
+  }
+  @keyframes threadDrawSecondary {
+    0% { stroke-dashoffset: 200; opacity: 0; }
+    30% { opacity: 0; }
+    100% { stroke-dashoffset: 0; opacity: 0.4; }
+  }
+  @keyframes threadTextReveal {
+    0% { opacity: 0; letter-spacing: 0.5em; }
+    100% { opacity: 1; letter-spacing: 0.32em; }
+  }
+  .thread-path {
+    stroke-dasharray: 200;
+    stroke-dashoffset: 200;
+    animation: threadDraw 2s ease-out forwards;
+  }
+  .thread-path-secondary {
+    stroke-dasharray: 200;
+    stroke-dashoffset: 200;
+    animation: threadDrawSecondary 2.4s ease-out forwards;
+  }
+  .animate-thread-text {
+    opacity: 0;
+    animation: threadTextReveal 0.8s ease-out 1.4s forwards;
+  }
+
+  /* Fabric unfurl — clip mask for scroll reveals */
+  @keyframes fabricUnfurl {
+    from {
+      clip-path: inset(100% 0 0 0);
+      transform: translateY(30px);
+    }
+    to {
+      clip-path: inset(0% 0 0 0);
+      transform: translateY(0);
+    }
+  }
+
+  /* Subtle woven texture overlay for section backgrounds */
+  .weave-texture::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.02;
+    background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 10h20M10 0v20' stroke='%23262E38' stroke-width='0.3'/%3E%3C/svg%3E");
+    background-size: 20px 20px;
+    pointer-events: none;
+  }
+
   /* Hide Snipcart cart badge when empty */
   .snipcart-items-count:empty {
     display: none;

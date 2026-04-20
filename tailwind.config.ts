@@ -79,6 +79,10 @@ const config: Config = {
         shimmer: {
           "100%": { transform: "translateX(100%)" },
         },
+        "thread-draw": {
+          "0%": { strokeDashoffset: "200" },
+          "100%": { strokeDashoffset: "0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -87,6 +91,7 @@ const config: Config = {
         "scroll-indicator": "scroll-indicator 2s ease-in-out infinite",
         "fade-up": "fade-up 0.8s ease-out both",
         shimmer: "shimmer 1.8s infinite",
+        "thread-draw": "thread-draw 2s ease-out forwards",
       },
     },
   },
