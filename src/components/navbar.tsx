@@ -35,7 +35,7 @@ export function Navbar({ solid = false }: { solid?: boolean }) {
       )}
       onMouseLeave={() => setOpenMenu(null)}
     >
-      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-5 md:h-16 md:px-8">
+      <div className="mx-auto grid h-14 max-w-7xl grid-cols-[1fr_auto_1fr] items-center px-5 md:h-16 md:px-8">
         {/* Left: Mobile menu + desktop nav */}
         <div className="flex items-center gap-1">
           <MobileNav scrolled={scrolled} />
@@ -44,7 +44,7 @@ export function Navbar({ solid = false }: { solid?: boolean }) {
               href="/"
               onMouseEnter={() => setOpenMenu(null)}
               className={cn(
-                "px-2.5 py-2 text-[10px] font-medium uppercase tracking-[0.16em] transition-colors duration-300",
+                "px-2 py-2 text-[10px] font-medium uppercase tracking-[0.14em] transition-colors duration-300",
                 textMuted,
                 scrolled ? "hover:text-foreground" : "hover:text-background"
               )}
@@ -58,7 +58,7 @@ export function Navbar({ solid = false }: { solid?: boolean }) {
                   onMouseEnter={() => setOpenMenu(cat.title)}
                   onFocus={() => setOpenMenu(cat.title)}
                   className={cn(
-                    "relative px-2.5 py-2 text-[10px] font-medium uppercase tracking-[0.16em] transition-colors duration-300",
+                    "relative whitespace-nowrap px-2 py-2 text-[10px] font-medium uppercase tracking-[0.14em] transition-colors duration-300",
                     openMenu === cat.title
                       ? textColor
                       : cn(textMuted, scrolled ? "hover:text-foreground" : "hover:text-background")
@@ -68,7 +68,7 @@ export function Navbar({ solid = false }: { solid?: boolean }) {
                   {cat.title}
                   <span
                     className={cn(
-                      "absolute inset-x-2.5 -bottom-0.5 h-px transition-transform duration-300 origin-left",
+                      "absolute inset-x-2 -bottom-0.5 h-px transition-transform duration-300 origin-left",
                       scrolled ? "bg-foreground" : "bg-background",
                       openMenu === cat.title ? "scale-x-100" : "scale-x-0"
                     )}
@@ -80,7 +80,7 @@ export function Navbar({ solid = false }: { solid?: boolean }) {
                   href={cat.href}
                   onMouseEnter={() => setOpenMenu(null)}
                   className={cn(
-                    "px-2.5 py-2 text-[10px] font-medium uppercase tracking-[0.16em] transition-colors duration-300",
+                    "whitespace-nowrap px-2 py-2 text-[10px] font-medium uppercase tracking-[0.14em] transition-colors duration-300",
                     textMuted,
                     scrolled ? "hover:text-foreground" : "hover:text-background"
                   )}
@@ -93,7 +93,7 @@ export function Navbar({ solid = false }: { solid?: boolean }) {
               href="/our-story"
               onMouseEnter={() => setOpenMenu(null)}
               className={cn(
-                "px-2.5 py-2 text-[10px] font-medium uppercase tracking-[0.16em] transition-colors duration-300",
+                "whitespace-nowrap px-2 py-2 text-[10px] font-medium uppercase tracking-[0.14em] transition-colors duration-300",
                 textMuted,
                 scrolled ? "hover:text-foreground" : "hover:text-background"
               )}
@@ -106,7 +106,7 @@ export function Navbar({ solid = false }: { solid?: boolean }) {
         {/* Center: Logo */}
         <Link
           href="/"
-          className="absolute left-1/2 -translate-x-1/2 select-none text-center"
+          className="select-none px-6 text-center"
           aria-label="Thazhuval home"
         >
           <div
@@ -130,7 +130,7 @@ export function Navbar({ solid = false }: { solid?: boolean }) {
         </Link>
 
         {/* Right: actions */}
-        <div className="flex items-center gap-0.5">
+        <div className="flex items-center justify-end gap-0.5">
           <Button
             variant="ghost"
             size="icon"
