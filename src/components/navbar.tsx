@@ -159,7 +159,10 @@ export function Navbar({ solid = false }: { solid?: boolean }) {
             className={cn("snipcart-checkout relative h-9 w-9 transition-colors duration-300", textColor, iconHover)}
           >
             <ShoppingBag className="h-[17px] w-[17px]" strokeWidth={1.5} />
-            <span className="snipcart-items-count absolute -right-0.5 -top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-foreground px-1 text-[9px] font-medium leading-none text-background" />
+            <span className={cn(
+              "snipcart-items-count absolute -right-0.5 -top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full px-1 text-[9px] font-medium leading-none transition-colors duration-300",
+              scrolled ? "bg-foreground text-background" : "bg-background text-foreground"
+            )} />
           </Button>
         </div>
       </div>
@@ -183,6 +186,7 @@ function MegaMenu({
     <div
       role="menu"
       className={cn(
+        "transition-all duration-300 ease-out",
         openMenu
           ? "pointer-events-auto translate-y-0 opacity-100"
           : "pointer-events-none -translate-y-1 opacity-0"

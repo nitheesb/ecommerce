@@ -56,8 +56,8 @@ export function ProductCare() {
             <AccordionTrigger>Shipping &amp; Returns</AccordionTrigger>
             <AccordionContent>
               Each saree is hand-packed in our signature ivory box with a certificate of origin.
-              Complimentary shipping on all orders above INR 15,000. Returns accepted within 14 days on
-              unworn, unaltered pieces. Limited edition drops are final sale.
+              Complimentary shipping on all orders above ₹2,000. Returns accepted within 48 hours for
+              damaged or defective items. Please refer to our Refund Policy for full details.
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="item-5" className="border-none">

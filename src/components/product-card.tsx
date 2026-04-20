@@ -105,7 +105,7 @@ export function ProductCard({ product, className, priority, onQuickView, hideQui
                 onQuickView(product)
               }}
               aria-label={`Quick view ${product.name}`}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-background/80 text-foreground backdrop-blur opacity-100 transition-all duration-300 hover:bg-background lg:translate-y-1 lg:opacity-0 lg:group-hover:translate-y-0 lg:group-hover:opacity-100"
+              className="hidden h-9 w-9 items-center justify-center rounded-full bg-background/80 text-foreground backdrop-blur transition-all duration-300 hover:bg-background lg:flex lg:translate-y-1 lg:opacity-0 lg:group-hover:translate-y-0 lg:group-hover:opacity-100"
             >
               <Eye className="h-[14px] w-[14px]" />
             </button>
@@ -117,7 +117,7 @@ export function ProductCard({ product, className, priority, onQuickView, hideQui
           <button
             type="button"
             onClick={(e) => e.preventDefault()}
-            className="snipcart-add-item absolute inset-x-3 bottom-3 flex items-center justify-center gap-2 bg-foreground py-3 text-[11px] uppercase tracking-[0.22em] text-background opacity-100 transition-all duration-500 hover:bg-foreground/90 lg:translate-y-2 lg:opacity-0 lg:group-hover:translate-y-0 lg:group-hover:opacity-100"
+            className="snipcart-add-item absolute inset-x-3 bottom-3 hidden items-center justify-center gap-2 bg-foreground py-3 text-[11px] uppercase tracking-[0.22em] text-background transition-all duration-500 hover:bg-foreground/90 lg:flex lg:translate-y-2 lg:opacity-0 lg:group-hover:translate-y-0 lg:group-hover:opacity-100"
             aria-label={`Quick add ${product.name}`}
             data-item-id={product.id}
             data-item-name={product.name}

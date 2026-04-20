@@ -17,12 +17,12 @@ export function HeroMobile() {
         {/* Vignette overlay */}
         <div
           aria-hidden
-          className="absolute inset-0 bg-gradient-to-b from-foreground/40 via-foreground/20 to-foreground/70"
+          className="absolute inset-0 bg-gradient-to-b from-foreground/50 via-foreground/30 to-foreground/75"
         />
 
         {/* Content */}
-        <div className="absolute inset-0 flex flex-col items-center justify-end pb-10 text-center text-background">
-          <p className="text-[10px] font-medium uppercase tracking-[0.3em] text-background/70">
+        <div className="absolute inset-0 flex flex-col items-center justify-end pb-10 text-center text-background animate-fade-up">
+          <p className="text-[11px] font-medium uppercase tracking-[0.32em] text-background/80">
             House of Thazhuval
           </p>
           <h1 className="mt-3 font-serif text-3xl leading-[1.08] tracking-[-0.01em]">

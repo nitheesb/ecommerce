@@ -5,7 +5,7 @@ export default function Loading() {
         {/* Silk thread drawing animation */}
         <svg
           viewBox="0 0 120 60"
-          className="h-16 w-32 animate-thread-draw"
+          className="h-16 w-32"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >

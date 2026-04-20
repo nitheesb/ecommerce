@@ -25,28 +25,32 @@ export function ProductGrid({ products }: { products: Product[] }) {
     const grid = gridRef.current
     if (!grid) return
 
-    const cards = grid.querySelectorAll<HTMLElement>(".product-card-item")
-    gsap.set(cards, { opacity: 0, y: 30, clipPath: "inset(100% 0 0 0)" })
+    const ctx = gsap.context(() => {
+      const cards = grid.querySelectorAll<HTMLElement>(".product-card-item")
+      if (!cards.length) return
 
-    const trigger = ScrollTrigger.create({
-      trigger: grid,
-      start: "top 85%",
-      once: true,
-      onEnter: () => {
-        gsap.to(cards, {
-          opacity: 1,
-          y: 0,
-          clipPath: "inset(0% 0 0 0)",
-          duration: 0.8,
-          stagger: 0.1,
-          ease: "power3.out",
-          clearProps: "clipPath",
-        })
-      },
-    })
+      gsap.set(cards, { opacity: 0, y: 30, clipPath: "inset(100% 0 0 0)" })
 
-    return () => trigger.kill()
-  }, [])
+      ScrollTrigger.create({
+        trigger: grid,
+        start: "top 85%",
+        once: true,
+        onEnter: () => {
+          gsap.to(cards, {
+            opacity: 1,
+            y: 0,
+            clipPath: "inset(0% 0 0 0)",
+            duration: 0.8,
+            stagger: 0.1,
+            ease: "power3.out",
+            clearProps: "clipPath",
+          })
+        },
+      })
+    }, gridRef)
+
+    return () => ctx.revert()
+  }, [products])
 
   return (
     <>

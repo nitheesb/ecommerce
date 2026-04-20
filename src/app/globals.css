@@ -62,14 +62,11 @@
     --input: 210 16% 20%;
     --ring: 40 38% 97%;
   }
-}
 
-@layer base {
   * {
     @apply border-border;
   }
   html {
-    @apply bg-background text-foreground;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
@@ -93,12 +90,6 @@
 }
 
 @layer utilities {
-  .font-serif-display {
-    font-family: var(--font-playfair), ui-serif, Georgia, serif;
-    font-feature-settings: "lnum", "pnum";
-    letter-spacing: -0.01em;
-  }
-
   /* Scroll indicator */
   @keyframes scrollDown {
     0% {
@@ -132,19 +123,6 @@
     100% { background-position: 400px 0; }
   }
 
-  .hairline {
-    background-image: linear-gradient(to right, transparent, hsl(var(--border)), transparent);
-    height: 1px;
-  }
-
-  .divider-ornament::before,
-  .divider-ornament::after {
-    content: "";
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(to right, transparent, hsl(var(--border)), transparent);
-  }
-
   /* Silk thread loader — draw animation */
   @keyframes threadDraw {
     0% { stroke-dashoffset: 200; }
@@ -172,18 +150,6 @@
   .animate-thread-text {
     opacity: 0;
     animation: threadTextReveal 0.8s ease-out 1.4s forwards;
-  }
-
-  /* Fabric unfurl — clip mask for scroll reveals */
-  @keyframes fabricUnfurl {
-    from {
-      clip-path: inset(100% 0 0 0);
-      transform: translateY(30px);
-    }
-    to {
-      clip-path: inset(0% 0 0 0);
-      transform: translateY(0);
-    }
   }
 
   /* Subtle woven texture overlay for section backgrounds */

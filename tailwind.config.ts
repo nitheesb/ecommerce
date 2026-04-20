@@ -7,13 +7,6 @@ const config: Config = {
     "./src/components/**/*.{ts,tsx}",
   ],
   theme: {
-    container: {
-      center: true,
-      padding: "1.5rem",
-      screens: {
-        "2xl": "1400px",
-      },
-    },
     extend: {
       colors: {
         border: "hsl(var(--border))",
@@ -23,7 +16,7 @@ const config: Config = {
         foreground: "hsl(var(--foreground))",
         ivory: "hsl(var(--ivory))",
         sand: "hsl(var(--sand))",
-        slate: "hsl(var(--slate))",
+        "slate-deep": "hsl(var(--slate-deep))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
@@ -63,15 +56,6 @@ const config: Config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
-        marquee: {
-          "0%": { transform: "translateX(0%)" },
-          "100%": { transform: "translateX(-50%)" },
-        },
-        "scroll-indicator": {
-          "0%": { transform: "translateY(0)", opacity: "0" },
-          "40%": { opacity: "1" },
-          "100%": { transform: "translateY(14px)", opacity: "0" },
-        },
         "fade-up": {
           "0%": { opacity: "0", transform: "translateY(12px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
@@ -79,19 +63,12 @@ const config: Config = {
         shimmer: {
           "100%": { transform: "translateX(100%)" },
         },
-        "thread-draw": {
-          "0%": { strokeDashoffset: "200" },
-          "100%": { strokeDashoffset: "0" },
-        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        marquee: "marquee 40s linear infinite",
-        "scroll-indicator": "scroll-indicator 2s ease-in-out infinite",
         "fade-up": "fade-up 0.8s ease-out both",
         shimmer: "shimmer 1.8s infinite",
-        "thread-draw": "thread-draw 2s ease-out forwards",
       },
     },
   },

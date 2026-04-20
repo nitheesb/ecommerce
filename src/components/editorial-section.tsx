@@ -22,40 +22,42 @@ export function EditorialSection() {
     const text = textRef.current
     if (!section || !imageWrap || !image || !text) return
 
-    // Image parallax
-    gsap.to(image, {
-      y: -60,
-      ease: "none",
-      scrollTrigger: {
-        trigger: imageWrap,
-        start: "top bottom",
-        end: "bottom top",
-        scrub: 0.6,
-      },
-    })
+    const ctx = gsap.context(() => {
+      // Image parallax
+      gsap.to(image, {
+        y: -60,
+        ease: "none",
+        scrollTrigger: {
+          trigger: imageWrap,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: 0.6,
+        },
+      })
 
-    // Text reveal
-    const textChildren = text.querySelectorAll<HTMLElement>(".reveal-item")
-    gsap.set(textChildren, { opacity: 0, y: 30, clipPath: "inset(100% 0 0 0)" })
+      // Text reveal
+      const textChildren = text.querySelectorAll<HTMLElement>(".reveal-item")
+      gsap.set(textChildren, { opacity: 0, y: 30, clipPath: "inset(100% 0 0 0)" })
 
-    ScrollTrigger.create({
-      trigger: text,
-      start: "top 80%",
-      once: true,
-      onEnter: () => {
-        gsap.to(textChildren, {
-          opacity: 1,
-          y: 0,
-          clipPath: "inset(0% 0 0 0)",
-          duration: 0.8,
-          stagger: 0.12,
-          ease: "power3.out",
-          clearProps: "clipPath",
-        })
-      },
-    })
+      ScrollTrigger.create({
+        trigger: text,
+        start: "top 80%",
+        once: true,
+        onEnter: () => {
+          gsap.to(textChildren, {
+            opacity: 1,
+            y: 0,
+            clipPath: "inset(0% 0 0 0)",
+            duration: 0.8,
+            stagger: 0.12,
+            ease: "power3.out",
+            clearProps: "clipPath",
+          })
+        },
+      })
+    }, sectionRef)
 
-    return () => ScrollTrigger.getAll().forEach((t) => t.kill())
+    return () => ctx.revert()
   }, [])
 
   return (
