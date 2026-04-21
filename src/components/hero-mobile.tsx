@@ -3,7 +3,7 @@ import Link from "next/link"
 
 export function HeroMobile() {
   return (
-    <section className="relative -mt-14 md:hidden" aria-label="Welcome to House of Thazhuval">
+    <section className="relative -mt-8 md:hidden" aria-label="Welcome to House of Thazhuval">
       {/* Background image — compact, not full viewport */}
       <div className="relative h-[55vh] min-h-[360px] max-h-[480px] overflow-hidden">
         <Image
