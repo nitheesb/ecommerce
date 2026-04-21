@@ -19,7 +19,6 @@ export default async function HomePage() {
 
   return (
     <>
-      <AnnouncementBar />
       <Navbar />
       <main id="main-content">
         <HeroMobile />
