@@ -19,7 +19,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <Navbar />
+      <Navbar overlay />
       <main id="main-content">
         <HeroMobile />
         <Hero />

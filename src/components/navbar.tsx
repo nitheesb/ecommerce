@@ -10,7 +10,13 @@ import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/s
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { categories } from "@/lib/products"
 
-export function Navbar({ solid = false }: { solid?: boolean }) {
+export function Navbar({
+  solid = false,
+  overlay = false,
+}: {
+  solid?: boolean
+  overlay?: boolean
+}) {
   const [scrolled, setScrolled] = React.useState(solid)
   const [openMenu, setOpenMenu] = React.useState<string | null>(null)
   const cartBtnRef = React.useRef<HTMLButtonElement>(null)
@@ -67,9 +73,12 @@ export function Navbar({ solid = false }: { solid?: boolean }) {
   return (
     <header
       className={cn(
-        "sticky top-0 z-40 w-full transition-all duration-500",
+        "top-0 z-40 w-full transition-all duration-500",
+        overlay ? "fixed inset-x-0" : "sticky",
         scrolled
           ? "bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/70 border-b border-border/40 shadow-[0_1px_2px_0_rgba(0,0,0,0.03)]"
+          : overlay
+          ? "bg-gradient-to-b from-foreground/45 via-foreground/18 to-transparent"
           : "bg-transparent"
       )}
       onMouseLeave={() => setOpenMenu(null)}
@@ -83,7 +92,7 @@ export function Navbar({ solid = false }: { solid?: boolean }) {
               href="/"
               onMouseEnter={() => setOpenMenu(null)}
               className={cn(
-                "px-2 py-2 text-[10px] font-medium uppercase tracking-[0.14em] transition-colors duration-300",
+                "px-2 py-2 text-[11px] font-medium uppercase tracking-[0.16em] transition-colors duration-300",
                 textMuted,
                 scrolled ? "hover:text-foreground" : "hover:text-background"
               )}
@@ -98,7 +107,7 @@ export function Navbar({ solid = false }: { solid?: boolean }) {
                   onFocus={() => setOpenMenu(cat.title)}
                   aria-haspopup="true"
                   className={cn(
-                    "relative whitespace-nowrap px-2 py-2 text-[10px] font-medium uppercase tracking-[0.14em] transition-colors duration-300",
+                    "relative whitespace-nowrap px-2 py-2 text-[11px] font-medium uppercase tracking-[0.16em] transition-colors duration-300",
                     openMenu === cat.title
                       ? textColor
                       : cn(textMuted, scrolled ? "hover:text-foreground" : "hover:text-background")
@@ -120,7 +129,7 @@ export function Navbar({ solid = false }: { solid?: boolean }) {
                   href={cat.href}
                   onMouseEnter={() => setOpenMenu(null)}
                   className={cn(
-                    "whitespace-nowrap px-2 py-2 text-[10px] font-medium uppercase tracking-[0.14em] transition-colors duration-300",
+                    "whitespace-nowrap px-2 py-2 text-[11px] font-medium uppercase tracking-[0.16em] transition-colors duration-300",
                     textMuted,
                     scrolled ? "hover:text-foreground" : "hover:text-background"
                   )}
@@ -151,7 +160,7 @@ export function Navbar({ solid = false }: { solid?: boolean }) {
               "mt-0.5 hidden text-[8px] uppercase tracking-[0.4em] transition-all duration-500 md:block",
               scrolled
                 ? "text-muted-foreground opacity-100"
-                : "text-background/60 opacity-0"
+                : "text-background/75 opacity-100"
             )}
           >
             House of Thazhuval
@@ -164,7 +173,7 @@ export function Navbar({ solid = false }: { solid?: boolean }) {
             href="/our-story"
             onMouseEnter={() => setOpenMenu(null)}
             className={cn(
-              "hidden whitespace-nowrap px-2.5 py-2 text-[10px] font-medium uppercase tracking-[0.14em] transition-colors duration-300 lg:inline-flex",
+              "hidden whitespace-nowrap px-2.5 py-2 text-[11px] font-medium uppercase tracking-[0.16em] transition-colors duration-300 lg:inline-flex",
               textMuted,
               scrolled ? "hover:text-foreground" : "hover:text-background"
             )}

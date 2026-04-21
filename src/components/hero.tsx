@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react"
+import Link from "next/link"
 import Image from "next/image"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
@@ -35,6 +36,7 @@ export function Hero() {
     const ctx = gsap.context(() => {
       const hero = heroRef.current
       const image = imageRef.current
+      const fixedBg = fixedBgRef.current
       const vignette = vignetteRef.current
       const eyebrow = eyebrowRef.current
       const line1 = line1Ref.current
@@ -42,154 +44,90 @@ export function Hero() {
       const para = paraRef.current
       const scrollIndic = scrollIndicRef.current
 
-      if (!hero || !image || !vignette || !eyebrow || !line1 || !line2 || !para || !scrollIndic) return
+      if (!hero || !image || !fixedBg || !vignette || !eyebrow || !line1 || !line2 || !para || !scrollIndic) {
+        return
+      }
 
-      const fixedBg = fixedBgRef.current
-      if (!fixedBg) return
+      gsap.set(image, { scale: 1.08 })
+      gsap.set(vignette, { opacity: 0.9 })
+      gsap.set(eyebrow, { opacity: 0, y: 16 })
+      gsap.set([line1, line2, para], { opacity: 0, y: 28 })
+      gsap.set(scrollIndic, { opacity: 0, y: 8 })
 
-      // ── Initial states ──
-      gsap.set(image, { scale: 1.3, filter: "blur(8px)" })
-      gsap.set(vignette, { opacity: 1 })
-      gsap.set(eyebrow, { opacity: 0, y: 20 })
-      gsap.set([line1, line2], { clipPath: "inset(100% 0 0 0)", y: 40 })
-      gsap.set(para, { opacity: 0, y: 30 })
-      gsap.set(scrollIndic, { opacity: 0, y: 10 })
-
-      // Hairlines inside eyebrow
-      const hairlines = eyebrow.querySelectorAll<HTMLSpanElement>(".hero-hairline")
-      gsap.set(hairlines, { width: 0, opacity: 0 })
-
-      // ── Intro timeline ──
-      const intro = gsap.timeline({ delay: 0.3 })
-
-      // Cinematic camera settle
+      const intro = gsap.timeline({ delay: 0.15 })
       intro.to(image, {
-        scale: 1.05,
-        filter: "blur(0px)",
-        duration: 2,
-        ease: "power3.out",
-      })
-
-      // Dramatic vignette reveal
-      intro.to(vignette, {
-        opacity: 0.85,
-        duration: 1.8,
+        scale: 1,
+        duration: 1.6,
         ease: "power2.out",
-      }, 0)
-
-      // Eyebrow fade in
+      })
       intro.to(eyebrow, {
         opacity: 1,
         y: 0,
-        duration: 0.8,
+        duration: 0.55,
         ease: "power2.out",
-      }, 0.8)
-
-      // Hairlines slide in
-      intro.to(hairlines, {
-        width: 40,
+      }, 0.2)
+      intro.to([line1, line2], {
         opacity: 1,
-        duration: 0.6,
-        stagger: 0.15,
-        ease: "power2.out",
-      }, 1.0)
-
-      // Masked text reveal — line 1
-      intro.to(line1, {
-        clipPath: "inset(0% 0 0 0)",
         y: 0,
-        duration: 1,
-        ease: "power4.out",
-      }, 1.1)
-
-      // Masked text reveal — line 2
-      intro.to(line2, {
-        clipPath: "inset(0% 0 0 0)",
-        y: 0,
-        duration: 1,
-        ease: "power4.out",
-      }, 1.35)
-
-      // Paragraph
+        duration: 0.8,
+        stagger: 0.12,
+        ease: "power3.out",
+      }, 0.35)
       intro.to(para, {
         opacity: 1,
         y: 0,
-        duration: 0.8,
+        duration: 0.7,
         ease: "power2.out",
-      }, 1.7)
-
-      // Scroll indicator
+      }, 0.65)
       intro.to(scrollIndic, {
         opacity: 1,
         y: 0,
-        duration: 0.6,
+        duration: 0.5,
         ease: "power2.out",
-      }, 2.0)
+      }, 0.95)
 
-      // ── Scroll-driven parallax timeline ──
-      // Each element exits at a different speed + blur for cinematic depth
       const scrollTl = gsap.timeline({
         scrollTrigger: {
           trigger: hero,
           start: "top top",
           end: "bottom top",
-          scrub: 0.8,
+          scrub: 0.7,
         },
       })
 
-      // Image: slow zoom creates depth
       scrollTl.to(image, {
-        scale: 1.18,
+        scale: 1.08,
         ease: "none",
       }, 0)
-
-      // Vignette darkens
       scrollTl.to(vignette, {
         opacity: 1,
         ease: "none",
       }, 0)
-
-      // Scroll indicator: instant exit
       scrollTl.to(scrollIndic, {
         opacity: 0,
         ease: "none",
       }, 0)
-
-      // Eyebrow: fast exit with blur
       scrollTl.to(eyebrow, {
-        y: -100,
+        y: -56,
         opacity: 0,
-        filter: "blur(8px)",
         ease: "none",
       }, 0)
-
-      // Heading line 1: deep parallax with scale + blur
       scrollTl.to(line1, {
-        y: -160,
+        y: -72,
         opacity: 0,
-        scale: 0.9,
-        filter: "blur(6px)",
-        ease: "none",
-      }, 0.03)
-
-      // Heading line 2: different speed for split effect
-      scrollTl.to(line2, {
-        y: -120,
-        opacity: 0,
-        scale: 0.92,
-        filter: "blur(6px)",
-        ease: "none",
-      }, 0.07)
-
-      // Paragraph: medium exit with blur
-      scrollTl.to(para, {
-        y: -80,
-        opacity: 0,
-        filter: "blur(4px)",
         ease: "none",
       }, 0.04)
+      scrollTl.to(line2, {
+        y: -56,
+        opacity: 0,
+        ease: "none",
+      }, 0.08)
+      scrollTl.to(para, {
+        y: -36,
+        opacity: 0,
+        ease: "none",
+      }, 0.1)
 
-      // Hide fixed background once hero is scrolled past
       ScrollTrigger.create({
         trigger: hero,
         start: "bottom top",
@@ -204,90 +142,98 @@ export function Hero() {
   return (
     <section
       ref={heroRef}
-      aria-label="More than a saree — it's an embrace"
-      className="relative -mt-14 hidden min-h-[100svh] md:-mt-16 md:block"
+      aria-label="Quiet grandeur by House of Thazhuval"
+      className="relative hidden min-h-[100svh] md:block"
     >
-      {/* Fixed background — stays in place while page scrolls over it */}
       <div
         ref={fixedBgRef}
         className={reducedMotion ? "absolute inset-0 z-0" : "fixed inset-0 z-0"}
       >
-        <div
-          ref={imageRef}
-          className="absolute inset-[-10%] will-change-transform"
-        >
+        <div ref={imageRef} className="absolute inset-[-6%] will-change-transform">
           <Image
             src="/images/hero-cover.jpg"
             alt="A woman in a red and gold saree standing in a golden mustard field"
             fill
             priority
             sizes="100vw"
-            className="object-cover"
+            className="object-cover object-[68%_40%]"
           />
         </div>
-        {/* Cinematic vignette — stronger for bright image */}
         <div
           ref={vignetteRef}
           aria-hidden
-          className="absolute inset-0 bg-gradient-to-b from-foreground/50 via-foreground/30 to-foreground/70"
+          className="absolute inset-0 bg-gradient-to-r from-foreground/78 via-foreground/44 to-foreground/18"
         />
         <div
           aria-hidden
-          className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_30%,_rgba(17,22,30,0.5)_100%)]"
+          className="absolute inset-0 bg-[radial-gradient(ellipse_at_68%_35%,_transparent_0%,_transparent_32%,_rgba(17,22,30,0.38)_100%)]"
         />
       </div>
 
-      {/* Content overlay — positioned over fixed background */}
-      <div className="relative z-10 flex min-h-[100svh] flex-col items-center justify-center">
+      <div className="relative z-10 flex min-h-[100svh] items-end">
+        <div className="mx-auto grid min-h-[100svh] w-full max-w-7xl grid-cols-12 px-6 pb-16 pt-28 md:px-8 md:pb-20 md:pt-32 lg:pb-24">
+          <div className="col-span-7 flex items-end lg:col-span-6">
+            <div className="max-w-2xl text-background">
+              <div
+                ref={eyebrowRef}
+                className="mb-6 flex items-center gap-4 text-background/88"
+              >
+                <span className="h-px w-12 bg-background/60" />
+                <span className="text-[11px] font-medium uppercase tracking-[0.32em]">
+                  House of Thazhuval
+                </span>
+              </div>
 
-      {/* Top hairline + eyebrow */}
-      <div
-        ref={eyebrowRef}
-        className="absolute inset-x-0 top-20 flex justify-center md:top-24"
-      >
-        <div className="flex items-center gap-4 text-background/90">
-          <span className="hero-hairline h-px bg-background/70" />
-          <span className="text-[11px] font-medium uppercase tracking-[0.32em]">
-            House of Thazhuval
-          </span>
-          <span className="hero-hairline h-px bg-background/70" />
-        </div>
-      </div>
+              <h1 className="font-serif text-5xl leading-[0.98] tracking-[-0.02em] text-balance md:text-7xl lg:text-[82px]">
+                <span ref={line1Ref} className="block will-change-transform">
+                  Sarees with
+                </span>
+                <span
+                  ref={line2Ref}
+                  className="block text-[hsl(var(--sand))] will-change-transform"
+                >
+                  quiet grandeur.
+                </span>
+              </h1>
 
-      {/* Centered copy */}
-      <div className="relative mx-auto max-w-4xl px-6 text-center text-background">
-        <h1 className="font-serif text-5xl leading-[1.02] tracking-[-0.015em] md:text-7xl lg:text-[88px] text-balance">
-          <span ref={line1Ref} className="block will-change-transform">
-            More than a saree...
-          </span>
-          <span ref={line2Ref} className="block italic text-[hsl(var(--sand))] will-change-transform">
-            it&apos;s an embrace.
-          </span>
-        </h1>
-        <p
-          ref={paraRef}
-          className="mx-auto mt-6 max-w-xl text-sm leading-relaxed text-background/90 md:text-base text-pretty"
-        >
-          Thazhuval means &lsquo;embrace&rsquo; — a feeling of comfort, love, and
-          belonging. Soft fabrics, thoughtful craftsmanship, pieces that
-          don&apos;t just dress you — they hold you.
-        </p>
-      </div>
+              <p
+                ref={paraRef}
+                className="mt-6 max-w-xl text-base leading-relaxed text-background/84 lg:text-lg"
+              >
+                Thoughtful drapes, heirloom weaves, and soft structure made to feel
+                composed the moment they touch the skin.
+              </p>
 
-      {/* Scroll indicator — subtle, bottom right */}
-      <div
-        ref={scrollIndicRef}
-        className={`absolute bottom-8 right-8 text-background/50 ${reducedMotion ? "hidden" : ""}`}
-      >
-        <div className="flex flex-col items-center gap-2">
-          <span className="text-[9px] uppercase tracking-[0.3em]">Scroll</span>
-          <div className="relative h-8 w-[14px] rounded-full border border-background/40">
-            <span className="absolute left-1/2 top-1.5 h-1 w-[1.5px] -translate-x-1/2 rounded-full bg-background/60 animate-scroll-indicator" />
+              <div className="mt-8 flex items-center gap-4">
+                <Link
+                  href="/collections/all-sarees"
+                  className="bg-background px-6 py-3 text-[11px] font-medium uppercase tracking-[0.2em] text-foreground transition-colors hover:bg-background/92"
+                >
+                  Shop the collection
+                </Link>
+                <Link
+                  href="/our-story"
+                  className="border border-background/40 px-6 py-3 text-[11px] font-medium uppercase tracking-[0.2em] text-background transition-colors hover:bg-background/10"
+                >
+                  Our story
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          <div
+            ref={scrollIndicRef}
+            className={`col-span-5 hidden items-end justify-end pb-2 text-background/68 lg:flex ${reducedMotion ? "opacity-0" : ""}`}
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-[10px] uppercase tracking-[0.28em]">Scroll to explore</span>
+              <div className="relative h-8 w-[14px] rounded-full border border-background/38">
+                <span className="absolute left-1/2 top-1.5 h-1.5 w-[1.5px] -translate-x-1/2 rounded-full bg-background/70 animate-scroll-indicator" />
+              </div>
+            </div>
           </div>
         </div>
       </div>
-
-      </div>{/* end content overlay */}
     </section>
   )
 }

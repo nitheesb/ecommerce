@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useEffect } from "react"
+import { useEffect, useRef } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
@@ -23,35 +23,31 @@ export function EditorialSection() {
     if (!section || !imageWrap || !image || !text) return
 
     const ctx = gsap.context(() => {
-      // Image parallax
       gsap.to(image, {
-        y: -60,
+        y: -40,
         ease: "none",
         scrollTrigger: {
           trigger: imageWrap,
           start: "top bottom",
           end: "bottom top",
-          scrub: 0.6,
+          scrub: 0.45,
         },
       })
 
-      // Text reveal
       const textChildren = text.querySelectorAll<HTMLElement>(".reveal-item")
-      gsap.set(textChildren, { opacity: 0, y: 30, clipPath: "inset(100% 0 0 0)" })
+      gsap.set(textChildren, { opacity: 0, y: 24 })
 
       ScrollTrigger.create({
         trigger: text,
-        start: "top 80%",
+        start: "top 82%",
         once: true,
         onEnter: () => {
           gsap.to(textChildren, {
             opacity: 1,
             y: 0,
-            clipPath: "inset(0% 0 0 0)",
-            duration: 0.8,
-            stagger: 0.12,
-            ease: "power3.out",
-            clearProps: "clipPath",
+            duration: 0.7,
+            stagger: 0.1,
+            ease: "power2.out",
           })
         },
       })
@@ -61,10 +57,10 @@ export function EditorialSection() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="relative overflow-hidden border-t border-border/60 bg-secondary/40 weave-texture">
+    <section ref={sectionRef} className="relative overflow-hidden border-t border-border/60 bg-secondary/30 weave-texture">
       <div className="relative z-[1] mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 py-20 md:grid-cols-2 md:gap-16 lg:px-12 lg:py-28">
-        <div ref={imageWrapRef} className="relative order-2 aspect-[4/5] overflow-hidden md:order-1">
-          <div ref={imageRef} className="absolute inset-[-30px] will-change-transform">
+        <div ref={imageWrapRef} className="relative order-2 aspect-[4/5] overflow-hidden rounded-[30px] md:order-1">
+          <div ref={imageRef} className="absolute inset-[-24px] will-change-transform">
             <Image
               src="/images/editorial-2.jpg"
               alt="Artisan weaver at a traditional handloom"
@@ -75,11 +71,12 @@ export function EditorialSection() {
           </div>
           <div className="absolute bottom-6 left-6 rounded-sm bg-background/90 px-4 py-3 backdrop-blur">
             <p className="text-[10px] font-medium uppercase tracking-[0.24em] text-muted-foreground">
-              Chapter I
+              Atelier Note
             </p>
-            <p className="font-serif text-lg">The Hands Behind the Weave</p>
+            <p className="font-serif text-lg">The hands behind Thazhuval</p>
           </div>
         </div>
+
         <div ref={textRef} className="order-1 flex flex-col justify-center md:order-2">
           <p className="reveal-item text-[11px] font-medium uppercase tracking-[0.32em] text-muted-foreground">
             Our Story
