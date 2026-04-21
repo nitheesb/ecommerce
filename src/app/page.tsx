@@ -8,6 +8,7 @@ import { HeroMobile } from "@/components/hero-mobile"
 import { Navbar } from "@/components/navbar"
 import { ProductCare } from "@/components/product-care"
 import { SectionDivider } from "@/components/section-divider"
+import { WeaveJourney } from "@/components/weave-journey"
 import { sanityFetch } from "@/lib/sanity/client"
 import { allProductsQuery } from "@/lib/sanity/queries"
 import { products as staticProducts, type Product } from "@/lib/products"
@@ -29,6 +30,7 @@ export default async function HomePage() {
           <FeaturedGridSection products={products} />
           <SectionDivider />
           <EditorialSection />
+          <WeaveJourney />
           <SectionDivider />
           <ProductCare />
         </div>
