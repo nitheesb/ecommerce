@@ -3,6 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { Menu, Search, ShoppingBag } from "lucide-react"
+import gsap from "gsap"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet"
@@ -12,6 +13,8 @@ import { categories } from "@/lib/products"
 export function Navbar({ solid = false }: { solid?: boolean }) {
   const [scrolled, setScrolled] = React.useState(solid)
   const [openMenu, setOpenMenu] = React.useState<string | null>(null)
+  const cartBtnRef = React.useRef<HTMLButtonElement>(null)
+  const badgeRef = React.useRef<HTMLSpanElement>(null)
 
   React.useEffect(() => {
     if (solid) return // Always use solid styling
@@ -29,6 +32,33 @@ export function Navbar({ solid = false }: { solid?: boolean }) {
     document.addEventListener("keydown", onKey)
     return () => document.removeEventListener("keydown", onKey)
   }, [openMenu])
+
+  // Cart add-to-cart micro-interaction
+  React.useEffect(() => {
+    const badge = badgeRef.current
+    const btn = cartBtnRef.current
+    if (!badge || !btn) return
+
+    let lastCount = badge.textContent ?? ""
+
+    const observer = new MutationObserver(() => {
+      const newCount = badge.textContent ?? ""
+      if (newCount === lastCount) return
+      const wasEmpty = lastCount === "" || lastCount === "0"
+      lastCount = newCount
+      if (wasEmpty && (newCount === "0" || newCount === "")) return
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
+
+      const icon = btn.querySelector("svg")
+      if (icon) {
+        gsap.fromTo(icon, { y: 0 }, { y: -4, duration: 0.15, ease: "power2.out", yoyo: true, repeat: 1 })
+      }
+      gsap.fromTo(badge, { scale: 0.5 }, { scale: 1, duration: 0.3, ease: "back.out(3)" })
+    })
+
+    observer.observe(badge, { childList: true, characterData: true, subtree: true })
+    return () => observer.disconnect()
+  }, [])
 
   const textColor = scrolled ? "text-foreground" : "text-background"
   const textMuted = scrolled ? "text-foreground/70" : "text-background/70"
@@ -153,13 +183,14 @@ export function Navbar({ solid = false }: { solid?: boolean }) {
             </Link>
           </Button>
           <Button
+            ref={cartBtnRef}
             variant="ghost"
             size="icon"
             aria-label="Cart"
             className={cn("snipcart-checkout relative h-9 w-9 transition-colors duration-300", textColor, iconHover)}
           >
             <ShoppingBag className="h-[17px] w-[17px]" strokeWidth={1.5} />
-            <span className={cn(
+            <span ref={badgeRef} className={cn(
               "snipcart-items-count absolute -right-0.5 -top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full px-1 text-[9px] font-medium leading-none transition-colors duration-300",
               scrolled ? "bg-foreground text-background" : "bg-background text-foreground"
             )} />

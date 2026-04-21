@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import { InnerPageShell } from "@/components/inner-page-shell"
+import { WeaveJourney } from "@/components/weave-journey"
 
 export const metadata: Metadata = {
   title: "Our Story",
@@ -47,6 +48,11 @@ export default function OurStoryPage() {
               choice of fabric to the smallest detail, every step is guided by care, quality,
               and a love for the craft.
             </p>
+          </div>
+
+          {/* Story of the Weave — scroll journey */}
+          <div className="mt-16 -mx-6 lg:-mx-12">
+            <WeaveJourney />
           </div>
 
           <div className="mt-14 border-t border-border/60 pt-10">

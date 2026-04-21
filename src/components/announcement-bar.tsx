@@ -1,4 +1,5 @@
 import { Marquee } from "@/components/marquee"
+import { CountdownBanner } from "@/components/countdown-banner"
 
 const announcements = [
   "Complimentary Shipping On Orders Above ₹2,000",
@@ -9,5 +10,10 @@ const announcements = [
 ]
 
 export function AnnouncementBar() {
-  return <Marquee messages={announcements} />
+  return (
+    <>
+      <CountdownBanner />
+      <Marquee messages={announcements} />
+    </>
+  )
 }

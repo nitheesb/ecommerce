@@ -39,7 +39,8 @@ export function ProductCard({ product, className, priority, onQuickView, hideQui
       href={`/product/${product.slug}`}
       className={cn("group relative block", className)}
     >
-      <div className="relative overflow-hidden bg-muted">
+      <div className="relative overflow-hidden bg-muted [perspective:800px]">
+        <div className="transition-transform duration-700 ease-out motion-safe:group-hover:[transform:rotateY(2deg)_rotateX(1deg)]">
         <AspectRatio ratio={4 / 5}>
           {/* Skeleton shimmer */}
           {!imageLoaded && (
@@ -68,6 +69,7 @@ export function ProductCard({ product, className, priority, onQuickView, hideQui
             className="object-cover opacity-0 transition-all duration-700 ease-out group-hover:scale-[1.03] group-hover:opacity-100"
           />
         </AspectRatio>
+        </div>
 
         {/* Badge */}
         {product.badge && (

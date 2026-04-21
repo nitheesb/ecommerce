@@ -24,6 +24,9 @@ export function ImageLightbox({ images, initialIndex, onClose }: ImageLightboxPr
   const backdropRef = useRef<HTMLDivElement>(null)
   const imageRef = useRef<HTMLDivElement>(null)
   const panRef = useRef({ x: 0, y: 0, startX: 0, startY: 0, dragging: false })
+  const pinchRef = useRef({ active: false, initialDistance: 0, initialScale: 1 })
+  const scaleRef = useRef(1)
+  const justPinchedRef = useRef(false)
 
   const current = images[index]
   const hasMultiple = images.length > 1
@@ -98,15 +101,18 @@ export function ImageLightbox({ images, initialIndex, onClose }: ImageLightboxPr
 
   // Toggle zoom on click
   const handleImageClick = useCallback(() => {
+    if (justPinchedRef.current) return
     const img = imageRef.current
     if (!img) return
 
     if (zoomed) {
       gsap.to(img, { scale: 1, x: 0, y: 0, duration: 0.4, ease: "power3.out" })
       panRef.current = { x: 0, y: 0, startX: 0, startY: 0, dragging: false }
+      scaleRef.current = 1
       setZoomed(false)
     } else {
       gsap.to(img, { scale: 2, duration: 0.4, ease: "power3.out" })
+      scaleRef.current = 2
       setZoomed(true)
     }
   }, [zoomed])
@@ -132,8 +138,8 @@ export function ImageLightbox({ images, initialIndex, onClose }: ImageLightboxPr
       p.x = e.clientX - p.startX
       p.y = e.clientY - p.startY
 
-      // Constrain pan
-      const maxPan = 300
+      // Constrain pan (scale-aware)
+      const maxPan = 150 * scaleRef.current
       p.x = Math.max(-maxPan, Math.min(maxPan, p.x))
       p.y = Math.max(-maxPan, Math.min(maxPan, p.y))
 
@@ -145,6 +151,50 @@ export function ImageLightbox({ images, initialIndex, onClose }: ImageLightboxPr
   const onPointerUp = useCallback((e: React.PointerEvent) => {
     panRef.current.dragging = false
     ;(e.target as HTMLElement).releasePointerCapture(e.pointerId)
+  }, [])
+
+  // Pinch-to-zoom (mobile)
+  const getTouchDistance = (touches: React.TouchList) => {
+    const t1 = touches[0]
+    const t2 = touches[1]
+    const dx = t1.clientX - t2.clientX
+    const dy = t1.clientY - t2.clientY
+    return Math.sqrt(dx * dx + dy * dy)
+  }
+
+  const onTouchStart = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length === 2) {
+      const p = pinchRef.current
+      p.active = true
+      p.initialDistance = getTouchDistance(e.touches)
+      p.initialScale = scaleRef.current
+    }
+  }, [])
+
+  const onTouchMove = useCallback((e: React.TouchEvent) => {
+    const p = pinchRef.current
+    if (!p.active || e.touches.length < 2) return
+    const dist = getTouchDistance(e.touches)
+    const newScale = Math.min(3, Math.max(1, p.initialScale * (dist / p.initialDistance)))
+    scaleRef.current = newScale
+    gsap.set(imageRef.current, { scale: newScale })
+    if (newScale > 1 && !zoomed) setZoomed(true)
+  }, [zoomed])
+
+  const onTouchEnd = useCallback(() => {
+    const p = pinchRef.current
+    if (!p.active) return
+    p.active = false
+
+    if (scaleRef.current <= 1.1) {
+      gsap.to(imageRef.current, { scale: 1, x: 0, y: 0, duration: 0.3, ease: "power2.out" })
+      scaleRef.current = 1
+      panRef.current = { x: 0, y: 0, startX: 0, startY: 0, dragging: false }
+      setZoomed(false)
+    }
+
+    justPinchedRef.current = true
+    setTimeout(() => { justPinchedRef.current = false }, 150)
   }, [])
 
   return (
@@ -204,11 +254,14 @@ export function ImageLightbox({ images, initialIndex, onClose }: ImageLightboxPr
           className={`relative max-h-[85vh] w-full max-w-4xl ${
             zoomed ? "cursor-grab active:cursor-grabbing" : "cursor-zoom-in"
           }`}
-          style={{ aspectRatio: "4 / 5" }}
+          style={{ aspectRatio: "4 / 5", touchAction: "none" }}
           onClick={!panRef.current.dragging ? handleImageClick : undefined}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
         >
           <Image
             src={current.src}
