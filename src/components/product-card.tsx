@@ -16,17 +16,9 @@ interface ProductCardProps {
   priority?: boolean
   onQuickView?: (product: Product) => void
   hideQuickAdd?: boolean
-  minimal?: boolean
 }
 
-export function ProductCard({
-  product,
-  className,
-  priority,
-  onQuickView,
-  hideQuickAdd = false,
-  minimal = false,
-}: ProductCardProps) {
+export function ProductCard({ product, className, priority, onQuickView, hideQuickAdd = false }: ProductCardProps) {
   const { isWishlisted, toggleWishlist } = useUiStore()
   const wishlisted = isWishlisted(product.id)
   const [imageLoaded, setImageLoaded] = React.useState(false)
@@ -43,42 +35,53 @@ export function ProductCard({
       : "outline"
 
   return (
-    <Link href={`/product/${product.slug}`} className={cn("group relative block", className)}>
-      <div className="relative overflow-hidden rounded-[24px] bg-muted/50 [perspective:800px]">
-        <div className="transition-transform duration-700 ease-out motion-safe:group-hover:[transform:rotateY(1deg)_rotateX(0.5deg)]">
-          <AspectRatio ratio={4 / 5}>
-            {!imageLoaded && (
-              <div className="absolute inset-0 z-10 animate-pulse bg-gradient-to-r from-muted via-muted-foreground/5 to-muted" />
+    <Link
+      href={`/product/${product.slug}`}
+      className={cn("group relative block", className)}
+    >
+      <div className="relative overflow-hidden bg-muted [perspective:800px]">
+        <div className="transition-transform duration-700 ease-out motion-safe:group-hover:[transform:rotateY(2deg)_rotateX(1deg)]">
+        <AspectRatio ratio={4 / 5}>
+          {/* Skeleton shimmer */}
+          {!imageLoaded && (
+            <div className="absolute inset-0 z-10 animate-pulse bg-gradient-to-r from-muted via-muted-foreground/5 to-muted" />
+          )}
+          {/* Primary image */}
+          <Image
+            src={product.image}
+            alt={`${product.name} — ${product.collection} saree`}
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            priority={priority}
+            onLoad={() => setImageLoaded(true)}
+            className={cn(
+              "object-cover transition-all duration-700 ease-out group-hover:scale-[1.03] group-hover:opacity-0",
+              !imageLoaded && "opacity-0"
             )}
-            <Image
-              src={product.image}
-              alt={`${product.name} — ${product.collection} saree`}
-              fill
-              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-              priority={priority}
-              onLoad={() => setImageLoaded(true)}
-              className={cn(
-                "object-cover transition-all duration-700 ease-out group-hover:scale-[1.03] group-hover:opacity-0",
-                !imageLoaded && "opacity-0"
-              )}
-            />
-            <Image
-              src={product.hoverImage}
-              alt=""
-              aria-hidden
-              fill
-              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-              className="object-cover opacity-0 transition-all duration-700 ease-out group-hover:scale-[1.03] group-hover:opacity-100"
-            />
-          </AspectRatio>
+          />
+          {/* Hover image */}
+          <Image
+            src={product.hoverImage}
+            alt=""
+            aria-hidden
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            className="object-cover opacity-0 transition-all duration-700 ease-out group-hover:scale-[1.03] group-hover:opacity-100"
+          />
+        </AspectRatio>
         </div>
 
+        {/* Badge */}
         {product.badge && (
-          <Badge variant={badgeVariant as never} className={cn("absolute left-3 top-3", minimal && "text-[9px]")}>
+          <Badge
+            variant={badgeVariant as any}
+            className="absolute left-3 top-3"
+          >
             {product.badge}
           </Badge>
         )}
 
+        {/* Wishlist */}
         <div className="absolute right-3 top-3 flex flex-col gap-2">
           <button
             type="button"
@@ -87,10 +90,7 @@ export function ProductCard({
               toggleWishlist(product.id)
             }}
             aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
-            className={cn(
-              "flex h-9 w-9 items-center justify-center rounded-full bg-background/82 text-foreground backdrop-blur transition-all hover:bg-background",
-              minimal && "lg:translate-y-1 lg:opacity-0 lg:group-hover:translate-y-0 lg:group-hover:opacity-100"
-            )}
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-background/80 text-foreground backdrop-blur transition-all hover:bg-background"
           >
             <Heart
               className={cn(
@@ -99,8 +99,7 @@ export function ProductCard({
               )}
             />
           </button>
-
-          {onQuickView && !minimal && (
+          {onQuickView && (
             <button
               type="button"
               onClick={(e) => {
@@ -108,13 +107,14 @@ export function ProductCard({
                 onQuickView(product)
               }}
               aria-label={`Quick view ${product.name}`}
-              className="hidden h-9 w-9 items-center justify-center rounded-full bg-background/82 text-foreground backdrop-blur transition-all duration-300 hover:bg-background lg:flex lg:translate-y-1 lg:opacity-0 lg:group-hover:translate-y-0 lg:group-hover:opacity-100"
+              className="hidden h-9 w-9 items-center justify-center rounded-full bg-background/80 text-foreground backdrop-blur transition-all duration-300 hover:bg-background lg:flex lg:translate-y-1 lg:opacity-0 lg:group-hover:translate-y-0 lg:group-hover:opacity-100"
             >
               <Eye className="h-[14px] w-[14px]" />
             </button>
           )}
         </div>
 
+        {/* Quick Add — Snipcart add-to-cart button */}
         {!hideQuickAdd && (
           <button
             type="button"
@@ -134,12 +134,13 @@ export function ProductCard({
         )}
       </div>
 
+      {/* Meta */}
       <div className="mt-4 flex items-start justify-between gap-3 px-0.5">
         <div className="min-w-0">
           <p className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
             {product.collection}
           </p>
-          <h3 className={cn("mt-1 truncate font-serif text-lg leading-tight", minimal && "text-[20px]")}>
+          <h3 className="mt-1 truncate font-serif text-lg leading-tight">
             {product.name}
           </h3>
         </div>

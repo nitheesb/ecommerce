@@ -1,4 +1,11 @@
+"use client"
+
+import { useRef, useLayoutEffect } from "react"
 import Image from "next/image"
+import gsap from "gsap"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
+
+gsap.registerPlugin(ScrollTrigger)
 
 const chapters = [
   {
@@ -32,62 +39,140 @@ const chapters = [
 ]
 
 export function WeaveJourney() {
+  const sectionRef = useRef<HTMLDivElement>(null)
+  const trackRef = useRef<HTMLDivElement>(null)
+
+  useLayoutEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
+
+    const section = sectionRef.current
+    const track = trackRef.current
+    if (!section || !track) return
+
+    const mm = gsap.matchMedia()
+
+    // Desktop: horizontal scroll with pin
+    mm.add("(min-width: 768px)", () => {
+      const ctx = gsap.context(() => {
+        const panels = track.querySelectorAll<HTMLElement>(".journey-panel")
+        const totalScroll = track.scrollWidth - section.offsetWidth
+
+        gsap.to(track, {
+          x: -totalScroll,
+          ease: "none",
+          scrollTrigger: {
+            trigger: section,
+            pin: true,
+            scrub: 1,
+            end: () => `+=${totalScroll}`,
+            invalidateOnRefresh: true,
+          },
+        })
+
+        // Stagger text reveals per panel
+        panels.forEach((panel) => {
+          const textEls = panel.querySelectorAll(".journey-reveal")
+          gsap.set(textEls, { opacity: 0, y: 30 })
+
+          ScrollTrigger.create({
+            trigger: panel,
+            containerAnimation: gsap.getById?.("__weaveJourney") ?? undefined,
+            start: "left 70%",
+            end: "left 30%",
+            onEnter: () => {
+              gsap.to(textEls, {
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                stagger: 0.12,
+                ease: "power3.out",
+              })
+            },
+          })
+        })
+      }, section)
+
+      return () => ctx.revert()
+    })
+
+    // Mobile: vertical layout with fade-in reveals
+    mm.add("(max-width: 767px)", () => {
+      const ctx = gsap.context(() => {
+        const items = track.querySelectorAll<HTMLElement>(".journey-reveal")
+        gsap.set(items, { opacity: 0, y: 20 })
+
+        items.forEach((item) => {
+          ScrollTrigger.create({
+            trigger: item,
+            start: "top 85%",
+            once: true,
+            onEnter: () => {
+              gsap.to(item, {
+                opacity: 1,
+                y: 0,
+                duration: 0.7,
+                ease: "power3.out",
+              })
+            },
+          })
+        })
+      }, section)
+
+      return () => ctx.revert()
+    })
+
+    return () => mm.revert()
+  }, [])
+
   return (
-    <section className="bg-background py-16 lg:py-20">
-      <div className="mx-auto max-w-7xl px-6 lg:px-12">
-        <div className="mb-10 flex flex-col gap-4 border-b border-border/40 pb-8 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <p className="text-[11px] font-medium uppercase tracking-[0.32em] text-muted-foreground">
-              The weave journey
-            </p>
-            <h2 className="mt-3 font-serif text-3xl leading-[1.1] tracking-tight md:text-4xl lg:text-5xl">
-              From first thread to final drape
-            </h2>
+    <div ref={sectionRef} className="overflow-hidden">
+      <div
+        ref={trackRef}
+        className="flex flex-col gap-16 py-10 md:flex-row md:gap-0 md:py-0"
+        style={{ width: "fit-content" }}
+      >
+        {chapters.map((ch, i) => (
+          <div
+            key={i}
+            className="journey-panel flex w-full flex-col px-6 md:h-screen md:w-screen md:flex-row md:items-center md:gap-0 md:px-0"
+          >
+            {/* Image */}
+            <div className="relative aspect-[4/5] w-full overflow-hidden bg-muted md:aspect-auto md:h-full md:w-[55%]">
+              <Image
+                src={ch.image}
+                alt={ch.alt}
+                fill
+                sizes="(max-width: 768px) 100vw, 55vw"
+                className="object-cover"
+                priority={i === 0}
+              />
+              {/* Subtle vignette */}
+              <div
+                aria-hidden
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-background/30 hidden md:block"
+              />
+            </div>
+
+            {/* Text */}
+            <div className="flex flex-col justify-center px-0 py-8 md:w-[45%] md:px-16 lg:px-24">
+              <p className="journey-reveal text-[10px] font-medium uppercase tracking-[0.32em] text-muted-foreground">
+                {ch.label}
+              </p>
+              <h3 className="journey-reveal mt-4 font-serif text-3xl leading-tight tracking-tight md:text-4xl lg:text-5xl">
+                {ch.title}
+              </h3>
+              <p className="journey-reveal mt-5 max-w-md text-base leading-relaxed text-muted-foreground md:text-lg">
+                {ch.text}
+              </p>
+              {i === chapters.length - 1 && (
+                <p className="journey-reveal mt-6 text-[10px] font-medium uppercase tracking-[0.28em] text-foreground/60">
+                  This is Thazhuval.
+                </p>
+              )}
+            </div>
           </div>
-          <p className="max-w-xl text-sm leading-relaxed text-muted-foreground md:text-base">
-            The story is easier to follow as a sequence of still moments than as a pinned horizontal animation.
-          </p>
-        </div>
-
-        <div className="space-y-8">
-          {chapters.map((ch, i) => (
-            <article
-              key={ch.title}
-              className="grid gap-6 rounded-[32px] border border-border/50 bg-secondary/20 p-5 md:grid-cols-[0.95fr_1.05fr] md:items-center md:p-6 lg:gap-10 lg:p-8"
-            >
-              <div className={i % 2 === 1 ? "md:order-2" : ""}>
-                <div className="relative aspect-[4/5] overflow-hidden rounded-[26px] bg-muted">
-                  <Image
-                    src={ch.image}
-                    alt={ch.alt}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 45vw"
-                    className="object-cover"
-                    priority={i === 0}
-                  />
-                </div>
-              </div>
-
-              <div className={i % 2 === 1 ? "md:order-1" : ""}>
-                <p className="text-[10px] font-medium uppercase tracking-[0.32em] text-muted-foreground">
-                  {ch.label}
-                </p>
-                <h3 className="mt-4 font-serif text-3xl leading-tight tracking-tight md:text-4xl">
-                  {ch.title}
-                </h3>
-                <p className="mt-5 max-w-lg text-base leading-relaxed text-muted-foreground md:text-lg">
-                  {ch.text}
-                </p>
-                {i === chapters.length - 1 && (
-                  <p className="mt-6 text-[10px] font-medium uppercase tracking-[0.28em] text-foreground/60">
-                    This is Thazhuval.
-                  </p>
-                )}
-              </div>
-            </article>
-          ))}
-        </div>
+        ))}
       </div>
-    </section>
+    </div>
   )
 }

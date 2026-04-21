@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useRef, useEffect, useCallback, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import gsap from "gsap"
@@ -21,14 +21,209 @@ const shopCategories = [
   { name: "Silk Cotton", image: "/images/saree-6-a.jpg", href: "/collections/silk-cotton" },
   { name: "Kalamkari", image: "/images/saree-1-b.jpg", href: "/collections/kalamkari" },
   { name: "Ajrakh Print", image: "/images/saree-6-b.jpg", href: "/collections/ajrakh-print" },
+  { name: "Bandhani", image: "/images/saree-2-b.jpg", href: "/collections/bandhani" },
+  { name: "Heritage", image: "/images/saree-7-b.jpg", href: "/collections/heritage" },
+  { name: "Dailywear", image: "/images/saree-8-b.jpg", href: "/collections/dailywear" },
+  { name: "Festive", image: "/images/saree-4-b.jpg", href: "/collections/festive" },
+  { name: "Modal", image: "/images/saree-2-a.jpg", href: "/collections/modal" },
 ]
 
-export function CategoriesSection() {
-  const headingRef = useRef<HTMLDivElement>(null)
+// Duplicate for seamless infinite loop
+const loopedCategories = [...shopCategories, ...shopCategories]
 
+const AUTO_SPEED = 0.4 // px per frame
+const DRAG_EASE = 0.92 // momentum decay
+
+export function CategoriesSection() {
+  const sectionRef = useRef<HTMLElement>(null)
+  const headingRef = useRef<HTMLDivElement>(null)
+  const trackRef = useRef<HTMLDivElement>(null)
+  const [reducedMotion, setReducedMotion] = useState(false)
+
+  // Mutable state for the animation loop (no re-renders needed)
+  const state = useRef({
+    x: 0,
+    targetX: 0,
+    dragging: false,
+    dragStartX: 0,
+    dragStartY: 0,
+    dragStartScrollX: 0,
+    velocity: 0,
+    lastPointerX: 0,
+    hasDragged: false,
+    dragDirection: null as "horizontal" | "vertical" | null,
+    singleSetWidth: 0,
+    animId: 0,
+  })
+
+  const loop = useCallback(() => {
+    const s = state.current
+    const track = trackRef.current
+    if (!track) return
+
+    if (!s.dragging) {
+      // Auto-scroll when not dragging
+      s.targetX -= AUTO_SPEED
+
+      // Apply momentum from drag release
+      if (Math.abs(s.velocity) > 0.5) {
+        s.targetX += s.velocity
+        s.velocity *= DRAG_EASE
+      } else {
+        s.velocity = 0
+      }
+    }
+
+    // Smooth lerp toward target
+    s.x += (s.targetX - s.x) * 0.1
+
+    // Seamless wrap: when we've scrolled one full set, reset
+    if (s.singleSetWidth > 0) {
+      if (s.x <= -s.singleSetWidth) {
+        s.x += s.singleSetWidth
+        s.targetX += s.singleSetWidth
+      } else if (s.x > 0) {
+        s.x -= s.singleSetWidth
+        s.targetX -= s.singleSetWidth
+      }
+    }
+
+    track.style.transform = `translate3d(${s.x}px, 0, 0)`
+    s.animId = requestAnimationFrame(loop)
+  }, [])
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)")
+    const updateReducedMotion = () => setReducedMotion(mediaQuery.matches)
+
+    updateReducedMotion()
+    mediaQuery.addEventListener("change", updateReducedMotion)
+
+    return () => mediaQuery.removeEventListener("change", updateReducedMotion)
+  }, [])
+
+  useEffect(() => {
+    if (reducedMotion) return
+
+    const track = trackRef.current
+    const section = sectionRef.current
+    if (!track || !section) return
+
+    // Measure one set width (half of track since we doubled)
+    state.current.singleSetWidth = track.scrollWidth / 2
+    let running = false
+
+    const start = () => {
+      if (running) return
+      running = true
+      state.current.animId = requestAnimationFrame(loop)
+    }
+
+    const stop = () => {
+      running = false
+      cancelAnimationFrame(state.current.animId)
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          start()
+        } else {
+          stop()
+        }
+      },
+      { threshold: 0.15 },
+    )
+
+    observer.observe(section)
+
+    return () => {
+      observer.disconnect()
+      stop()
+    }
+  }, [loop, reducedMotion])
+
+  // Pointer events for universal drag (mouse, touch, trackpad)
+  useEffect(() => {
+    if (reducedMotion) return
+
+    const track = trackRef.current
+    if (!track) return
+
+    const parent = track.parentElement!
+
+    const onPointerDown = (e: PointerEvent) => {
+      const s = state.current
+      s.dragging = true
+      s.hasDragged = false
+      s.dragDirection = null
+      s.dragStartX = e.clientX
+      s.dragStartY = e.clientY
+      s.dragStartScrollX = s.targetX
+      s.lastPointerX = e.clientX
+      s.velocity = 0
+    }
+
+    const onPointerMove = (e: PointerEvent) => {
+      const s = state.current
+      if (!s.dragging) return
+
+      const dx = e.clientX - s.dragStartX
+      const dy = e.clientY - s.dragStartY
+
+      // Determine drag direction once we have enough movement
+      if (!s.dragDirection && (Math.abs(dx) > 5 || Math.abs(dy) > 5)) {
+        s.dragDirection = Math.abs(dx) > Math.abs(dy) ? "horizontal" : "vertical"
+      }
+
+      // If vertical, release the drag so native scroll works
+      if (s.dragDirection === "vertical") {
+        s.dragging = false
+        return
+      }
+
+      if (s.dragDirection === "horizontal") {
+        e.preventDefault()
+        s.hasDragged = true
+        s.velocity = e.clientX - s.lastPointerX
+        s.lastPointerX = e.clientX
+        s.targetX = s.dragStartScrollX + dx
+      }
+    }
+
+    const onPointerUp = () => {
+      state.current.dragging = false
+    }
+
+    parent.addEventListener("pointerdown", onPointerDown)
+    parent.addEventListener("pointermove", onPointerMove)
+    parent.addEventListener("pointerup", onPointerUp)
+    parent.addEventListener("pointercancel", onPointerUp)
+
+    return () => {
+      parent.removeEventListener("pointerdown", onPointerDown)
+      parent.removeEventListener("pointermove", onPointerMove)
+      parent.removeEventListener("pointerup", onPointerUp)
+      parent.removeEventListener("pointercancel", onPointerUp)
+    }
+  }, [reducedMotion])
+
+  // Block link clicks if user dragged
+  const handleClick = useCallback((e: React.MouseEvent) => {
+    if (state.current.hasDragged) {
+      e.preventDefault()
+    }
+  }, [])
+
+  // GSAP heading reveal
   useEffect(() => {
     const heading = headingRef.current
     if (!heading) return
+
+    if (reducedMotion) {
+      gsap.set(heading.children, { clearProps: "all" })
+      return
+    }
 
     gsap.set(heading.children, { opacity: 0, y: 24 })
 
@@ -48,50 +243,53 @@ export function CategoriesSection() {
     })
 
     return () => trigger.kill()
-  }, [])
+  }, [reducedMotion])
+
+  const visibleCategories = reducedMotion ? shopCategories : loopedCategories
 
   return (
-    <section className="border-b border-border/40 bg-[linear-gradient(180deg,rgba(251,248,241,0.82),rgba(251,248,241,1))] py-16 lg:py-20">
-      <div
-        ref={headingRef}
-        className="mx-auto mb-10 flex max-w-7xl flex-col gap-4 px-6 lg:mb-12 lg:flex-row lg:items-end lg:justify-between lg:px-12"
-      >
-        <div>
-          <p className="text-[11px] font-medium uppercase tracking-[0.32em] text-muted-foreground">
-            Shop by Category
-          </p>
-          <h2 className="mt-3 font-serif text-3xl leading-[1.1] tracking-tight md:text-4xl lg:text-5xl">
-            Explore the weave library
-          </h2>
-        </div>
-        <p className="max-w-xl text-sm leading-relaxed text-muted-foreground md:text-base">
-          A calmer way to browse the collection by feel, weight, and occasion, without the moving rail.
+    <section ref={sectionRef} className="pt-20 pb-14 lg:pt-24 lg:pb-16 overflow-hidden border-b border-border/40">
+      {/* Section heading */}
+      <div ref={headingRef} className="mx-auto max-w-7xl px-6 mb-10 md:mb-12 lg:px-12">
+        <p className="text-[11px] font-medium uppercase tracking-[0.32em] text-muted-foreground">
+          Shop by Category
         </p>
+        <h2 className="mt-3 font-serif text-3xl leading-[1.1] tracking-tight md:text-4xl lg:text-5xl">
+          Explore Our Weaves
+        </h2>
       </div>
 
-      <div className="mx-auto max-w-7xl px-6 lg:px-12">
-        <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-          {shopCategories.map((cat) => (
+      {/* Infinite marquee track — draggable */}
+      <div
+        className={`relative ${reducedMotion ? "overflow-x-auto" : "select-none cursor-grab active:cursor-grabbing touch-pan-y"}`}
+        style={{ WebkitUserSelect: "none" }}
+      >
+        <div
+          ref={trackRef}
+          className={`flex gap-8 pl-6 md:gap-10 lg:pl-12 ${reducedMotion ? "w-max pr-6" : "will-change-transform"}`}
+        >
+          {visibleCategories.map((cat, i) => (
             <Link
-              key={cat.href}
+              key={`${cat.name}-${i}`}
               href={cat.href}
-              className="group flex flex-col items-start gap-4 rounded-[28px] border border-border/50 bg-background/78 p-4 transition-all duration-300 hover:-translate-y-1 hover:border-foreground/15 hover:shadow-[0_18px_36px_-28px_rgba(27,31,35,0.35)]"
+              onClick={handleClick}
+              draggable={false}
+              className="group shrink-0 flex flex-col items-center gap-3"
             >
-              <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[22px] bg-muted">
+              {/* Circular image — zoomed into fabric */}
+              <div className="relative h-24 w-24 overflow-hidden rounded-full bg-muted ring-1 ring-border/30 transition-shadow duration-300 group-hover:ring-foreground/20 group-hover:shadow-lg sm:h-28 sm:w-28 md:h-32 md:w-32">
                 <Image
                   src={cat.image}
                   alt={`${cat.name} weave`}
                   fill
-                  sizes="(max-width: 768px) 50vw, (max-width: 1280px) 25vw, 16vw"
-                  className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+                  sizes="128px"
+                  draggable={false}
+                  className="object-cover scale-[2.2] object-[center_30%] transition-transform duration-500 ease-out group-hover:scale-[2.4]"
                 />
               </div>
-              <div>
-                <span className="text-[10px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
-                  Collection
-                </span>
-                <p className="mt-1 font-serif text-xl text-foreground">{cat.name}</p>
-              </div>
+              <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-foreground/60 transition-colors duration-300 group-hover:text-foreground sm:text-[11px]">
+                {cat.name}
+              </span>
             </Link>
           ))}
         </div>
