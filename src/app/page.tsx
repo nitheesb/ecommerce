@@ -4,7 +4,6 @@ import { EditorialSection } from "@/components/editorial-section"
 import { FeaturedGridSection } from "@/components/featured-grid-section"
 import { Footer } from "@/components/footer"
 import { Hero } from "@/components/hero"
-import { HeroMobile } from "@/components/hero-mobile"
 import { Navbar } from "@/components/navbar"
 import { ProductCare } from "@/components/product-care"
 import { SectionDivider } from "@/components/section-divider"
@@ -21,7 +20,6 @@ export default async function HomePage() {
     <>
       <Navbar />
       <main id="main-content">
-        <HeroMobile />
         <Hero />
         <div className="relative z-10 bg-background">
           <CategoriesSection />
