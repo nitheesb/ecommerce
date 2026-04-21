@@ -192,7 +192,7 @@ export function Hero() {
     <section
       ref={heroRef}
       aria-label="More than a saree — it's an embrace"
-      className="relative -mt-8 hidden min-h-[100svh] md:-mt-10 md:block"
+      className="relative -mt-14 hidden min-h-[100svh] md:-mt-16 md:block"
     >
       {/* Fixed background — stays in place while page scrolls over it */}
       <div ref={fixedBgRef} className="fixed inset-0 z-0">
