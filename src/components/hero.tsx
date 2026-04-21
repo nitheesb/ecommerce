@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useLayoutEffect } from "react"
+import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import Image from "next/image"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
@@ -17,8 +17,21 @@ export function Hero() {
   const line2Ref = useRef<HTMLSpanElement>(null)
   const paraRef = useRef<HTMLParagraphElement>(null)
   const scrollIndicRef = useRef<HTMLDivElement>(null)
+  const [reducedMotion, setReducedMotion] = useState(false)
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)")
+    const updateReducedMotion = () => setReducedMotion(mediaQuery.matches)
+
+    updateReducedMotion()
+    mediaQuery.addEventListener("change", updateReducedMotion)
+
+    return () => mediaQuery.removeEventListener("change", updateReducedMotion)
+  }, [])
 
   useLayoutEffect(() => {
+    if (reducedMotion) return
+
     const ctx = gsap.context(() => {
       const hero = heroRef.current
       const image = imageRef.current
@@ -186,7 +199,7 @@ export function Hero() {
     }, heroRef)
 
     return () => ctx.revert()
-  }, [])
+  }, [reducedMotion])
 
   return (
     <section
@@ -195,7 +208,10 @@ export function Hero() {
       className="relative -mt-14 hidden min-h-[100svh] md:-mt-16 md:block"
     >
       {/* Fixed background — stays in place while page scrolls over it */}
-      <div ref={fixedBgRef} className="fixed inset-0 z-0">
+      <div
+        ref={fixedBgRef}
+        className={reducedMotion ? "absolute inset-0 z-0" : "fixed inset-0 z-0"}
+      >
         <div
           ref={imageRef}
           className="absolute inset-[-10%] will-change-transform"
@@ -261,7 +277,7 @@ export function Hero() {
       {/* Scroll indicator — subtle, bottom right */}
       <div
         ref={scrollIndicRef}
-        className="absolute bottom-8 right-8 text-background/50"
+        className={`absolute bottom-8 right-8 text-background/50 ${reducedMotion ? "hidden" : ""}`}
       >
         <div className="flex flex-col items-center gap-2">
           <span className="text-[9px] uppercase tracking-[0.3em]">Scroll</span>

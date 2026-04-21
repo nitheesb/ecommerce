@@ -4,9 +4,14 @@ import { Breadcrumbs } from "@/components/breadcrumbs"
 import { InnerPageShell } from "@/components/inner-page-shell"
 import { ProductCare } from "@/components/product-care"
 import { CollectionGrid } from "@/components/collection-grid"
-import { products as staticProducts, type Product, type ProductCategory } from "@/lib/products"
+import {
+  filterProductsByCollectionSlug,
+  products as staticProducts,
+  type Product,
+  type ProductCategory,
+} from "@/lib/products"
 import { sanityFetch } from "@/lib/sanity/client"
-import { productsByCategoryQuery } from "@/lib/sanity/queries"
+import { allProductsQuery } from "@/lib/sanity/queries"
 
 // ---------------------------------------------------------------------------
 // Allow any slug — Next.js won't 404 on slugs missing from generateStaticParams
@@ -351,20 +356,9 @@ export default async function CollectionPage({ params }: { params: { slug: strin
   }
 
   // Try Sanity first if we know the category
-  let products: Product[] = []
-  if (meta.sanityCategory) {
-    const sanityProducts = await sanityFetch<Product[]>(productsByCategoryQuery, {
-      category: meta.sanityCategory,
-    })
-    if (sanityProducts && sanityProducts.length > 0) {
-      products = sanityProducts
-    } else {
-      products = staticProducts.filter((p) => p.category === meta.sanityCategory)
-    }
-  } else {
-    // Show all products for generic collections (since we only have 8 static products)
-    products = staticProducts
-  }
+  const sanityProducts = await sanityFetch<Product[]>(allProductsQuery)
+  const catalog = sanityProducts && sanityProducts.length > 0 ? sanityProducts : staticProducts
+  const products = filterProductsByCollectionSlug(catalog, params.slug)
 
   return (
     <InnerPageShell>

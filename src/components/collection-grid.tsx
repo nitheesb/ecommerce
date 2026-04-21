@@ -1,10 +1,9 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import Link from "next/link"
 
 import { ProductGrid } from "@/components/product-grid"
-import { ProductGridSkeleton } from "@/components/product-grid-skeleton"
 import type { Product } from "@/lib/products"
 
 type SortKey = "featured" | "price-asc" | "price-desc"
@@ -16,13 +15,7 @@ const sortOptions: { value: SortKey; label: string }[] = [
 ]
 
 export function CollectionGrid({ products }: { products: Product[] }) {
-  const [isLoading, setIsLoading] = useState(true)
   const [sort, setSort] = useState<SortKey>("featured")
-
-  useEffect(() => {
-    const t = setTimeout(() => setIsLoading(false), 900)
-    return () => clearTimeout(t)
-  }, [])
 
   const sorted = [...products].sort((a, b) => {
     if (sort === "price-asc") return a.price - b.price
@@ -30,7 +23,7 @@ export function CollectionGrid({ products }: { products: Product[] }) {
     return 0
   })
 
-  if (!isLoading && products.length === 0) {
+  if (products.length === 0) {
     return (
       <section className="mx-auto max-w-7xl px-6 py-20 lg:px-12 text-center">
         <p className="font-serif text-3xl">No pieces found in this collection</p>
@@ -69,7 +62,7 @@ export function CollectionGrid({ products }: { products: Product[] }) {
         </label>
       </div>
 
-      {isLoading ? <ProductGridSkeleton count={8} /> : <ProductGrid products={sorted} />}
+      <ProductGrid products={sorted} />
     </section>
   )
 }

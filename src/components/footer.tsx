@@ -23,8 +23,15 @@ export function Footer() {
   function handleSubscribe(e: React.FormEvent) {
     e.preventDefault()
     if (!email.trim()) return
-    toast.success("Thank you for subscribing!", {
-      description: "You\u2019ll hear from us soon.",
+    const mailtoUrl = `mailto:houseofthazhuval@gmail.com?subject=${encodeURIComponent(
+      "Subscribe me to House of Thazhuval updates",
+    )}&body=${encodeURIComponent(
+      `Please add ${email.trim()} to House of Thazhuval updates.`,
+    )}`
+
+    window.location.href = mailtoUrl
+    toast.success("Opening your email app", {
+      description: "Send the draft to request updates from House of Thazhuval.",
     })
     setEmail("")
   }
@@ -76,7 +83,10 @@ export function Footer() {
         {/* Subscribe + Instagram */}
         <div className="flex flex-col items-start justify-between gap-8 sm:flex-row sm:items-end">
           <form className="w-full max-w-sm" onSubmit={handleSubscribe}>
-            <p className="text-sm font-medium text-background">Subscribe to our emails</p>
+            <p className="text-sm font-medium text-background">Stay in touch</p>
+            <p className="mt-2 text-xs leading-relaxed text-background/60">
+              Enter your email and we&apos;ll open a ready-to-send message requesting updates.
+            </p>
             <div className="mt-3 flex items-center gap-0 border border-background/40 focus-within:border-background">
               <input
                 type="email"

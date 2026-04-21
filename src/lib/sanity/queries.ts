@@ -1,29 +1,25 @@
-import { groq } from "next-sanity";
-
 // ---------------------------------------------------------------------------
 // Reusable GROQ fragments
 // ---------------------------------------------------------------------------
 
-const imageFragment = groq`{
+const imageFragment = `{
   asset->{ _id, url, metadata { lqip, dimensions } },
   hotspot, crop, alt
 }`;
 
-const productCardFields = groq`{
-  _id,
-  title,
-  slug,
+const productCardFields = `{
+  "id": _id,
+  "name": title,
+  "slug": slug.current,
   description,
   category,
-  weaveType,
   collection,
   price,
-  compareAtPrice,
+  "compareAt": compareAtPrice,
   badge,
   palette,
-  mainImage ${imageFragment},
-  hoverImage ${imageFragment},
-  variants[]{ _key, sku, color, colorHex, size, price, compareAtPrice, stockQuantity }
+  "image": mainImage.asset->url,
+  "hoverImage": coalesce(hoverImage.asset->url, mainImage.asset->url)
 }`;
 
 // ---------------------------------------------------------------------------
@@ -31,17 +27,12 @@ const productCardFields = groq`{
 // ---------------------------------------------------------------------------
 
 /** Fetch all products for listings (homepage, search) */
-export const allProductsQuery = groq`
+export const allProductsQuery = `
   *[_type == "saree"] | order(_createdAt desc) ${productCardFields}
 `;
 
-/** Fetch products filtered by category */
-export const productsByCategoryQuery = groq`
-  *[_type == "saree" && category == $category] | order(_createdAt desc) ${productCardFields}
-`;
-
 /** Fetch a single product by slug — full detail for PDP */
-export const productBySlugQuery = groq`
+export const productBySlugQuery = `
   *[_type == "saree" && slug.current == $slug][0] {
     _id,
     _type,
@@ -73,6 +64,6 @@ export const productBySlugQuery = groq`
 `;
 
 /** Fetch all slugs for generateStaticParams */
-export const allProductSlugsQuery = groq`
+export const allProductSlugsQuery = `
   *[_type == "saree" && defined(slug.current)].slug.current
 `;

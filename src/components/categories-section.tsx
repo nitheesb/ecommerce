@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useEffect, useCallback } from "react"
+import { useRef, useEffect, useCallback, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import gsap from "gsap"
@@ -38,6 +38,7 @@ export function CategoriesSection() {
   const sectionRef = useRef<HTMLElement>(null)
   const headingRef = useRef<HTMLDivElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
+  const [reducedMotion, setReducedMotion] = useState(false)
 
   // Mutable state for the animation loop (no re-renders needed)
   const state = useRef({
@@ -92,18 +93,60 @@ export function CategoriesSection() {
   }, [])
 
   useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)")
+    const updateReducedMotion = () => setReducedMotion(mediaQuery.matches)
+
+    updateReducedMotion()
+    mediaQuery.addEventListener("change", updateReducedMotion)
+
+    return () => mediaQuery.removeEventListener("change", updateReducedMotion)
+  }, [])
+
+  useEffect(() => {
+    if (reducedMotion) return
+
     const track = trackRef.current
-    if (!track) return
+    const section = sectionRef.current
+    if (!track || !section) return
 
     // Measure one set width (half of track since we doubled)
     state.current.singleSetWidth = track.scrollWidth / 2
-    state.current.animId = requestAnimationFrame(loop)
+    let running = false
 
-    return () => cancelAnimationFrame(state.current.animId)
-  }, [loop])
+    const start = () => {
+      if (running) return
+      running = true
+      state.current.animId = requestAnimationFrame(loop)
+    }
+
+    const stop = () => {
+      running = false
+      cancelAnimationFrame(state.current.animId)
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          start()
+        } else {
+          stop()
+        }
+      },
+      { threshold: 0.15 },
+    )
+
+    observer.observe(section)
+
+    return () => {
+      observer.disconnect()
+      stop()
+    }
+  }, [loop, reducedMotion])
 
   // Pointer events for universal drag (mouse, touch, trackpad)
   useEffect(() => {
+    if (reducedMotion) return
+
     const track = trackRef.current
     if (!track) return
 
@@ -163,7 +206,7 @@ export function CategoriesSection() {
       parent.removeEventListener("pointerup", onPointerUp)
       parent.removeEventListener("pointercancel", onPointerUp)
     }
-  }, [])
+  }, [reducedMotion])
 
   // Block link clicks if user dragged
   const handleClick = useCallback((e: React.MouseEvent) => {
@@ -176,6 +219,11 @@ export function CategoriesSection() {
   useEffect(() => {
     const heading = headingRef.current
     if (!heading) return
+
+    if (reducedMotion) {
+      gsap.set(heading.children, { clearProps: "all" })
+      return
+    }
 
     gsap.set(heading.children, { opacity: 0, y: 24 })
 
@@ -195,7 +243,9 @@ export function CategoriesSection() {
     })
 
     return () => trigger.kill()
-  }, [])
+  }, [reducedMotion])
+
+  const visibleCategories = reducedMotion ? shopCategories : loopedCategories
 
   return (
     <section ref={sectionRef} className="pt-20 pb-14 lg:pt-24 lg:pb-16 overflow-hidden border-b border-border/40">
@@ -211,11 +261,14 @@ export function CategoriesSection() {
 
       {/* Infinite marquee track — draggable */}
       <div
-        className="relative select-none cursor-grab active:cursor-grabbing touch-pan-y"
+        className={`relative ${reducedMotion ? "overflow-x-auto" : "select-none cursor-grab active:cursor-grabbing touch-pan-y"}`}
         style={{ WebkitUserSelect: "none" }}
       >
-        <div ref={trackRef} className="flex gap-8 will-change-transform pl-6 lg:pl-12 md:gap-10">
-          {loopedCategories.map((cat, i) => (
+        <div
+          ref={trackRef}
+          className={`flex gap-8 pl-6 md:gap-10 lg:pl-12 ${reducedMotion ? "w-max pr-6" : "will-change-transform"}`}
+        >
+          {visibleCategories.map((cat, i) => (
             <Link
               key={`${cat.name}-${i}`}
               href={cat.href}

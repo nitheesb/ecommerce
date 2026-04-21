@@ -13,6 +13,79 @@ export type Product = {
   description: string
 }
 
+function normalizeText(value: string) {
+  return value.toLowerCase().trim()
+}
+
+function tokenizeSlug(slug: string) {
+  return normalizeText(slug)
+    .split("-")
+    .filter(Boolean)
+}
+
+function getSearchableText(product: Product) {
+  return [
+    product.name,
+    product.slug,
+    product.collection,
+    product.category,
+    product.badge ?? "",
+    product.description,
+  ]
+    .join(" ")
+    .toLowerCase()
+}
+
+export function searchProducts(products: Product[], query: string) {
+  const trimmedQuery = normalizeText(query)
+  if (!trimmedQuery) return products
+
+  const terms = trimmedQuery.split(/\s+/).filter(Boolean)
+
+  return products.filter((product) => {
+    const haystack = getSearchableText(product)
+    return terms.every((term) => haystack.includes(term))
+  })
+}
+
+export function filterProductsByCollectionSlug(products: Product[], slug: string) {
+  const normalizedSlug = normalizeText(slug)
+
+  switch (normalizedSlug) {
+    case "all-sarees":
+    case "sarees":
+      return products
+    case "best-sellers":
+      return products.filter((product) => product.badge === "Bestseller")
+    case "new-arrivals":
+      return products.filter((product) => product.badge === "New")
+    case "cotton":
+      return products.filter((product) => product.category === "Cotton")
+    case "silk":
+      return products.filter((product) => product.category === "Silk")
+    case "heritage":
+      return products.filter((product) => product.category === "Heritage")
+    case "dailywear":
+      return products.filter((product) => product.category === "Cotton" || product.price < 15000)
+    case "festive":
+      return products.filter(
+        (product) =>
+          product.category === "Silk" ||
+          product.category === "Heritage" ||
+          product.price >= 15000,
+      )
+    default: {
+      const slugTerms = tokenizeSlug(normalizedSlug)
+      if (slugTerms.length === 0) return []
+
+      return products.filter((product) => {
+        const haystack = getSearchableText(product)
+        return slugTerms.every((term) => haystack.includes(term))
+      })
+    }
+  }
+}
+
 export type ProductCategory = Product["category"]
 
 export const products: Product[] = [
