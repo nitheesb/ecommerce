@@ -59,6 +59,28 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const structuredData = [
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: "House of Thazhuval",
+      url: "https://thazhuval.com",
+      email: "houseofthazhuval@gmail.com",
+      sameAs: ["https://instagram.com/houseofthazhuval"],
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: "House of Thazhuval",
+      url: "https://thazhuval.com",
+      potentialAction: {
+        "@type": "SearchAction",
+        target: "https://thazhuval.com/search?q={search_term_string}",
+        "query-input": "required name=search_term_string",
+      },
+    },
+  ]
+
   return (
     <html
       lang="en"
@@ -69,6 +91,10 @@ export default function RootLayout({
       )}
     >
       <body className="min-h-screen bg-background text-foreground font-sans selection:bg-foreground selection:text-background">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-foreground focus:px-4 focus:py-2 focus:text-sm focus:text-background focus:outline-none"

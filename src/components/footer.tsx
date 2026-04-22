@@ -19,21 +19,48 @@ const quickLinks = [
 
 export function Footer() {
   const [email, setEmail] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  function handleSubscribe(e: React.FormEvent) {
+  async function handleSubscribe(e: React.FormEvent) {
     e.preventDefault()
     if (!email.trim()) return
-    const mailtoUrl = `mailto:houseofthazhuval@gmail.com?subject=${encodeURIComponent(
-      "Subscribe me to House of Thazhuval updates",
-    )}&body=${encodeURIComponent(
-      `Please add ${email.trim()} to House of Thazhuval updates.`,
-    )}`
 
-    window.location.href = mailtoUrl
-    toast.success("Opening your email app", {
-      description: "Send the draft to request updates from House of Thazhuval.",
-    })
-    setEmail("")
+    try {
+      setIsSubmitting(true)
+
+      const response = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email.trim(),
+          source: "footer",
+        }),
+      })
+
+      const payload = (await response.json().catch(() => null)) as
+        | { message?: string }
+        | null
+
+      if (!response.ok) {
+        throw new Error(payload?.message ?? "We couldn't save your request right now.")
+      }
+
+      toast.success("You’re on the list", {
+        description: "We’ll share collection drops and launch notes when they’re ready.",
+      })
+      setEmail("")
+    } catch (error) {
+      toast.error("Newsletter signup unavailable", {
+        description:
+          error instanceof Error
+            ? error.message
+            : "We couldn't save your request right now.",
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -85,7 +112,7 @@ export function Footer() {
           <form className="w-full max-w-sm" onSubmit={handleSubscribe}>
             <p className="text-sm font-medium text-background">Stay in touch</p>
             <p className="mt-2 text-xs leading-relaxed text-background/60">
-              Enter your email and we&apos;ll open a ready-to-send message requesting updates.
+              Join our list for collection drops, archive releases, and styling notes.
             </p>
             <div className="mt-3 flex items-center gap-0 border border-background/40 focus-within:border-background">
               <input
@@ -100,12 +127,19 @@ export function Footer() {
                 type="submit"
                 variant="ghost"
                 size="sm"
-                className="shrink-0 px-3 text-background hover:bg-background/10 hover:text-background"
-                aria-label="Subscribe"
+                className="shrink-0 px-4 text-[11px] font-medium uppercase tracking-[0.18em] text-background hover:bg-background/10 hover:text-background"
+                aria-label="Join the list"
+                disabled={isSubmitting}
               >
-                &rarr;
+                {isSubmitting ? "Joining..." : "Join"}
               </Button>
             </div>
+            <p className="mt-2 text-[11px] leading-relaxed text-background/50">
+              Your signup will activate once the newsletter webhook is connected. Until then, reach us via{" "}
+              <a href="mailto:houseofthazhuval@gmail.com" className="underline underline-offset-4">
+                email
+              </a>.
+            </p>
           </form>
 
           <a

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -20,9 +20,20 @@ export function Marquee({
   className?: string
 }) {
   const [dismissed, setDismissed] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const items = [...messages, ...messages]
 
-  if (dismissed) return null
+  useEffect(() => {
+    setMounted(true)
+    setDismissed(window.localStorage.getItem("thazhuval-announcements-dismissed") === "1")
+  }, [])
+
+  function handleDismiss() {
+    window.localStorage.setItem("thazhuval-announcements-dismissed", "1")
+    setDismissed(true)
+  }
+
+  if (!mounted || dismissed) return null
 
   return (
     <div
@@ -48,7 +59,7 @@ export function Marquee({
       </div>
       <button
         type="button"
-        onClick={() => setDismissed(true)}
+        onClick={handleDismiss}
         aria-label="Dismiss announcements"
         className="absolute right-3 top-1/2 z-10 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full text-background/60 transition-colors hover:text-background"
       >

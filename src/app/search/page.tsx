@@ -9,11 +9,20 @@ import { products as staticProducts, type Product } from "@/lib/products"
 export const metadata: Metadata = {
   title: "Search",
   description: "Search House of Thazhuval for sarees, collections, and more.",
+  robots: {
+    index: false,
+    follow: true,
+  },
 }
 
-export default async function SearchPage() {
+export default async function SearchPage({
+  searchParams,
+}: {
+  searchParams?: { q?: string }
+}) {
   const sanityProducts = await sanityFetch<Product[]>(allProductsQuery)
   const products = sanityProducts && sanityProducts.length > 0 ? sanityProducts : staticProducts
+  const initialQuery = searchParams?.q?.trim() ?? ""
 
   return (
     <InnerPageShell>
@@ -28,7 +37,7 @@ export default async function SearchPage() {
           <h1 className="text-center font-serif text-4xl leading-[1.1] tracking-tight md:text-5xl">
             Search
           </h1>
-          <SearchPageClient products={products} />
+          <SearchPageClient products={products} initialQuery={initialQuery} />
         </section>
     </InnerPageShell>
   )

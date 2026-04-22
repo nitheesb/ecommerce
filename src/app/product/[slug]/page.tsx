@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
+import { BadgeCheck, MessageCircleHeart, ShieldCheck, Truck } from "lucide-react"
 
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import { InnerPageShell } from "@/components/inner-page-shell"
@@ -49,6 +50,9 @@ export async function generateMetadata({
     return {
       title,
       description,
+      alternates: {
+        canonical: `/product/${params.slug}`,
+      },
       openGraph: {
         title: `${title} · Thazhuval`,
         description,
@@ -68,6 +72,9 @@ export async function generateMetadata({
   return {
     title: staticProduct.name,
     description: staticProduct.description,
+    alternates: {
+      canonical: `/product/${params.slug}`,
+    },
     openGraph: {
       title: `${staticProduct.name} · Thazhuval`,
       description: staticProduct.description,
@@ -105,6 +112,16 @@ export default async function ProductPage({
 function SanityProductDetail({ product }: { product: IProduct }) {
   const mainImageUrl = product.mainImage?.url ?? "/images/hero.jpg"
   const lqip = product.mainImage?.lqip
+  const productSchema = buildProductSchema({
+    name: product.title,
+    description: product.description,
+    image: mainImageUrl,
+    price: product.price,
+    compareAtPrice: product.compareAtPrice ?? undefined,
+    slug: product.slug.current,
+    category: product.category,
+    collection: product.collection ?? product.weaveType ?? "Saree",
+  })
 
   const badgeVariant =
     product.badge === "Limited Edition"
@@ -117,6 +134,10 @@ function SanityProductDetail({ product }: { product: IProduct }) {
 
   return (
     <InnerPageShell>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+        />
         <div className="mx-auto max-w-7xl px-6 py-8 lg:px-12">
           <Breadcrumbs
             items={[
@@ -176,6 +197,7 @@ function SanityProductDetail({ product }: { product: IProduct }) {
 
               {/* Variant selection + Buy Button (client component) */}
               <ProductActions product={product} />
+              <PurchaseConfidence />
 
               {/* WhatsApp */}
               <a
@@ -214,6 +236,16 @@ function SanityProductDetail({ product }: { product: IProduct }) {
 
 function StaticProductDetail({ product }: { product: Product }) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? ""
+  const productSchema = buildProductSchema({
+    name: product.name,
+    description: product.description,
+    image: product.image,
+    price: product.price,
+    compareAtPrice: product.compareAt,
+    slug: product.slug,
+    category: product.category,
+    collection: product.collection,
+  })
 
   const badgeVariant =
     product.badge === "Limited Edition"
@@ -226,6 +258,10 @@ function StaticProductDetail({ product }: { product: Product }) {
 
   return (
     <InnerPageShell>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+        />
         <div className="mx-auto max-w-7xl px-6 py-8 lg:px-12">
           <Breadcrumbs
             items={[
@@ -333,6 +369,7 @@ function StaticProductDetail({ product }: { product: Product }) {
                 >
                   Add to Cart — {formatCurrency(product.price)}
                 </button>
+                <PurchaseConfidence />
                 <a
                   href={`https://wa.me/919585628565?text=${encodeURIComponent(`Hi, I'm interested in the ${product.name} saree (${formatCurrency(product.price)}). ${siteUrl}/product/${product.slug}`)}`}
                   target="_blank"
@@ -362,4 +399,106 @@ function StaticProductDetail({ product }: { product: Product }) {
         />
     </InnerPageShell>
   )
+}
+
+function PurchaseConfidence() {
+  const highlights = [
+    {
+      title: "Certified Craft",
+      description: "Each piece is reviewed before dispatch and comes with origin-led product details.",
+      icon: BadgeCheck,
+    },
+    {
+      title: "Concierge Support",
+      description: "Ask for styling, drape, and occasion guidance before you commit to the piece.",
+      icon: MessageCircleHeart,
+    },
+    {
+      title: "Protected Checkout",
+      description: "Secure cart flow with careful packing and support after your order is placed.",
+      icon: ShieldCheck,
+    },
+  ]
+
+  return (
+    <div className="mt-5 space-y-4">
+      <div className="grid gap-3 sm:grid-cols-3">
+        {highlights.map((highlight) => {
+          const Icon = highlight.icon
+
+          return (
+            <div
+              key={highlight.title}
+              className="rounded-2xl border border-border/60 bg-secondary/25 px-4 py-4"
+            >
+              <Icon className="h-4 w-4 text-foreground/70" strokeWidth={1.5} />
+              <p className="mt-3 text-[11px] font-medium uppercase tracking-[0.22em] text-foreground">
+                {highlight.title}
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                {highlight.description}
+              </p>
+            </div>
+          )
+        })}
+      </div>
+
+      <div className="flex items-center gap-2 rounded-2xl border border-border/60 px-4 py-3 text-sm text-muted-foreground">
+        <Truck className="h-4 w-4 shrink-0 text-foreground/70" strokeWidth={1.5} />
+        Complimentary shipping above ₹2,000 and support throughout delivery.
+      </div>
+    </div>
+  )
+}
+
+function buildProductSchema({
+  name,
+  description,
+  image,
+  price,
+  compareAtPrice,
+  slug,
+  category,
+  collection,
+}: {
+  name: string
+  description: string
+  image: string
+  price: number
+  compareAtPrice?: number
+  slug: string
+  category: string
+  collection: string
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name,
+    description,
+    image: [image],
+    brand: {
+      "@type": "Brand",
+      name: "House of Thazhuval",
+    },
+    category: `${category} / ${collection}`,
+    offers: {
+      "@type": "Offer",
+      url: `https://thazhuval.com/product/${slug}`,
+      priceCurrency: "INR",
+      price,
+      availability: "https://schema.org/InStock",
+      itemCondition: "https://schema.org/NewCondition",
+    },
+    ...(compareAtPrice
+      ? {
+          additionalProperty: [
+            {
+              "@type": "PropertyValue",
+              name: "Compare at price",
+              value: compareAtPrice,
+            },
+          ],
+        }
+      : {}),
+  }
 }

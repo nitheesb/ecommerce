@@ -1,6 +1,7 @@
 "use client"
 
 import { useRef, useState, useEffect } from "react"
+import { usePathname } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
 import { X, Clock } from "lucide-react"
@@ -10,6 +11,7 @@ import { formatCurrency } from "@/lib/utils"
 
 export function RecentlyViewedDrawer() {
   const recentlyViewed = useUiStore((s) => s.recentlyViewed)
+  const pathname = usePathname()
   const [open, setOpen] = useState(false)
   const panelRef = useRef<HTMLDivElement>(null)
   const [mounted, setMounted] = useState(false)
@@ -28,7 +30,15 @@ export function RecentlyViewedDrawer() {
     }
   }, [open])
 
-  if (!mounted || recentlyViewed.length === 0) return null
+  const shouldRender = mounted && pathname.startsWith("/product/") && recentlyViewed.length > 1
+
+  useEffect(() => {
+    if (!shouldRender && open) {
+      setOpen(false)
+    }
+  }, [open, shouldRender])
+
+  if (!shouldRender) return null
 
   return (
     <>
@@ -36,7 +46,7 @@ export function RecentlyViewedDrawer() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="fixed right-0 top-1/2 z-30 hidden -translate-y-1/2 items-center gap-1.5 rounded-l-sm bg-foreground px-2 py-3 text-background shadow-lg transition-opacity hover:opacity-90 lg:flex"
+        className="fixed right-0 top-[42%] z-30 hidden -translate-y-1/2 items-center gap-1.5 rounded-l-sm bg-foreground/92 px-2 py-3 text-background shadow-lg transition-opacity hover:opacity-90 xl:flex"
         style={{ writingMode: "vertical-rl", textOrientation: "mixed" }}
         aria-label="Open recently viewed"
       >
