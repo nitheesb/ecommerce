@@ -10,7 +10,13 @@ import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/s
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { categories } from "@/lib/products"
 
-export function Navbar({ solid = false }: { solid?: boolean }) {
+export function Navbar({
+  solid = false,
+  overlay = false,
+}: {
+  solid?: boolean
+  overlay?: boolean
+}) {
   const [scrolled, setScrolled] = React.useState(solid)
   const [openMenu, setOpenMenu] = React.useState<string | null>(null)
   const cartBtnRef = React.useRef<HTMLButtonElement>(null)
@@ -60,21 +66,41 @@ export function Navbar({ solid = false }: { solid?: boolean }) {
     return () => observer.disconnect()
   }, [])
 
-  const textColor = scrolled ? "text-foreground" : "text-background"
-  const textMuted = scrolled ? "text-foreground/70" : "text-background/70"
-  const iconHover = scrolled ? "hover:bg-foreground/5" : "hover:bg-background/10"
+  const textColor = scrolled
+    ? "text-foreground"
+    : overlay
+      ? "text-foreground md:text-background"
+      : "text-background"
+  const textMuted = scrolled
+    ? "text-foreground/72"
+    : overlay
+      ? "text-foreground/72 md:text-background/82"
+      : "text-background/82"
+  const iconHover = scrolled
+    ? "hover:bg-foreground/5"
+    : overlay
+      ? "hover:bg-foreground/5 md:hover:bg-background/10"
+      : "hover:bg-background/10"
 
   return (
     <header
       className={cn(
-        "sticky top-0 z-40 w-full transition-all duration-500",
+        "top-0 z-40 w-full transition-all duration-500",
+        overlay ? "sticky md:fixed md:inset-x-0" : "sticky",
         scrolled
           ? "bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/70 border-b border-border/40 shadow-[0_1px_2px_0_rgba(0,0,0,0.03)]"
-          : "bg-transparent"
+          : overlay
+            ? "border-b border-border/30 bg-background/95 md:border-transparent md:bg-transparent"
+            : "bg-transparent"
       )}
       onMouseLeave={() => setOpenMenu(null)}
     >
-      <div className="mx-auto grid h-14 max-w-7xl grid-cols-[1fr_auto_1fr] items-center px-5 md:h-16 md:px-8">
+      <div
+        className={cn(
+          "mx-auto grid max-w-7xl grid-cols-[1fr_auto_1fr] items-center px-5 md:px-8",
+          scrolled ? "h-[58px] md:h-[64px]" : "h-[68px] md:h-[76px]"
+        )}
+      >
         {/* Left: Mobile menu + desktop nav */}
         <div className="flex items-center gap-1">
           <MobileNav scrolled={scrolled} />
@@ -83,7 +109,7 @@ export function Navbar({ solid = false }: { solid?: boolean }) {
               href="/"
               onMouseEnter={() => setOpenMenu(null)}
               className={cn(
-                "px-2 py-2 text-[10px] font-medium uppercase tracking-[0.14em] transition-colors duration-300",
+                "px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.16em] transition-colors duration-300",
                 textMuted,
                 scrolled ? "hover:text-foreground" : "hover:text-background"
               )}
@@ -98,7 +124,7 @@ export function Navbar({ solid = false }: { solid?: boolean }) {
                   onFocus={() => setOpenMenu(cat.title)}
                   aria-haspopup="true"
                   className={cn(
-                    "relative whitespace-nowrap px-2 py-2 text-[10px] font-medium uppercase tracking-[0.14em] transition-colors duration-300",
+                    "relative whitespace-nowrap px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.16em] transition-colors duration-300",
                     openMenu === cat.title
                       ? textColor
                       : cn(textMuted, scrolled ? "hover:text-foreground" : "hover:text-background")
@@ -108,7 +134,7 @@ export function Navbar({ solid = false }: { solid?: boolean }) {
                   {cat.title}
                   <span
                     className={cn(
-                      "absolute inset-x-2 -bottom-0.5 h-px transition-transform duration-300 origin-left",
+                      "absolute inset-x-2.5 -bottom-1 h-px transition-transform duration-300 origin-left",
                       scrolled ? "bg-foreground" : "bg-background",
                       openMenu === cat.title ? "scale-x-100" : "scale-x-0"
                     )}
@@ -120,7 +146,7 @@ export function Navbar({ solid = false }: { solid?: boolean }) {
                   href={cat.href}
                   onMouseEnter={() => setOpenMenu(null)}
                   className={cn(
-                    "whitespace-nowrap px-2 py-2 text-[10px] font-medium uppercase tracking-[0.14em] transition-colors duration-300",
+                    "whitespace-nowrap px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.16em] transition-colors duration-300",
                     textMuted,
                     scrolled ? "hover:text-foreground" : "hover:text-background"
                   )}
@@ -135,12 +161,12 @@ export function Navbar({ solid = false }: { solid?: boolean }) {
         {/* Center: Logo */}
         <Link
           href="/"
-          className="select-none px-6 text-center"
+          className="select-none px-4 text-center md:px-6"
           aria-label="Thazhuval home"
         >
           <div
             className={cn(
-              "font-serif text-[20px] leading-none tracking-[0.22em] transition-colors duration-500 md:text-[24px]",
+              "font-serif text-[22px] leading-none tracking-[0.22em] transition-colors duration-500 md:text-[28px]",
               textColor
             )}
           >
@@ -148,10 +174,10 @@ export function Navbar({ solid = false }: { solid?: boolean }) {
           </div>
           <div
             className={cn(
-              "mt-0.5 hidden text-[8px] uppercase tracking-[0.4em] transition-all duration-500 md:block",
+              "mt-1 hidden text-[8px] uppercase tracking-[0.38em] transition-all duration-300 md:block",
               scrolled
-                ? "text-muted-foreground opacity-100"
-                : "text-background/60 opacity-0"
+                ? "pointer-events-none -translate-y-1 opacity-0"
+                : "text-background/72 opacity-100"
             )}
           >
             House of Thazhuval
@@ -164,7 +190,7 @@ export function Navbar({ solid = false }: { solid?: boolean }) {
             href="/our-story"
             onMouseEnter={() => setOpenMenu(null)}
             className={cn(
-              "hidden whitespace-nowrap px-2.5 py-2 text-[10px] font-medium uppercase tracking-[0.14em] transition-colors duration-300 lg:inline-flex",
+              "hidden whitespace-nowrap px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.16em] transition-colors duration-300 lg:inline-flex",
               textMuted,
               scrolled ? "hover:text-foreground" : "hover:text-background"
             )}
@@ -176,10 +202,10 @@ export function Navbar({ solid = false }: { solid?: boolean }) {
             variant="ghost"
             size="icon"
             aria-label="Search"
-            className={cn("h-9 w-9 transition-colors duration-300", textColor, iconHover)}
+            className={cn("h-9 w-9 md:h-10 md:w-10 transition-colors duration-300", textColor, iconHover)}
           >
             <Link href="/search">
-              <Search className="h-[17px] w-[17px]" strokeWidth={1.5} />
+              <Search className="h-[18px] w-[18px]" strokeWidth={1.5} />
             </Link>
           </Button>
           <Button
@@ -187,9 +213,9 @@ export function Navbar({ solid = false }: { solid?: boolean }) {
             variant="ghost"
             size="icon"
             aria-label="Cart"
-            className={cn("snipcart-checkout relative h-9 w-9 transition-colors duration-300", textColor, iconHover)}
+            className={cn("snipcart-checkout relative h-9 w-9 md:h-10 md:w-10 transition-colors duration-300", textColor, iconHover)}
           >
-            <ShoppingBag className="h-[17px] w-[17px]" strokeWidth={1.5} />
+            <ShoppingBag className="h-[18px] w-[18px]" strokeWidth={1.5} />
             <span ref={badgeRef} className={cn(
               "snipcart-items-count absolute -right-0.5 -top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full px-1 text-[9px] font-medium leading-none transition-colors duration-300",
               scrolled ? "bg-foreground text-background" : "bg-background text-foreground"
@@ -213,53 +239,49 @@ function MegaMenu({
 }) {
   const active = categories.find((c) => c.title === openMenu)
 
+  if (!active) return null
+
   return (
     <div
       role="menu"
       className={cn(
-        "transition-all duration-300 ease-out",
-        openMenu
-          ? "pointer-events-auto translate-y-0 opacity-100"
-          : "pointer-events-none -translate-y-1 opacity-0"
+        "absolute inset-x-0 top-full z-30 transition-all duration-300 ease-out",
+        openMenu ? "pointer-events-auto translate-y-0 opacity-100" : "pointer-events-none -translate-y-1 opacity-0"
       )}
       onMouseLeave={onClose}
     >
       {/* Dark frosted panel */}
       <div className="border-b border-background/10 bg-foreground/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-start gap-16 px-8 py-8">
-          {active && (
-            <>
-              {/* Left: category + shop all link */}
-              <div className="min-w-[160px] shrink-0">
-                <p className="text-[10px] font-medium uppercase tracking-[0.3em] text-background/50">
-                  {active.title}
-                </p>
-                <Link
-                  href={active.href}
-                  className="mt-3 inline-flex items-center gap-2 font-serif text-lg text-background transition-colors hover:text-background/70"
-                >
-                  Shop All
-                  <span className="text-background/40" aria-hidden>→</span>
-                </Link>
-              </div>
+          {/* Left: category + shop all link */}
+          <div className="min-w-[160px] shrink-0">
+            <p className="text-[10px] font-medium uppercase tracking-[0.3em] text-background/50">
+              {active.title}
+            </p>
+            <Link
+              href={active.href}
+              className="mt-3 inline-flex items-center gap-2 font-serif text-lg text-background transition-colors hover:text-background/70"
+            >
+              Shop All
+              <span className="text-background/40" aria-hidden>→</span>
+            </Link>
+          </div>
 
-              {/* Vertical separator */}
-              <div className="h-20 w-px bg-background/10 self-center" />
+          {/* Vertical separator */}
+          <div className="h-20 w-px bg-background/10 self-center" />
 
-              {/* Right: weave links in a horizontal flow */}
-              <div className="flex flex-1 flex-wrap items-center gap-x-8 gap-y-3">
-                {active.items.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="text-[11px] font-medium uppercase tracking-[0.18em] text-background/70 transition-colors duration-200 hover:text-background"
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </div>
-            </>
-          )}
+          {/* Right: weave links in a horizontal flow */}
+          <div className="flex flex-1 flex-wrap items-center gap-x-8 gap-y-3">
+            {active.items.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="text-[11px] font-medium uppercase tracking-[0.18em] text-background/70 transition-colors duration-200 hover:text-background"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </div>
