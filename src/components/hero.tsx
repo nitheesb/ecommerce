@@ -120,12 +120,12 @@ export function Hero() {
           className="absolute inset-0 will-change-transform"
         >
           <Image
-            src="/images/hero-cover.jpg"
-            alt="A woman in a red and gold saree standing in a golden mustard field"
+            src="/images/hero-red-portrait.png"
+            alt="A woman in a red saree standing in a warmly lit heritage corridor"
             fill
             priority
             sizes="100vw"
-            className="object-cover object-center"
+            className="object-cover object-[72%_center]"
           />
         </div>
       <div

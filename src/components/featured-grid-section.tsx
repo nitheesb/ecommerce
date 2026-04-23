@@ -80,7 +80,7 @@ export function FeaturedGridSection({ products }: FeaturedGridSectionProps) {
     selectedFabrics.length + selectedOccasions.length + (priceRange[0] > 0 || priceRange[1] < 130000 ? 1 : 0)
 
   return (
-    <section className="mx-auto max-w-7xl px-6 py-20 lg:px-12 lg:py-28">
+    <section className="mx-auto max-w-7xl px-6 pb-20 pt-12 lg:px-12 lg:pb-28 lg:pt-16">
       <div className="mb-12 grid gap-6 border-b border-border/40 pb-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
         <div className="max-w-2xl">
           <p className="text-[11px] font-medium uppercase tracking-[0.32em] text-muted-foreground">
