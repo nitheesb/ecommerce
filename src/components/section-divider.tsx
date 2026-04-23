@@ -39,7 +39,7 @@ export function SectionDivider() {
   }, [])
 
   return (
-    <div className="relative mx-auto max-w-7xl px-6 py-4 lg:px-12" aria-hidden>
+    <div className="relative mx-auto max-w-7xl px-6 py-8 lg:px-12 lg:py-10" aria-hidden>
       <svg
         ref={svgRef}
         viewBox="0 0 1200 32"

@@ -128,13 +128,17 @@ export function Hero() {
             className="object-cover object-center"
           />
         </div>
-        <div
-          aria-hidden
-          className="absolute inset-0 bg-gradient-to-r from-foreground/72 via-foreground/34 to-foreground/20"
+      <div
+        aria-hidden
+          className="absolute inset-0 bg-gradient-to-r from-foreground/76 via-foreground/32 to-foreground/16"
         />
         <div
           aria-hidden
-          className="absolute inset-0 bg-gradient-to-t from-foreground/58 via-transparent to-foreground/24"
+          className="absolute inset-0 bg-gradient-to-t from-foreground/62 via-transparent to-foreground/18"
+        />
+        <div
+          aria-hidden
+          className="absolute inset-y-[16%] left-[6%] w-[42%] rounded-[40px] bg-[radial-gradient(circle_at_center,rgba(12,10,9,0.36),rgba(12,10,9,0))] blur-3xl"
         />
       </div>
 
@@ -142,9 +146,12 @@ export function Hero() {
         <div className="mx-auto w-full max-w-7xl px-6 pb-16 pt-28 md:px-8 md:pb-20 md:pt-32 lg:pb-24 lg:pt-36">
           <div
             ref={contentRef}
-            className="max-w-3xl text-background"
+            className="max-w-[43rem] rounded-[32px] border border-background/14 bg-background/6 px-7 py-8 text-background shadow-[0_20px_80px_rgba(12,10,9,0.16)] backdrop-blur-[6px] md:px-9 md:py-10 lg:px-10 lg:py-11"
           >
-            <h1 className="font-serif text-5xl leading-[0.98] tracking-[-0.03em] text-balance md:text-7xl lg:text-[86px]">
+            <p className="text-[11px] font-medium uppercase tracking-[0.32em] text-background/70">
+              House of Thazhuval
+            </p>
+            <h1 className="mt-4 font-serif text-5xl leading-[0.98] tracking-[-0.03em] text-balance md:text-7xl lg:text-[84px]">
               <span ref={line1Ref} className="block will-change-transform">
                 More than a saree...
               </span>
@@ -157,7 +164,7 @@ export function Hero() {
             </h1>
             <p
               ref={paraRef}
-              className="mt-6 max-w-xl text-base leading-relaxed text-background/88 md:text-lg"
+              className="mt-6 max-w-[34rem] text-base leading-relaxed text-background/90 md:text-lg"
             >
               Thazhuval means &lsquo;embrace&rsquo; — a feeling of comfort, love,
               and belonging. Soft fabrics, thoughtful craftsmanship, pieces

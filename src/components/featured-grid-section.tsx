@@ -80,15 +80,25 @@ export function FeaturedGridSection({ products }: FeaturedGridSectionProps) {
     selectedFabrics.length + selectedOccasions.length + (priceRange[0] > 0 || priceRange[1] < 130000 ? 1 : 0)
 
   return (
-    <section className="mx-auto max-w-7xl px-6 pt-16 pb-20 lg:px-12 lg:pt-20 lg:pb-24">
-      {/* Shop All Sarees heading */}
-      <div className="mb-10 flex items-center justify-between border-b border-border/40 pb-6">
-        <h2 className="font-serif text-3xl tracking-tight md:text-4xl">Shop All Sarees</h2>
+    <section className="mx-auto max-w-7xl px-6 py-20 lg:px-12 lg:py-28">
+      <div className="mb-12 grid gap-6 border-b border-border/40 pb-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+        <div className="max-w-2xl">
+          <p className="text-[11px] font-medium uppercase tracking-[0.32em] text-muted-foreground">
+            Signature Edit
+          </p>
+          <h2 className="mt-3 font-serif text-3xl tracking-tight md:text-4xl lg:text-[46px]">
+            Sarees chosen for the way the house wants to be remembered.
+          </h2>
+          <p className="mt-4 text-base leading-relaxed text-muted-foreground">
+            A composed selection of festive drapes, softer daily weaves, and timeless signatures.
+            Use filters when you want precision, or simply browse the edit as it is.
+          </p>
+        </div>
         <Link
           href="/collections/all-sarees"
-          className="group inline-flex items-center gap-2 text-sm font-medium uppercase tracking-[0.18em] text-foreground underline-offset-8 hover:underline"
+          className="group inline-flex items-center gap-2 text-sm font-medium uppercase tracking-[0.18em] text-foreground underline-offset-8 hover:underline md:justify-self-end"
         >
-          Shop All
+          View full collection
           <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
         </Link>
       </div>
@@ -120,6 +130,22 @@ export function FeaturedGridSection({ products }: FeaturedGridSectionProps) {
           </button>
         )}
       </div>
+
+      <div className="rounded-[32px] border border-border/50 bg-[linear-gradient(180deg,rgba(255,255,255,0.95)_0%,rgba(248,243,233,0.92)_100%)] p-5 shadow-[0_14px_50px_rgba(15,23,42,0.05)] md:p-7 lg:p-8">
+        <div className="mb-6 flex flex-wrap items-center gap-3 border-b border-border/40 pb-5">
+          <span className="text-[11px] font-medium uppercase tracking-[0.24em] text-muted-foreground">
+            Refine this edit
+          </span>
+          {hasFilters ? (
+            <span className="rounded-full bg-foreground px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] text-background">
+              {activeFilterCount} filter{activeFilterCount > 1 ? "s" : ""} active
+            </span>
+          ) : (
+            <span className="rounded-full border border-border/60 px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+              Start with the curated view
+            </span>
+          )}
+        </div>
 
       <div className="flex flex-col gap-10 lg:flex-row lg:gap-12">
         {/* Filters sidebar — hidden on mobile unless toggled */}
@@ -246,6 +272,7 @@ export function FeaturedGridSection({ products }: FeaturedGridSectionProps) {
             </div>
           )}
         </div>
+      </div>
       </div>
     </section>
   )

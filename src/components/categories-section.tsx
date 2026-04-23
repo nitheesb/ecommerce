@@ -20,11 +20,24 @@ const categoryImages: Record<(typeof categories)[number]["title"], string> = {
 
 export function CategoriesSection() {
   const sectionRef = useRef<HTMLElement>(null)
+  const viewportRef = useRef<HTMLDivElement>(null)
   const topTrackRef = useRef<HTMLDivElement>(null)
   const [activeIndex, setActiveIndex] = useState(0)
   const [reducedMotion, setReducedMotion] = useState(false)
-  const [isPaused, setIsPaused] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
+  const motionStateRef = useRef({
+    x: 0,
+    targetX: 0,
+    trackWidth: 0,
+    frameId: 0,
+    dragging: false,
+    dragStartX: 0,
+    dragStartOffset: 0,
+    lastPointerX: 0,
+    velocity: 0,
+    hasDragged: false,
+  })
 
   const topCards = useMemo(() => [...categories, ...categories], [])
 
@@ -100,59 +113,127 @@ export function CategoriesSection() {
   useEffect(() => {
     if (reducedMotion) return
 
+    const viewport = viewportRef.current
     const topTrack = topTrackRef.current
-    if (!topTrack) return
-
-    const state = {
-      topX: 0,
-      topWidth: 0,
-      frameId: 0,
-    }
+    const state = motionStateRef.current
+    if (!topTrack || !viewport) return
 
     const measure = () => {
-      state.topWidth = topTrack.scrollWidth / 2
+      state.trackWidth = topTrack.scrollWidth / 2
     }
 
     const loop = () => {
-      if (isVisible && !isPaused) {
-        state.topX -= 0.45
+      if (isVisible) {
+        if (!state.dragging) {
+          state.targetX -= 0.45
 
-        if (state.topWidth > 0 && state.topX <= -state.topWidth) {
-          state.topX += state.topWidth
+          if (Math.abs(state.velocity) > 0.1) {
+            state.targetX += state.velocity
+            state.velocity *= 0.94
+          } else {
+            state.velocity = 0
+          }
         }
 
-        topTrack.style.transform = `translate3d(${state.topX}px, 0, 0)`
+        state.x += (state.targetX - state.x) * (state.dragging ? 0.22 : 0.1)
+
+        if (state.trackWidth > 0 && state.x <= -state.trackWidth) {
+          state.x += state.trackWidth
+          state.targetX += state.trackWidth
+        } else if (state.trackWidth > 0 && state.x > 0) {
+          state.x -= state.trackWidth
+          state.targetX -= state.trackWidth
+        }
+
+        topTrack.style.transform = `translate3d(${state.x}px, 0, 0)`
       }
 
       state.frameId = window.requestAnimationFrame(loop)
     }
 
+    const onPointerDown = (event: PointerEvent) => {
+      event.preventDefault()
+      state.dragging = true
+      state.dragStartX = event.clientX
+      state.dragStartOffset = state.targetX
+      state.lastPointerX = event.clientX
+      state.velocity = 0
+      state.hasDragged = false
+      setIsDragging(true)
+      viewport.setPointerCapture(event.pointerId)
+    }
+
+    const onPointerMove = (event: PointerEvent) => {
+      if (!state.dragging) return
+
+      event.preventDefault()
+      const deltaX = event.clientX - state.dragStartX
+      if (Math.abs(deltaX) > 4) {
+        state.hasDragged = true
+      }
+      state.targetX = state.dragStartOffset + deltaX
+      state.velocity = event.clientX - state.lastPointerX
+      state.lastPointerX = event.clientX
+    }
+
+    const endDrag = (pointerId?: number) => {
+      if (!state.dragging) return
+
+      state.dragging = false
+      setIsDragging(false)
+
+      if (pointerId !== undefined && viewport.hasPointerCapture(pointerId)) {
+        viewport.releasePointerCapture(pointerId)
+      }
+    }
+
+    const onPointerUp = (event: PointerEvent) => {
+      endDrag(event.pointerId)
+    }
+
+    const onPointerCancel = (event: PointerEvent) => {
+      endDrag(event.pointerId)
+    }
+
+    const onLostPointerCapture = () => {
+      endDrag()
+    }
+
     measure()
     loop()
 
+    viewport.addEventListener("pointerdown", onPointerDown)
+    viewport.addEventListener("pointermove", onPointerMove)
+    viewport.addEventListener("pointerup", onPointerUp)
+    viewport.addEventListener("pointercancel", onPointerCancel)
+    viewport.addEventListener("lostpointercapture", onLostPointerCapture)
     window.addEventListener("resize", measure)
 
     return () => {
       window.cancelAnimationFrame(state.frameId)
+      viewport.removeEventListener("pointerdown", onPointerDown)
+      viewport.removeEventListener("pointermove", onPointerMove)
+      viewport.removeEventListener("pointerup", onPointerUp)
+      viewport.removeEventListener("pointercancel", onPointerCancel)
+      viewport.removeEventListener("lostpointercapture", onLostPointerCapture)
       window.removeEventListener("resize", measure)
     }
-  }, [isPaused, isVisible, reducedMotion])
+  }, [isVisible, reducedMotion])
 
   useEffect(() => {
-    if (reducedMotion || isPaused || !isVisible) return
+    if (reducedMotion || isDragging || !isVisible) return
 
     const intervalId = window.setInterval(() => {
       setActiveIndex((current) => (current + 1) % categories.length)
     }, 3200)
 
     return () => window.clearInterval(intervalId)
-  }, [isPaused, isVisible, reducedMotion])
+  }, [isDragging, isVisible, reducedMotion])
 
   return (
     <section
       ref={sectionRef}
       className="overflow-hidden border-b border-border/40 bg-[linear-gradient(180deg,#fbf8f1_0%,#f6f1e6_55%,#fbf8f1_100%)] py-20 lg:py-24"
-      onMouseLeave={() => setIsPaused(false)}
     >
       <div className="mx-auto max-w-7xl px-6 lg:px-12">
         <div className="max-w-3xl" data-browse-intro>
@@ -170,7 +251,18 @@ export function CategoriesSection() {
       </div>
 
       <div className="mt-12">
-        <div className="overflow-hidden" data-browse-motion>
+        <div
+          ref={viewportRef}
+          className={`cursor-grab overflow-hidden touch-pan-y select-none [webkit-user-select:none] ${isDragging ? "cursor-grabbing" : ""}`}
+          data-browse-motion
+          onDragStart={(event) => event.preventDefault()}
+          onClickCapture={(event) => {
+            if (motionStateRef.current.hasDragged) {
+              event.preventDefault()
+              event.stopPropagation()
+            }
+          }}
+        >
           <div
             ref={topTrackRef}
             className="flex w-max gap-5 px-6 will-change-transform lg:px-12"
@@ -189,23 +281,20 @@ export function CategoriesSection() {
                   }`}
                   onMouseEnter={() => {
                     setActiveIndex(categoryIndex)
-                    setIsPaused(true)
                   }}
-                  onFocusCapture={() => {
-                    setActiveIndex(categoryIndex)
-                    setIsPaused(true)
-                  }}
+                  onFocusCapture={() => setActiveIndex(categoryIndex)}
                 >
                   <div className="relative min-h-[15rem] overflow-hidden">
                     <Image
                       src={categoryImages[category.title]}
                       alt={category.title}
                       fill
+                      draggable={false}
                       sizes="(max-width: 768px) 280px, 336px"
                       className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-foreground/75 via-foreground/20 to-transparent" />
-                    <div className="absolute inset-x-0 bottom-0 p-6 text-background">
+                    <div className="absolute inset-x-0 bottom-0 p-6 text-background select-none [webkit-user-select:none]">
                       <p className="text-[10px] uppercase tracking-[0.28em] text-background/72">
                         Major Category
                       </p>

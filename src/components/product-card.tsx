@@ -135,24 +135,31 @@ export function ProductCard({ product, className, priority, onQuickView, hideQui
       </div>
 
       {/* Meta */}
-      <div className="mt-4 flex items-start justify-between gap-3 px-0.5">
-        <div className="min-w-0">
-          <p className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-            {product.collection}
+      <div className="mt-4 px-0.5">
+        <p className="text-[10px] uppercase tracking-[0.24em] text-muted-foreground/90">
+          {product.collection}
+        </p>
+        <h3 className="mt-2 font-serif text-[21px] leading-[1.15] tracking-tight text-foreground">
+          {product.name}
+        </h3>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+          {product.category} weave
+        </p>
+
+        <div className="mt-4 flex items-end justify-between gap-3 border-t border-border/50 pt-3">
+          <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
+            Ready to wear elegance
           </p>
-          <h3 className="mt-1 truncate font-serif text-lg leading-tight">
-            {product.name}
-          </h3>
-        </div>
-        <div className="shrink-0 text-right">
-          <p className="font-serif text-lg leading-tight">
-            {formatCurrency(product.price)}
-          </p>
-          {product.compareAt && (
-            <p className="text-[11px] text-muted-foreground line-through">
-              {formatCurrency(product.compareAt)}
+          <div className="shrink-0 text-right">
+            <p className="font-serif text-base leading-tight md:text-lg">
+              {formatCurrency(product.price)}
             </p>
-          )}
+            {product.compareAt && (
+              <p className="mt-1 text-[11px] text-muted-foreground line-through">
+                {formatCurrency(product.compareAt)}
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </Link>

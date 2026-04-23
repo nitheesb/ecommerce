@@ -98,18 +98,18 @@ export function Navbar({
       <div
         className={cn(
           "mx-auto grid max-w-7xl grid-cols-[1fr_auto_1fr] items-center px-5 md:px-8",
-          scrolled ? "h-[58px] md:h-[64px]" : "h-[68px] md:h-[76px]"
+          scrolled ? "h-[60px] md:h-[68px]" : "h-[70px] md:h-[82px]"
         )}
       >
         {/* Left: Mobile menu + desktop nav */}
         <div className="flex items-center gap-1">
           <MobileNav scrolled={scrolled} />
-          <nav className="hidden items-center gap-0.5 lg:flex">
+          <nav className="hidden items-center gap-1 lg:flex">
             <Link
               href="/"
               onMouseEnter={() => setOpenMenu(null)}
               className={cn(
-                "px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.16em] transition-colors duration-300",
+                "px-3 py-2 text-[11px] font-medium uppercase tracking-[0.18em] transition-colors duration-300",
                 textMuted,
                 scrolled ? "hover:text-foreground" : "hover:text-background"
               )}
@@ -124,7 +124,7 @@ export function Navbar({
                   onFocus={() => setOpenMenu(cat.title)}
                   aria-haspopup="true"
                   className={cn(
-                    "relative whitespace-nowrap px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.16em] transition-colors duration-300",
+                    "relative whitespace-nowrap px-3 py-2 text-[11px] font-medium uppercase tracking-[0.18em] transition-colors duration-300",
                     openMenu === cat.title
                       ? textColor
                       : cn(textMuted, scrolled ? "hover:text-foreground" : "hover:text-background")
@@ -134,7 +134,7 @@ export function Navbar({
                   {cat.title}
                   <span
                     className={cn(
-                      "absolute inset-x-2.5 -bottom-1 h-px transition-transform duration-300 origin-left",
+                      "absolute inset-x-3 bottom-[5px] h-px transition-transform duration-300 origin-left",
                       scrolled ? "bg-foreground" : "bg-background",
                       openMenu === cat.title ? "scale-x-100" : "scale-x-0"
                     )}
@@ -146,7 +146,7 @@ export function Navbar({
                   href={cat.href}
                   onMouseEnter={() => setOpenMenu(null)}
                   className={cn(
-                    "whitespace-nowrap px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.16em] transition-colors duration-300",
+                    "whitespace-nowrap px-3 py-2 text-[11px] font-medium uppercase tracking-[0.18em] transition-colors duration-300",
                     textMuted,
                     scrolled ? "hover:text-foreground" : "hover:text-background"
                   )}
@@ -161,12 +161,12 @@ export function Navbar({
         {/* Center: Logo */}
         <Link
           href="/"
-          className="select-none px-4 text-center md:px-6"
+          className="select-none px-4 py-2 text-center md:px-6"
           aria-label="Thazhuval home"
         >
           <div
             className={cn(
-              "font-serif text-[22px] leading-none tracking-[0.22em] transition-colors duration-500 md:text-[28px]",
+              "font-serif text-[23px] leading-none tracking-[0.22em] transition-colors duration-500 md:text-[30px]",
               textColor
             )}
           >
@@ -176,7 +176,7 @@ export function Navbar({
             className={cn(
               "mt-1 hidden text-[8px] uppercase tracking-[0.38em] transition-all duration-300 md:block",
               scrolled
-                ? "pointer-events-none -translate-y-1 opacity-0"
+                ? "pointer-events-none -translate-y-0.5 opacity-0 text-foreground/50"
                 : "text-background/72 opacity-100"
             )}
           >
@@ -190,7 +190,7 @@ export function Navbar({
             href="/our-story"
             onMouseEnter={() => setOpenMenu(null)}
             className={cn(
-              "hidden whitespace-nowrap px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.16em] transition-colors duration-300 lg:inline-flex",
+              "hidden whitespace-nowrap px-3 py-2 text-[11px] font-medium uppercase tracking-[0.18em] transition-colors duration-300 lg:inline-flex",
               textMuted,
               scrolled ? "hover:text-foreground" : "hover:text-background"
             )}
