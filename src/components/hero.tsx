@@ -175,7 +175,7 @@ export function Hero() {
               width={680}
               height={92}
               priority
-              className="mt-7 h-auto w-[clamp(260px,46vw,520px)] select-none [filter:invert(1)_brightness(1.05)]"
+              className="mt-7 h-16 w-auto max-w-[clamp(280px,50vw,560px)] select-none [filter:invert(1)_brightness(1.05)] md:h-20 lg:h-24"
             />
           </div>
 

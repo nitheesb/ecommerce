@@ -166,7 +166,7 @@ export function Navbar({
       <div
         className={cn(
           "mx-auto grid max-w-7xl grid-cols-[1fr_auto_1fr] items-center px-5 md:px-8",
-          scrolled ? "h-[68px] md:h-[78px]" : "h-[80px] md:h-[96px]"
+          scrolled ? "h-[60px] md:h-[68px]" : "h-[70px] md:h-[82px]"
         )}
       >
         {/* Left: Mobile menu + desktop nav */}
@@ -180,11 +180,16 @@ export function Navbar({
               src="/images/logo-02.png"
               alt="House of Thazhuval"
               width={320}
-              height={540}
+              height={226}
               priority
               className={cn(
                 "w-auto select-none transition-all duration-500",
-                scrolled ? "h-14 md:h-16" : "h-16 md:h-20 lg:h-[88px]"
+                scrolled ? "h-10 md:h-11" : "h-12 md:h-14 lg:h-[60px]",
+                scrolled
+                  ? "opacity-95"
+                  : overlay
+                    ? "opacity-95 md:[filter:invert(1)_brightness(1.05)]"
+                    : "[filter:invert(1)_brightness(1.05)]"
               )}
             />
           </Link>
@@ -235,12 +240,25 @@ export function Navbar({
           <div
             ref={wordmarkRef}
             className={cn(
-              "font-script italic font-medium leading-none tracking-[0.005em] transition-colors duration-500 will-change-transform",
-              "text-[26px] sm:text-[30px] md:text-[36px] lg:text-[42px]",
-              textColor
+              "inline-flex items-center justify-center transition-[filter,opacity] duration-500 will-change-transform"
             )}
           >
-            House of Thazhuval
+            <Image
+              src="/images/logo-01.png"
+              alt="House of Thazhuval"
+              width={520}
+              height={180}
+              priority
+              className={cn(
+                "w-auto select-none",
+                scrolled ? "h-9 md:h-11" : "h-11 md:h-14 lg:h-[60px]",
+                scrolled
+                  ? "opacity-95"
+                  : overlay
+                    ? "opacity-95 md:[filter:invert(1)_brightness(1.05)]"
+                    : "[filter:invert(1)_brightness(1.05)]"
+              )}
+            />
           </div>
           <span className="sr-only">House of Thazhuval</span>
           <div
@@ -252,7 +270,7 @@ export function Navbar({
                 : "text-background/72 opacity-100"
             )}
           >
-            The Embrace
+            House of Thazhuval
           </div>
         </Link>
 
@@ -379,9 +397,9 @@ function MobileNav({ scrolled }: { scrolled: boolean }) {
             <Image
               src="/images/logo-02.png"
               alt="House of Thazhuval"
-              width={320}
-              height={540}
-              className="h-32 w-auto sm:h-36"
+              width={280}
+              height={198}
+              className="h-24 w-auto sm:h-28"
               priority
             />
             <p className="mt-2 text-[10px] uppercase tracking-[0.3em] text-muted-foreground">

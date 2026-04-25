@@ -39,7 +39,7 @@ export function HeroMobile() {
             width={520}
             height={72}
             priority
-            className="mx-auto mt-5 h-auto w-[min(82vw,360px)] select-none [filter:invert(1)_brightness(1.05)]"
+            className="mx-auto mt-5 h-14 w-auto max-w-[88vw] select-none [filter:invert(1)_brightness(1.05)] sm:h-16"
           />
           <div className="mt-5 flex gap-3">
             <Link
