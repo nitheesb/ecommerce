@@ -26,6 +26,7 @@ export function Navbar({
   const badgeRef = React.useRef<HTMLSpanElement>(null)
   const wordmarkRef = React.useRef<HTMLDivElement>(null)
   const wordmarkLinkRef = React.useRef<HTMLAnchorElement>(null)
+  const eyebrowRef = React.useRef<HTMLDivElement>(null)
   const subtitleRef = React.useRef<HTMLDivElement>(null)
 
   React.useEffect(() => {
@@ -77,6 +78,7 @@ export function Navbar({
   React.useEffect(() => {
     const root = wordmarkRef.current
     const link = wordmarkLinkRef.current
+    const eyebrow = eyebrowRef.current
     const subtitle = subtitleRef.current
     if (!root || !link) return
     if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
@@ -86,7 +88,8 @@ export function Navbar({
 
     const ctx = gsap.context(() => {
       gsap.set(letters, { yPercent: 120, opacity: 0, rotate: -6 })
-      if (subtitle) gsap.set(subtitle, { opacity: 0, y: 6, letterSpacing: "0.5em" })
+      if (eyebrow) gsap.set(eyebrow, { opacity: 0, y: 4, letterSpacing: "0.34em" })
+      if (subtitle) gsap.set(subtitle, { opacity: 0, y: 6, letterSpacing: "0.08em" })
 
       const intro = gsap.timeline({ delay: 0.25 })
       intro.to(letters, {
@@ -97,13 +100,26 @@ export function Navbar({
         ease: "back.out(2.4)",
         stagger: 0.045,
       })
+      if (eyebrow) {
+        intro.to(
+          eyebrow,
+          {
+            opacity: 1,
+            y: 0,
+            letterSpacing: "0.28em",
+            duration: 0.55,
+            ease: "power2.out",
+          },
+          "-=0.8"
+        )
+      }
       if (subtitle) {
         intro.to(
           subtitle,
           {
             opacity: 1,
             y: 0,
-            letterSpacing: "0.38em",
+            letterSpacing: "0.02em",
             duration: 0.7,
             ease: "power3.out",
           },
@@ -143,18 +159,29 @@ export function Navbar({
   const textColor = scrolled
     ? "text-foreground"
     : overlay
-      ? "text-foreground md:text-background"
+      ? "text-foreground md:text-white"
       : "text-background"
   const textMuted = scrolled
     ? "text-foreground/72"
     : overlay
-      ? "text-foreground/72 md:text-background/82"
+      ? "text-foreground/72 md:text-white"
       : "text-background/82"
   const iconHover = scrolled
     ? "hover:bg-foreground/5"
     : overlay
       ? "hover:bg-foreground/5 md:hover:bg-background/10"
       : "hover:bg-background/10"
+  const brandMetaColor = scrolled
+    ? "text-foreground/58"
+    : overlay
+      ? "text-foreground/70 md:text-white/78"
+      : "text-background/72"
+  const brandTaglineColor = scrolled
+    ? "text-foreground/78"
+    : overlay
+      ? "text-foreground/88 md:text-white/88"
+      : "text-background/88"
+  const overlayGlow = !scrolled && overlay ? "md:[text-shadow:0_1px_12px_rgba(0,0,0,0.28)]" : ""
 
   return (
     <header
@@ -172,7 +199,7 @@ export function Navbar({
       <div
         className={cn(
           "mx-auto grid max-w-7xl grid-cols-[1fr_auto_1fr] items-center px-5 md:px-8",
-          scrolled ? "h-[60px] md:h-[68px]" : "h-[70px] md:h-[82px]"
+          scrolled ? "h-[88px] md:h-[104px]" : "h-[94px] md:h-[110px]"
         )}
       >
         {/* Left: Mobile menu + desktop nav */}
@@ -180,23 +207,15 @@ export function Navbar({
           <Link
             href="/"
             aria-label="House of Thazhuval — home"
-            className="mr-2 hidden shrink-0 items-center sm:inline-flex md:mr-3"
+            className="mr-2 hidden shrink-0 items-center sm:inline-flex md:mr-4"
           >
             <Image
-              src="/images/logo-02.png"
+              src={scrolled ? "/images/logo-02.png" : "/images/logo-02-hero.png"}
               alt="House of Thazhuval"
               width={320}
               height={226}
               priority
-              className={cn(
-                "w-auto select-none transition-all duration-500",
-                scrolled ? "h-10 md:h-11" : "h-12 md:h-14 lg:h-[60px]",
-                scrolled
-                  ? "opacity-95"
-                  : overlay
-                    ? "opacity-95 md:[filter:invert(1)_brightness(1.05)]"
-                    : "[filter:invert(1)_brightness(1.05)]"
-              )}
+              className="h-[68px] w-auto select-none md:h-[86px] lg:h-[98px]"
             />
           </Link>
           <MobileNav scrolled={scrolled} />
@@ -207,6 +226,7 @@ export function Navbar({
               className={cn(
                 "px-3 py-2 text-[11px] font-medium uppercase tracking-[0.18em] transition-colors duration-300",
                 textMuted,
+                overlayGlow,
                 scrolled ? "hover:text-foreground" : "hover:text-background"
               )}
             >
@@ -219,6 +239,7 @@ export function Navbar({
               aria-expanded={openMenu === "Shop"}
               className={cn(
                 "relative whitespace-nowrap px-3 py-2 text-[11px] font-medium uppercase tracking-[0.18em] transition-colors duration-300",
+                overlayGlow,
                 openMenu === "Shop"
                   ? textColor
                   : cn(textMuted, scrolled ? "hover:text-foreground" : "hover:text-background")
@@ -244,11 +265,23 @@ export function Navbar({
           aria-label="Thazhuval home"
         >
           <div
+            ref={eyebrowRef}
+            className={cn(
+              "mb-[-4px] hidden text-[7px] font-medium uppercase tracking-[0.28em] transition-colors duration-500 md:block",
+              brandMetaColor,
+              overlayGlow
+            )}
+            aria-hidden
+          >
+            The house of
+          </div>
+          <div
             ref={wordmarkRef}
             className={cn(
-              "font-serif text-[23px] leading-none tracking-[0.22em] transition-colors duration-500 md:text-[30px]",
-              "inline-flex overflow-hidden",
-              textColor
+              "font-serif text-[23px] leading-none tracking-[0.22em] transition-colors duration-500 will-change-transform",
+              "inline-flex overflow-hidden md:text-[30px]",
+              textColor,
+              overlayGlow
             )}
             aria-hidden
           >
@@ -266,13 +299,12 @@ export function Navbar({
           <div
             ref={subtitleRef}
             className={cn(
-              "mt-1 hidden text-[8px] uppercase tracking-[0.38em] transition-all duration-300 md:block",
-              scrolled
-                ? "pointer-events-none -translate-y-0.5 opacity-0 text-foreground/50"
-                : "text-background/72 opacity-100"
+              "mt-[-5px] hidden font-serif text-[10px] italic tracking-[0.015em] transition-colors duration-500 md:block",
+              brandTaglineColor,
+              overlayGlow
             )}
           >
-            House of Thazhuval
+            The comfort that embraces you
           </div>
         </Link>
 
@@ -284,6 +316,7 @@ export function Navbar({
             className={cn(
               "hidden whitespace-nowrap px-3 py-2 text-[11px] font-medium uppercase tracking-[0.18em] transition-colors duration-300 lg:inline-flex",
               textMuted,
+              overlayGlow,
               scrolled ? "hover:text-foreground" : "hover:text-background"
             )}
           >
