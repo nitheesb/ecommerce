@@ -11,6 +11,8 @@ import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/s
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { categories } from "@/lib/products"
 
+const WORDMARK = "THAZHUVAL"
+
 export function Navbar({
   solid = false,
   overlay = false,
@@ -79,18 +81,21 @@ export function Navbar({
     if (!root || !link) return
     if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
 
+    const letters = Array.from(root.querySelectorAll<HTMLSpanElement>("[data-letter]"))
+    if (letters.length === 0) return
+
     const ctx = gsap.context(() => {
-      gsap.set(root, { scale: 0.85, opacity: 0, rotate: -3, y: 10 })
+      gsap.set(letters, { yPercent: 120, opacity: 0, rotate: -6 })
       if (subtitle) gsap.set(subtitle, { opacity: 0, y: 6, letterSpacing: "0.5em" })
 
       const intro = gsap.timeline({ delay: 0.25 })
-      intro.to(root, {
-        scale: 1,
+      intro.to(letters, {
+        yPercent: 0,
         opacity: 1,
         rotate: 0,
-        y: 0,
-        duration: 1.1,
-        ease: "back.out(1.7)",
+        duration: 0.85,
+        ease: "back.out(2.4)",
+        stagger: 0.045,
       })
       if (subtitle) {
         intro.to(
@@ -102,13 +107,13 @@ export function Navbar({
             duration: 0.7,
             ease: "power3.out",
           },
-          "-=0.55"
+          "-=0.4"
         )
       }
       intro.add(() => {
         gsap.to(root, {
-          y: -3,
-          duration: 2.8,
+          y: -2,
+          duration: 2.6,
           ease: "sine.inOut",
           yoyo: true,
           repeat: -1,
@@ -117,11 +122,12 @@ export function Navbar({
     }, root)
 
     const onEnter = () => {
-      gsap.to(root, {
+      gsap.to(letters, {
         keyframes: [
-          { scale: 1.05, rotate: -2, duration: 0.5, ease: "power2.out" },
-          { scale: 1, rotate: 0, duration: 1.05, ease: "elastic.out(1, 0.5)" },
+          { yPercent: -32, rotate: -5, duration: 0.45, ease: "power2.out" },
+          { yPercent: 0, rotate: 0, duration: 0.95, ease: "elastic.out(1, 0.55)" },
         ],
+        stagger: 0.085,
       })
     }
 
@@ -235,32 +241,28 @@ export function Navbar({
           ref={wordmarkLinkRef}
           href="/"
           className="select-none px-4 py-2 text-center md:px-6"
-          aria-label="House of Thazhuval — home"
+          aria-label="Thazhuval home"
         >
           <div
             ref={wordmarkRef}
             className={cn(
-              "inline-flex items-center justify-center transition-[filter,opacity] duration-500 will-change-transform"
+              "font-serif text-[23px] leading-none tracking-[0.22em] transition-colors duration-500 md:text-[30px]",
+              "inline-flex overflow-hidden",
+              textColor
             )}
+            aria-hidden
           >
-            <Image
-              src="/images/logo-01.png"
-              alt="House of Thazhuval"
-              width={520}
-              height={180}
-              priority
-              className={cn(
-                "w-auto select-none",
-                scrolled ? "h-9 md:h-11" : "h-11 md:h-14 lg:h-[60px]",
-                scrolled
-                  ? "opacity-95"
-                  : overlay
-                    ? "opacity-95 md:[filter:invert(1)_brightness(1.05)]"
-                    : "[filter:invert(1)_brightness(1.05)]"
-              )}
-            />
+            {WORDMARK.split("").map((ch, i) => (
+              <span
+                key={`${ch}-${i}`}
+                data-letter
+                className="inline-block will-change-transform"
+              >
+                {ch}
+              </span>
+            ))}
           </div>
-          <span className="sr-only">House of Thazhuval</span>
+          <span className="sr-only">{WORDMARK}</span>
           <div
             ref={subtitleRef}
             className={cn(
