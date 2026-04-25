@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next"
-import { Playfair_Display, Inter } from "next/font/google"
+import { Playfair_Display, Inter, Cormorant_Garamond } from "next/font/google"
 import "./globals.css"
 import { cn } from "@/lib/utils"
 import { SnipcartProvider } from "@/components/snipcart-provider"
@@ -16,6 +16,14 @@ const playfair = Playfair_Display({
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+  display: "swap",
+})
+
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  variable: "--font-cormorant",
+  weight: ["400", "500", "600"],
+  style: ["italic", "normal"],
   display: "swap",
 })
 
@@ -87,6 +95,7 @@ export default function RootLayout({
       className={cn(
         playfair.variable,
         inter.variable,
+        cormorant.variable,
         "bg-background antialiased"
       )}
     >
