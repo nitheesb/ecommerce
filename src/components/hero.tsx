@@ -173,10 +173,10 @@ export function Hero() {
             <Image
               src="/images/logo-03.png"
               alt="The comfort that embraces you"
-              width={520}
-              height={70}
+              width={680}
+              height={92}
               priority
-              className="mt-6 h-9 w-auto select-none [filter:invert(1)_brightness(1.05)] md:h-10"
+              className="mt-7 h-12 w-auto max-w-[clamp(220px,38vw,420px)] select-none [filter:invert(1)_brightness(1.05)] md:h-14 lg:h-16"
             />
           </div>
 

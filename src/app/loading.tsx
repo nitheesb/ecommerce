@@ -8,10 +8,10 @@ export default function Loading() {
           <Image
             src="/images/logo-02.png"
             alt="House of Thazhuval"
-            width={320}
-            height={226}
+            width={420}
+            height={296}
             priority
-            className="h-32 w-auto md:h-40"
+            className="h-36 w-auto sm:h-44 md:h-52 lg:h-56"
           />
         </div>
         <p className="animate-thread-text text-[11px] font-serif uppercase tracking-[0.32em] text-muted-foreground">

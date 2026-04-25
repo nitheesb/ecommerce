@@ -181,21 +181,22 @@ export function Navbar({
           <Link
             href="/"
             aria-label="House of Thazhuval — home"
-            className="mr-1 hidden shrink-0 items-center sm:inline-flex"
+            className="mr-2 hidden shrink-0 items-center sm:inline-flex md:mr-3"
           >
             <Image
               src="/images/logo-01.png"
               alt="House of Thazhuval"
-              width={140}
-              height={48}
+              width={280}
+              height={96}
               priority
               className={cn(
-                "h-7 w-auto select-none transition-[filter,opacity] duration-500 md:h-8",
+                "w-auto select-none transition-all duration-500",
+                scrolled ? "h-11 md:h-12" : "h-14 md:h-16 lg:h-[68px]",
                 scrolled
-                  ? "opacity-90"
+                  ? "opacity-95"
                   : overlay
-                    ? "opacity-90 md:opacity-95 md:[filter:invert(1)_brightness(1.05)]"
-                    : "opacity-95 [filter:invert(1)_brightness(1.05)]"
+                    ? "opacity-95 md:[filter:invert(1)_brightness(1.05)]"
+                    : "[filter:invert(1)_brightness(1.05)]"
               )}
             />
           </Link>
@@ -399,9 +400,9 @@ function MobileNav({ scrolled }: { scrolled: boolean }) {
             <Image
               src="/images/logo-02.png"
               alt="House of Thazhuval"
-              width={220}
-              height={156}
-              className="h-20 w-auto"
+              width={280}
+              height={198}
+              className="h-24 w-auto sm:h-28"
               priority
             />
             <p className="mt-2 text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
