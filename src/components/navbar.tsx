@@ -125,10 +125,10 @@ export function Navbar({
     const onEnter = () => {
       gsap.to(letters, {
         keyframes: [
-          { yPercent: -28, rotate: -4, duration: 0.18, ease: "power2.out" },
-          { yPercent: 0, rotate: 0, duration: 0.42, ease: "elastic.out(1, 0.45)" },
+          { yPercent: -32, rotate: -5, duration: 0.45, ease: "power2.out" },
+          { yPercent: 0, rotate: 0, duration: 0.95, ease: "elastic.out(1, 0.55)" },
         ],
-        stagger: 0.04,
+        stagger: 0.085,
       })
     }
 
@@ -184,14 +184,14 @@ export function Navbar({
             className="mr-2 hidden shrink-0 items-center sm:inline-flex md:mr-3"
           >
             <Image
-              src="/images/logo-01.png"
+              src="/images/logo-02.png"
               alt="House of Thazhuval"
-              width={280}
-              height={96}
+              width={320}
+              height={226}
               priority
               className={cn(
                 "w-auto select-none transition-all duration-500",
-                scrolled ? "h-11 md:h-12" : "h-14 md:h-16 lg:h-[68px]",
+                scrolled ? "h-10 md:h-11" : "h-12 md:h-14 lg:h-[60px]",
                 scrolled
                   ? "opacity-95"
                   : overlay

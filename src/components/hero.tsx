@@ -94,7 +94,6 @@ export function Hero() {
       }, 0)
         .to(content, {
         y: -40,
-        opacity: 0.18,
         ease: "none",
       }, 0)
         .to(scrollIndic, {
@@ -176,7 +175,7 @@ export function Hero() {
               width={680}
               height={92}
               priority
-              className="mt-7 h-12 w-auto max-w-[clamp(220px,38vw,420px)] select-none [filter:invert(1)_brightness(1.05)] md:h-14 lg:h-16"
+              className="mt-7 h-16 w-auto max-w-[clamp(280px,50vw,560px)] select-none [filter:invert(1)_brightness(1.05)] md:h-20 lg:h-24"
             />
           </div>
 
