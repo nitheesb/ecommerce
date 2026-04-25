@@ -33,6 +33,14 @@ export function HeroMobile() {
           <p className="mx-auto mt-3 max-w-xs text-[13px] leading-relaxed text-background/80">
             Soft fabrics, thoughtful craftsmanship, pieces that hold you.
           </p>
+          <Image
+            src="/images/logo-03.png"
+            alt="The comfort that embraces you"
+            width={420}
+            height={60}
+            priority
+            className="mx-auto mt-4 h-7 w-auto select-none [filter:invert(1)_brightness(1.05)]"
+          />
           <div className="mt-5 flex gap-3">
             <Link
               href="/collections/all-sarees"

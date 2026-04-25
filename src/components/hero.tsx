@@ -170,6 +170,14 @@ export function Hero() {
               and belonging. Soft fabrics, thoughtful craftsmanship, pieces
               that don&apos;t just dress you — they hold you.
             </p>
+            <Image
+              src="/images/logo-03.png"
+              alt="The comfort that embraces you"
+              width={520}
+              height={70}
+              priority
+              className="mt-6 h-9 w-auto select-none [filter:invert(1)_brightness(1.05)] md:h-10"
+            />
           </div>
 
           <div

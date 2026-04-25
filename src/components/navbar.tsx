@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { Menu, Search, ShoppingBag } from "lucide-react"
 import gsap from "gsap"
 import { cn } from "@/lib/utils"
@@ -9,6 +10,8 @@ import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { categories } from "@/lib/products"
+
+const WORDMARK = "THAZHUVAL"
 
 export function Navbar({
   solid = false,
@@ -21,6 +24,9 @@ export function Navbar({
   const [openMenu, setOpenMenu] = React.useState<string | null>(null)
   const cartBtnRef = React.useRef<HTMLButtonElement>(null)
   const badgeRef = React.useRef<HTMLSpanElement>(null)
+  const wordmarkRef = React.useRef<HTMLDivElement>(null)
+  const wordmarkLinkRef = React.useRef<HTMLAnchorElement>(null)
+  const subtitleRef = React.useRef<HTMLDivElement>(null)
 
   React.useEffect(() => {
     if (solid) return // Always use solid styling
@@ -66,6 +72,75 @@ export function Navbar({
     return () => observer.disconnect()
   }, [])
 
+  // Center wordmark — fun animation: per-letter wave entrance, gentle float loop,
+  // and a hover wave-bounce.
+  React.useEffect(() => {
+    const root = wordmarkRef.current
+    const link = wordmarkLinkRef.current
+    const subtitle = subtitleRef.current
+    if (!root || !link) return
+    if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
+
+    const letters = Array.from(root.querySelectorAll<HTMLSpanElement>("[data-letter]"))
+    if (letters.length === 0) return
+
+    const ctx = gsap.context(() => {
+      gsap.set(letters, { yPercent: 120, opacity: 0, rotate: -6 })
+      if (subtitle) gsap.set(subtitle, { opacity: 0, y: 6, letterSpacing: "0.5em" })
+
+      const intro = gsap.timeline({ delay: 0.25 })
+      intro.to(letters, {
+        yPercent: 0,
+        opacity: 1,
+        rotate: 0,
+        duration: 0.85,
+        ease: "back.out(2.4)",
+        stagger: 0.045,
+      })
+      if (subtitle) {
+        intro.to(
+          subtitle,
+          {
+            opacity: 1,
+            y: 0,
+            letterSpacing: "0.38em",
+            duration: 0.7,
+            ease: "power3.out",
+          },
+          "-=0.4"
+        )
+      }
+      intro.add(() => {
+        // Gentle floating loop on the whole wordmark after entrance
+        gsap.to(root, {
+          y: -2,
+          duration: 2.6,
+          ease: "sine.inOut",
+          yoyo: true,
+          repeat: -1,
+        })
+      })
+    }, root)
+
+    const onEnter = () => {
+      gsap.to(letters, {
+        keyframes: [
+          { yPercent: -28, rotate: -4, duration: 0.18, ease: "power2.out" },
+          { yPercent: 0, rotate: 0, duration: 0.42, ease: "elastic.out(1, 0.45)" },
+        ],
+        stagger: 0.04,
+      })
+    }
+
+    link.addEventListener("mouseenter", onEnter)
+    link.addEventListener("focus", onEnter)
+    return () => {
+      link.removeEventListener("mouseenter", onEnter)
+      link.removeEventListener("focus", onEnter)
+      ctx.revert()
+    }
+  }, [])
+
   const textColor = scrolled
     ? "text-foreground"
     : overlay
@@ -103,6 +178,27 @@ export function Navbar({
       >
         {/* Left: Mobile menu + desktop nav */}
         <div className="flex items-center gap-1">
+          <Link
+            href="/"
+            aria-label="House of Thazhuval — home"
+            className="mr-1 hidden shrink-0 items-center sm:inline-flex"
+          >
+            <Image
+              src="/images/logo-01.png"
+              alt="House of Thazhuval"
+              width={140}
+              height={48}
+              priority
+              className={cn(
+                "h-7 w-auto select-none transition-[filter,opacity] duration-500 md:h-8",
+                scrolled
+                  ? "opacity-90"
+                  : overlay
+                    ? "opacity-90 md:opacity-95 md:[filter:invert(1)_brightness(1.05)]"
+                    : "opacity-95 [filter:invert(1)_brightness(1.05)]"
+              )}
+            />
+          </Link>
           <MobileNav scrolled={scrolled} />
           <nav className="hidden items-center gap-1 lg:flex">
             <Link
@@ -160,19 +256,33 @@ export function Navbar({
 
         {/* Center: Logo */}
         <Link
+          ref={wordmarkLinkRef}
           href="/"
           className="select-none px-4 py-2 text-center md:px-6"
           aria-label="Thazhuval home"
         >
           <div
+            ref={wordmarkRef}
             className={cn(
               "font-serif text-[23px] leading-none tracking-[0.22em] transition-colors duration-500 md:text-[30px]",
+              "inline-flex overflow-hidden",
               textColor
             )}
+            aria-hidden
           >
-            THAZHUVAL
+            {WORDMARK.split("").map((ch, i) => (
+              <span
+                key={`${ch}-${i}`}
+                data-letter
+                className="inline-block will-change-transform"
+              >
+                {ch}
+              </span>
+            ))}
           </div>
+          <span className="sr-only">{WORDMARK}</span>
           <div
+            ref={subtitleRef}
             className={cn(
               "mt-1 hidden text-[8px] uppercase tracking-[0.38em] transition-all duration-300 md:block",
               scrolled
@@ -309,8 +419,15 @@ function MobileNav({ scrolled }: { scrolled: boolean }) {
       <SheetContent side="left" className="w-[88vw] max-w-sm p-0">
         <div className="flex h-full flex-col">
           <div className="border-b border-border/60 px-6 py-5">
-            <p className="font-serif text-lg tracking-[0.22em]">THAZHUVAL</p>
-            <p className="mt-1 text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+            <Image
+              src="/images/logo-02.png"
+              alt="House of Thazhuval"
+              width={220}
+              height={156}
+              className="h-20 w-auto"
+              priority
+            />
+            <p className="mt-2 text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
               The Embrace
             </p>
           </div>
