@@ -8,7 +8,7 @@ import {
 export function ProductCare() {
   return (
     <section className="border-t border-border/60">
-      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 py-20 md:grid-cols-[1fr_1.3fr] md:gap-20 lg:px-12 lg:py-28">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 py-14 md:grid-cols-[1fr_1.3fr] md:gap-20 lg:px-12 lg:py-20">
         <div>
           <p className="text-[11px] font-medium uppercase tracking-[0.32em] text-muted-foreground">
             Forever Yours

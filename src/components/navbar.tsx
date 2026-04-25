@@ -212,45 +212,27 @@ export function Navbar({
             >
               Home
             </Link>
-            {categories.map((cat) =>
-              cat.items.length > 0 ? (
-                <button
-                  key={cat.title}
-                  onMouseEnter={() => setOpenMenu(cat.title)}
-                  onFocus={() => setOpenMenu(cat.title)}
-                  aria-haspopup="true"
-                  className={cn(
-                    "relative whitespace-nowrap px-3 py-2 text-[11px] font-medium uppercase tracking-[0.18em] transition-colors duration-300",
-                    openMenu === cat.title
-                      ? textColor
-                      : cn(textMuted, scrolled ? "hover:text-foreground" : "hover:text-background")
-                  )}
-                  aria-expanded={openMenu === cat.title}
-                >
-                  {cat.title}
-                  <span
-                    className={cn(
-                      "absolute inset-x-3 bottom-[5px] h-px transition-transform duration-300 origin-left",
-                      scrolled ? "bg-foreground" : "bg-background",
-                      openMenu === cat.title ? "scale-x-100" : "scale-x-0"
-                    )}
-                  />
-                </button>
-              ) : (
-                <Link
-                  key={cat.title}
-                  href={cat.href}
-                  onMouseEnter={() => setOpenMenu(null)}
-                  className={cn(
-                    "whitespace-nowrap px-3 py-2 text-[11px] font-medium uppercase tracking-[0.18em] transition-colors duration-300",
-                    textMuted,
-                    scrolled ? "hover:text-foreground" : "hover:text-background"
-                  )}
-                >
-                  {cat.title}
-                </Link>
-              )
-            )}
+            <button
+              onMouseEnter={() => setOpenMenu("Shop")}
+              onFocus={() => setOpenMenu("Shop")}
+              aria-haspopup="true"
+              aria-expanded={openMenu === "Shop"}
+              className={cn(
+                "relative whitespace-nowrap px-3 py-2 text-[11px] font-medium uppercase tracking-[0.18em] transition-colors duration-300",
+                openMenu === "Shop"
+                  ? textColor
+                  : cn(textMuted, scrolled ? "hover:text-foreground" : "hover:text-background")
+              )}
+            >
+              Shop
+              <span
+                className={cn(
+                  "absolute inset-x-3 bottom-[5px] h-px transition-transform duration-300 origin-left",
+                  scrolled ? "bg-foreground" : "bg-background",
+                  openMenu === "Shop" ? "scale-x-100" : "scale-x-0"
+                )}
+              />
+            </button>
           </nav>
         </div>
 
@@ -347,9 +329,7 @@ function MegaMenu({
   openMenu: string | null
   onClose: () => void
 }) {
-  const active = categories.find((c) => c.title === openMenu)
-
-  if (!active) return null
+  if (openMenu !== "Shop") return null
 
   return (
     <div
@@ -361,37 +341,34 @@ function MegaMenu({
       onMouseLeave={onClose}
     >
       {/* Dark frosted panel */}
-      <div className="border-b border-background/10 bg-foreground/90 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-start gap-16 px-8 py-8">
-          {/* Left: category + shop all link */}
-          <div className="min-w-[160px] shrink-0">
-            <p className="text-[10px] font-medium uppercase tracking-[0.3em] text-background/50">
-              {active.title}
-            </p>
-            <Link
-              href={active.href}
-              className="mt-3 inline-flex items-center gap-2 font-serif text-lg text-background transition-colors hover:text-background/70"
-            >
-              Shop All
-              <span className="text-background/40" aria-hidden>→</span>
-            </Link>
-          </div>
-
-          {/* Vertical separator */}
-          <div className="h-20 w-px bg-background/10 self-center" />
-
-          {/* Right: weave links in a horizontal flow */}
-          <div className="flex flex-1 flex-wrap items-center gap-x-8 gap-y-3">
-            {active.items.map((item) => (
+      <div className="border-b border-background/10 bg-foreground/95 backdrop-blur-xl">
+        <div className="mx-auto grid max-w-7xl gap-10 px-8 py-10 md:grid-cols-4 md:gap-12">
+          {categories.map((cat) => (
+            <div key={cat.title} className="min-w-0">
+              <p className="text-[10px] font-medium uppercase tracking-[0.3em] text-background/50">
+                {cat.title}
+              </p>
               <Link
-                key={item.href}
-                href={item.href}
-                className="text-[11px] font-medium uppercase tracking-[0.18em] text-background/70 transition-colors duration-200 hover:text-background"
+                href={cat.href}
+                className="mt-3 inline-flex items-center gap-2 font-serif text-base text-background transition-colors hover:text-background/70"
               >
-                {item.label}
+                Shop All
+                <span className="text-background/40" aria-hidden>→</span>
               </Link>
-            ))}
-          </div>
+              <ul className="mt-4 flex flex-col gap-2.5">
+                {cat.items.slice(0, 8).map((item) => (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      className="text-[11px] font-medium uppercase tracking-[0.18em] text-background/70 transition-colors duration-200 hover:text-background"
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
       </div>
     </div>

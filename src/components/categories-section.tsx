@@ -233,24 +233,20 @@ export function CategoriesSection() {
   return (
     <section
       ref={sectionRef}
-      className="overflow-hidden border-b border-border/40 bg-[linear-gradient(180deg,#fbf8f1_0%,#f6f1e6_55%,#fbf8f1_100%)] py-20 lg:py-24"
+      className="overflow-hidden border-b border-border/40 bg-[linear-gradient(180deg,#fbf8f1_0%,#f6f1e6_55%,#fbf8f1_100%)] py-12 lg:py-16"
     >
       <div className="mx-auto max-w-7xl px-6 lg:px-12">
         <div className="max-w-3xl" data-browse-intro>
           <p className="text-[11px] font-medium uppercase tracking-[0.32em] text-muted-foreground">
-            Browse the House
+            Products
           </p>
-          <h2 className="mt-3 font-serif text-3xl leading-[1.05] tracking-tight md:text-4xl lg:text-5xl">
-            A moving overview of the collections and the paths inside them.
+          <h2 className="mt-3 font-serif text-2xl leading-[1.1] tracking-tight md:text-3xl lg:text-4xl">
+            Shop by collection.
           </h2>
-          <p className="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground">
-            Let the category rail drift across the page and jump into the collection path that feels right for
-            the moment you are shopping for.
-          </p>
         </div>
       </div>
 
-      <div className="mt-12">
+      <div className="mt-7 md:mt-10">
         <div
           ref={viewportRef}
           className={`cursor-grab overflow-hidden touch-pan-y select-none [webkit-user-select:none] ${isDragging ? "cursor-grabbing" : ""}`}

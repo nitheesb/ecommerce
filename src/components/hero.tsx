@@ -143,7 +143,7 @@ export function Hero() {
       </div>
 
       <div className="relative z-10 flex min-h-[100svh] items-end">
-        <div className="mx-auto w-full max-w-7xl px-6 pb-16 pt-28 md:px-8 md:pb-20 md:pt-32 lg:pb-24 lg:pt-36">
+        <div className="mx-auto w-full max-w-7xl px-6 pb-10 pt-28 md:px-8 md:pb-14 md:pt-32 lg:pb-16 lg:pt-36">
           <div
             ref={contentRef}
             className="max-w-[43rem] rounded-[32px] border border-background/14 bg-background/6 px-7 py-8 text-background shadow-[0_20px_80px_rgba(12,10,9,0.16)] backdrop-blur-[6px] md:px-9 md:py-10 lg:px-10 lg:py-11"
