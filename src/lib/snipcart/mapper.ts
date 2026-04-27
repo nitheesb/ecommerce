@@ -1,5 +1,6 @@
 import type { IProduct, IProductVariant, ISnipcartItem, ISnipcartCustomField } from "@/types";
 import { urlFor } from "@/lib/sanity/image";
+import { absoluteUrl } from "@/lib/utils";
 
 /**
  * Maps a Sanity product (+ optional selected variant) to Snipcart data attributes.
@@ -8,7 +9,6 @@ export function mapProductToSnipcartItem(
   product: IProduct,
   variant?: IProductVariant,
 ): ISnipcartItem {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
   const effectivePrice = variant?.price ?? product.price;
   const imageUrl = variant?.image
     ? urlFor(variant.image).width(400).height(500).url()
@@ -42,7 +42,7 @@ export function mapProductToSnipcartItem(
 
   return {
     id: variant?.sku ?? product._id,
-    url: `${siteUrl}/product/${product.slug.current}`,
+    url: absoluteUrl(`/product/${product.slug.current}`),
     name: product.title,
     price: effectivePrice,
     image: imageUrl,

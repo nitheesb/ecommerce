@@ -1,12 +1,12 @@
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
-import { BadgeCheck, MessageCircleHeart, ShieldCheck, Truck } from "lucide-react"
+import { BadgeCheck, MessageCircle, MessageCircleHeart, ShieldCheck, ShoppingBag, Truck } from "lucide-react"
 
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import { InnerPageShell } from "@/components/inner-page-shell"
 import { ProductCare } from "@/components/product-care"
 import { Separator } from "@/components/ui/separator"
-import { formatCurrency } from "@/lib/utils"
+import { absoluteUrl, formatCurrency } from "@/lib/utils"
 import { sanityFetch } from "@/lib/sanity/client"
 import { productBySlugQuery, allProductSlugsQuery } from "@/lib/sanity/queries"
 import { products as staticProducts, type Product } from "@/lib/products"
@@ -111,6 +111,7 @@ export default async function ProductPage({
 
 function SanityProductDetail({ product }: { product: IProduct }) {
   const mainImageUrl = product.mainImage?.url ?? "/images/hero.jpg"
+  const productUrl = absoluteUrl(`/product/${product.slug.current}`)
   const lqip = product.mainImage?.lqip
   const productSchema = buildProductSchema({
     name: product.title,
@@ -138,7 +139,7 @@ function SanityProductDetail({ product }: { product: IProduct }) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
         />
-        <div className="mx-auto max-w-7xl px-6 py-8 lg:px-12">
+        <div className="mx-auto max-w-7xl px-6 pb-32 pt-8 md:pb-8 lg:px-12">
           <Breadcrumbs
             items={[
               { label: "Home", href: "/" },
@@ -210,7 +211,7 @@ function SanityProductDetail({ product }: { product: IProduct }) {
                 <PurchaseConfidence />
 
                 <a
-                  href={`https://wa.me/919585628565?text=${encodeURIComponent(`Hi, I'm interested in the ${product.title} saree (${formatCurrency(product.price)}). ${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/product/${product.slug.current}`)}`}
+                  href={`https://wa.me/919585628565?text=${encodeURIComponent(`Hi, I'm interested in the ${product.title} saree (${formatCurrency(product.price)}). ${productUrl}`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border border-border/70 py-4 text-[11px] font-medium uppercase tracking-[0.22em] text-foreground transition-colors hover:bg-secondary/50"
@@ -245,7 +246,8 @@ function SanityProductDetail({ product }: { product: IProduct }) {
 // ---------------------------------------------------------------------------
 
 function StaticProductDetail({ product }: { product: Product }) {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? ""
+  const productUrl = absoluteUrl(`/product/${product.slug}`)
+  const productImage = absoluteUrl(product.image)
   const productSchema = buildProductSchema({
     name: product.name,
     description: product.description,
@@ -272,7 +274,7 @@ function StaticProductDetail({ product }: { product: Product }) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
         />
-        <div className="mx-auto max-w-7xl px-6 py-8 lg:px-12">
+        <div className="mx-auto max-w-7xl px-6 pb-32 pt-8 md:pb-8 lg:px-12">
           <Breadcrumbs
             items={[
               { label: "Home", href: "/" },
@@ -381,15 +383,15 @@ function StaticProductDetail({ product }: { product: Product }) {
                   data-item-id={product.id}
                   data-item-name={product.name}
                   data-item-price={product.price}
-                  data-item-url={`${siteUrl}/product/${product.slug}`}
-                  data-item-image={product.image}
+                  data-item-url={productUrl}
+                  data-item-image={productImage}
                   data-item-description={product.description}
                 >
                   Add to Cart — {formatCurrency(product.price)}
                 </button>
                 <PurchaseConfidence />
                 <a
-                  href={`https://wa.me/919585628565?text=${encodeURIComponent(`Hi, I'm interested in the ${product.name} saree (${formatCurrency(product.price)}). ${siteUrl}/product/${product.slug}`)}`}
+                  href={`https://wa.me/919585628565?text=${encodeURIComponent(`Hi, I'm interested in the ${product.name} saree (${formatCurrency(product.price)}). ${productUrl}`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border border-border/70 py-4 text-[11px] font-medium uppercase tracking-[0.22em] text-foreground transition-colors hover:bg-secondary/50"
@@ -405,6 +407,11 @@ function StaticProductDetail({ product }: { product: Product }) {
             </div>
           </div>
         </div>
+        <MobileStaticPurchaseBar
+          product={product}
+          productUrl={productUrl}
+          productImage={productImage}
+        />
         <RecentlyViewedTracker
           item={{
             id: product.id,
@@ -416,6 +423,60 @@ function StaticProductDetail({ product }: { product: Product }) {
           }}
         />
     </InnerPageShell>
+  )
+}
+
+function MobileStaticPurchaseBar({
+  product,
+  productUrl,
+  productImage,
+}: {
+  product: Product
+  productUrl: string
+  productImage: string
+}) {
+  return (
+    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 px-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] md:hidden">
+      <div className="pointer-events-auto mx-auto max-w-md rounded-[26px] border border-border/60 bg-background/94 p-3 shadow-[0_-14px_45px_rgba(15,23,42,0.16)] backdrop-blur-xl">
+        <div className="mb-2 flex items-center justify-between gap-3 px-1">
+          <div className="min-w-0">
+            <p className="truncate text-[10px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
+              {product.name}
+            </p>
+            <p className="mt-0.5 truncate text-xs text-muted-foreground">
+              {product.collection}
+            </p>
+          </div>
+          <p className="shrink-0 font-serif text-lg leading-none">
+            {formatCurrency(product.price)}
+          </p>
+        </div>
+        <div className="grid grid-cols-[1fr_auto] gap-2">
+          <button
+            type="button"
+            className="snipcart-add-item flex h-12 items-center justify-center gap-2 rounded-full bg-foreground px-5 text-[10px] font-medium uppercase tracking-[0.18em] text-background transition-colors hover:bg-foreground/90"
+            data-item-id={product.id}
+            data-item-name={product.name}
+            data-item-price={product.price}
+            data-item-url={productUrl}
+            data-item-image={productImage}
+            data-item-description={product.description}
+          >
+            <ShoppingBag className="h-4 w-4" strokeWidth={1.5} />
+            Add to Cart
+          </button>
+          <a
+            href={`https://wa.me/919585628565?text=${encodeURIComponent(`Hi, I'm interested in the ${product.name} saree (${formatCurrency(product.price)}). ${productUrl}`)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Ask about this saree on WhatsApp"
+            className="flex h-12 w-12 items-center justify-center rounded-full border border-border/70 bg-background text-foreground shadow-sm transition-colors hover:bg-secondary/60"
+          >
+            <MessageCircle className="h-4 w-4" strokeWidth={1.5} />
+          </a>
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -493,7 +554,7 @@ function buildProductSchema({
     "@type": "Product",
     name,
     description,
-    image: [image],
+    image: [absoluteUrl(image)],
     brand: {
       "@type": "Brand",
       name: "House of Thazhuval",
@@ -501,7 +562,7 @@ function buildProductSchema({
     category: `${category} / ${collection}`,
     offers: {
       "@type": "Offer",
-      url: `https://thazhuval.com/product/${slug}`,
+      url: absoluteUrl(`/product/${slug}`),
       priceCurrency: "INR",
       price,
       availability: "https://schema.org/InStock",

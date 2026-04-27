@@ -3,7 +3,10 @@ import Script from "next/script";
 export function SnipcartProvider() {
   const apiKey = process.env.NEXT_PUBLIC_SNIPCART_API_KEY;
 
-  if (!apiKey) return null;
+  const hasConfiguredKey =
+    apiKey && !apiKey.startsWith("your-") && !apiKey.toLowerCase().includes("placeholder");
+
+  if (!hasConfiguredKey) return null;
 
   return (
     <>

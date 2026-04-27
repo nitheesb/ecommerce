@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next"
+import { absoluteUrl, SITE_URL } from "@/lib/utils"
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -9,7 +10,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/search"],
       },
     ],
-    sitemap: "https://thazhuval.com/sitemap.xml",
-    host: "https://thazhuval.com",
+    sitemap: absoluteUrl("/sitemap.xml"),
+    host: SITE_URL,
   }
 }

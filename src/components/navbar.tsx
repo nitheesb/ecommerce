@@ -164,7 +164,7 @@ export function Navbar({
   const textMuted = scrolled
     ? "text-foreground/72"
     : overlay
-      ? "text-foreground/72 md:text-white"
+      ? "text-foreground/72 md:text-white/92"
       : "text-background/82"
   const iconHover = scrolled
     ? "hover:bg-foreground/5"
@@ -174,14 +174,14 @@ export function Navbar({
   const brandMetaColor = scrolled
     ? "text-foreground/58"
     : overlay
-      ? "text-foreground/70 md:text-white/78"
+      ? "text-foreground/70 md:text-white/88"
       : "text-background/72"
   const brandTaglineColor = scrolled
     ? "text-foreground/78"
     : overlay
-      ? "text-foreground/88 md:text-white/88"
+      ? "text-foreground/88 md:text-white/94"
       : "text-background/88"
-  const overlayGlow = !scrolled && overlay ? "md:[text-shadow:0_1px_12px_rgba(0,0,0,0.28)]" : ""
+  const overlayGlow = !scrolled && overlay ? "md:[text-shadow:0_1px_14px_rgba(0,0,0,0.42)]" : ""
 
   return (
     <header
@@ -218,7 +218,7 @@ export function Navbar({
               className="h-[68px] w-auto select-none md:h-[86px] lg:h-[98px]"
             />
           </Link>
-          <MobileNav scrolled={scrolled} />
+          <MobileNav scrolled={scrolled} overlay={overlay} />
           <nav className="hidden items-center gap-1 lg:flex">
             <Link
               href="/"
@@ -408,7 +408,7 @@ function MegaMenu({
   )
 }
 
-function MobileNav({ scrolled }: { scrolled: boolean }) {
+function MobileNav({ scrolled, overlay }: { scrolled: boolean; overlay: boolean }) {
   const [open, setOpen] = React.useState(false)
 
   return (
@@ -418,8 +418,10 @@ function MobileNav({ scrolled }: { scrolled: boolean }) {
           variant="ghost"
           size="icon"
           className={cn(
-            "h-9 w-9 lg:hidden transition-colors duration-300",
-            scrolled ? "text-foreground hover:bg-foreground/5" : "text-background hover:bg-background/10"
+            "h-9 w-9 transition-colors duration-300 lg:hidden",
+            scrolled || !overlay
+              ? "text-foreground hover:bg-foreground/5"
+              : "text-foreground hover:bg-foreground/5 md:text-white md:hover:bg-background/10 md:[filter:drop-shadow(0_1px_10px_rgba(0,0,0,0.42))]"
           )}
           aria-label="Open menu"
         >
@@ -432,13 +434,13 @@ function MobileNav({ scrolled }: { scrolled: boolean }) {
             <Image
               src="/images/logo-02.png"
               alt="House of Thazhuval"
-              width={280}
-              height={198}
+              width={320}
+              height={540}
               className="h-24 w-auto sm:h-28"
               priority
             />
             <p className="mt-2 text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-              The Embrace
+              The comfort that embraces you
             </p>
           </div>
           <div className="flex-1 overflow-y-auto px-6 py-6">

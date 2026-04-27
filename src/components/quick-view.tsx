@@ -5,7 +5,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { X, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { formatCurrency } from "@/lib/utils"
+import { absoluteUrl, formatCurrency } from "@/lib/utils"
 import { useLenisStore } from "@/hooks/use-lenis"
 import type { Product } from "@/lib/products"
 
@@ -15,8 +15,6 @@ interface QuickViewProps {
 }
 
 export function QuickView({ product, onClose }: QuickViewProps) {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? ""
-
   React.useEffect(() => {
     if (!product) return
     const onKey = (e: KeyboardEvent) => {
@@ -37,6 +35,8 @@ export function QuickView({ product, onClose }: QuickViewProps) {
   }, [product, onClose])
 
   if (!product) return null
+  const productUrl = absoluteUrl(`/product/${product.slug}`)
+  const productImage = absoluteUrl(product.image)
 
   return (
     <div
@@ -95,8 +95,8 @@ export function QuickView({ product, onClose }: QuickViewProps) {
               data-item-id={product.id}
               data-item-name={product.name}
               data-item-price={product.price}
-              data-item-url={`${siteUrl}/product/${product.slug}`}
-              data-item-image={product.image}
+              data-item-url={productUrl}
+              data-item-image={productImage}
               data-item-description={product.description}
             >
               <Plus className="h-3.5 w-3.5" />

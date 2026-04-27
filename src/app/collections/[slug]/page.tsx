@@ -387,7 +387,11 @@ export default async function CollectionPage({ params }: { params: { slug: strin
           </div>
         </section>
 
-        <CollectionGrid products={products} />
+        <CollectionGrid
+          products={products}
+          collectionTitle={meta.title}
+          collectionDescription={meta.description}
+        />
 
         <ProductCare />
     </InnerPageShell>

@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next"
 import { Playfair_Display, Inter } from "next/font/google"
 import "./globals.css"
-import { cn } from "@/lib/utils"
+import { absoluteUrl, cn, SITE_URL } from "@/lib/utils"
 import { SnipcartProvider } from "@/components/snipcart-provider"
 import { Toaster } from "@/components/ui/toaster"
 import { ClientOverlays } from "@/components/client-overlays"
@@ -20,7 +20,7 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://thazhuval.com"),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "House of Thazhuval — More Than a Saree, It's an Embrace",
     template: "%s · Thazhuval",
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     description:
       "Thazhuval means 'embrace'. Soft fabrics, thoughtful craftsmanship, sarees that hold you.",
     type: "website",
-    url: "https://thazhuval.com",
+    url: SITE_URL,
   },
   authors: [{ name: "nitheesbalaji" }],
   creator: "nitheesbalaji",
@@ -64,7 +64,7 @@ export default function RootLayout({
       "@context": "https://schema.org",
       "@type": "Organization",
       name: "House of Thazhuval",
-      url: "https://thazhuval.com",
+      url: SITE_URL,
       email: "houseofthazhuval@gmail.com",
       sameAs: ["https://instagram.com/houseofthazhuval"],
     },
@@ -72,10 +72,10 @@ export default function RootLayout({
       "@context": "https://schema.org",
       "@type": "WebSite",
       name: "House of Thazhuval",
-      url: "https://thazhuval.com",
+      url: SITE_URL,
       potentialAction: {
         "@type": "SearchAction",
-        target: "https://thazhuval.com/search?q={search_term_string}",
+        target: `${absoluteUrl("/search")}?q={search_term_string}`,
         "query-input": "required name=search_term_string",
       },
     },
