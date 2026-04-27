@@ -80,23 +80,23 @@ export function FeaturedGridSection({ products }: FeaturedGridSectionProps) {
     selectedFabrics.length + selectedOccasions.length + (priceRange[0] > 0 || priceRange[1] < 130000 ? 1 : 0)
 
   return (
-    <section className="mx-auto max-w-7xl px-6 pb-14 pt-8 lg:px-12 lg:pb-20 lg:pt-12">
-      <div className="mb-8 grid gap-6 border-b border-border/40 pb-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+    <section className="mx-auto max-w-7xl px-4 pb-14 pt-5 md:px-6 md:pt-8 lg:px-12 lg:pb-20 lg:pt-12">
+      <div className="mb-5 grid gap-3 border-b border-border/40 pb-5 md:mb-8 md:gap-6 md:pb-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
         <div className="max-w-2xl">
           <p className="text-[11px] font-medium uppercase tracking-[0.32em] text-muted-foreground">
             Signature Edit
           </p>
-          <h2 className="mt-3 font-serif text-3xl tracking-tight md:text-4xl lg:text-[46px]">
+          <h2 className="mt-2 font-serif text-2xl tracking-tight md:mt-3 md:text-4xl lg:text-[46px]">
             Sarees chosen for the way the house wants to be remembered.
           </h2>
-          <p className="mt-4 text-base leading-relaxed text-muted-foreground">
+          <p className="mt-4 hidden text-base leading-relaxed text-muted-foreground sm:block">
             A composed selection of festive drapes, softer daily weaves, and timeless signatures.
             Use filters when you want precision, or simply browse the edit as it is.
           </p>
         </div>
         <Link
           href="/collections/all-sarees"
-          className="group inline-flex items-center gap-2 text-sm font-medium uppercase tracking-[0.18em] text-foreground underline-offset-8 hover:underline md:justify-self-end"
+          className="group hidden items-center gap-2 text-sm font-medium uppercase tracking-[0.18em] text-foreground underline-offset-8 hover:underline md:inline-flex md:justify-self-end"
         >
           View full collection
           <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -104,7 +104,7 @@ export function FeaturedGridSection({ products }: FeaturedGridSectionProps) {
       </div>
 
       {/* Mobile filter toggle */}
-      <div className="mb-6 flex items-center gap-3 lg:hidden">
+      <div className="mb-5 flex items-center gap-3 lg:hidden">
         <button
           onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
           className="inline-flex items-center gap-2 border border-border px-4 py-2.5 text-[11px] font-medium uppercase tracking-[0.18em] transition-colors hover:bg-secondary/50"
@@ -131,8 +131,8 @@ export function FeaturedGridSection({ products }: FeaturedGridSectionProps) {
         )}
       </div>
 
-      <div className="rounded-[32px] border border-border/50 bg-[linear-gradient(180deg,rgba(255,255,255,0.95)_0%,rgba(248,243,233,0.92)_100%)] p-5 shadow-[0_14px_50px_rgba(15,23,42,0.05)] md:p-7 lg:p-8">
-        <div className="mb-6 flex flex-wrap items-center gap-3 border-b border-border/40 pb-5">
+      <div className="md:rounded-[32px] md:border md:border-border/50 md:bg-[linear-gradient(180deg,rgba(255,255,255,0.95)_0%,rgba(248,243,233,0.92)_100%)] md:p-7 md:shadow-[0_14px_50px_rgba(15,23,42,0.05)] lg:p-8">
+        <div className="mb-6 hidden flex-wrap items-center gap-3 border-b border-border/40 pb-5 md:flex">
           <span className="text-[11px] font-medium uppercase tracking-[0.24em] text-muted-foreground">
             Refine this edit
           </span>

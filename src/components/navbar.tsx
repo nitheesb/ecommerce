@@ -213,7 +213,7 @@ export function Navbar({
               src={scrolled ? "/images/logo-02.png" : "/images/logo-02-hero.png"}
               alt="House of Thazhuval"
               width={320}
-              height={226}
+              height={540}
               priority
               className="h-[68px] w-auto select-none md:h-[86px] lg:h-[98px]"
             />
