@@ -12,10 +12,10 @@ import { categories } from "@/lib/products"
 gsap.registerPlugin(ScrollTrigger)
 
 const categoryImages: Record<(typeof categories)[number]["title"], string> = {
-  Sarees: "/images/saree-1-a.jpg",
-  "Shop by Prints": "/images/saree-6-b.jpg",
-  "Shop by Occasion": "/images/saree-4-a.jpg",
-  "Shop by Colors": "/images/saree-3-a.jpg",
+  Sarees: "/images/client/08-olive-green.webp",
+  "Shop by Prints": "/images/client/03-mustard-geometrical-weave.webp",
+  "Shop by Occasion": "/images/client/18-red-chiffon.webp",
+  "Shop by Colors": "/images/client/12-purple-chiffon.webp",
 }
 
 export function CategoriesSection() {

@@ -60,13 +60,13 @@ export function QuickView({ product, onClose }: QuickViewProps) {
         </button>
 
         {/* Image with hover zoom */}
-        <div className="group/zoom relative aspect-[4/5] overflow-hidden bg-muted">
+        <div className="group/zoom relative aspect-[4/5] overflow-hidden bg-[radial-gradient(circle_at_top,#f5eadc_0%,#eee3d2_55%,#e3d4be_100%)]">
           <Image
             src={product.image}
             alt={product.name}
             fill
             sizes="(min-width: 768px) 384px, 100vw"
-            className="object-cover transition-transform duration-500 ease-out group-hover/zoom:scale-[1.06]"
+            className="object-contain transition-transform duration-500 ease-out group-hover/zoom:scale-[1.04]"
           />
         </div>
 

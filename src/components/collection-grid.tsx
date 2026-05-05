@@ -20,19 +20,19 @@ const comingSoonCards = [
   {
     title: "Client curation pending",
     description: "This path is ready for the final assortment once the client approves the product structure.",
-    image: "/images/saree-5-a.jpg",
+    image: "/images/client/10-pink-saree.webp",
     icon: Layers3,
   },
   {
     title: "Editorial story ready",
     description: "The page already has its mood, title, and browsing intent so it will not feel empty during approval.",
-    image: "/images/saree-6-b.jpg",
+    image: "/images/client/02-mustard-geometric-print-saree.webp",
     icon: Sparkles,
   },
   {
     title: "Drop alert friendly",
     description: "Use this space for an upcoming drop, waitlist, or WhatsApp enquiry before backend inventory is live.",
-    image: "/images/saree-7-a.jpg",
+    image: "/images/client/17-red-chiffon-saree.webp",
     icon: Bell,
   },
 ]
@@ -68,7 +68,7 @@ export function CollectionGrid({
           <div className="grid gap-0 lg:grid-cols-[0.92fr_1.08fr]">
             <div className="relative min-h-[22rem] overflow-hidden bg-foreground text-background">
               <Image
-                src="/images/hero-red-portrait.png"
+                src="/images/client/18-red-chiffon.webp"
                 alt=""
                 fill
                 sizes="(max-width: 1024px) 100vw, 45vw"

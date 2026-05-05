@@ -34,7 +34,7 @@ export function ProductGallery({ images, badge }: ProductGalleryProps) {
       <div className="space-y-4">
         {/* Main image */}
         <div
-          className="group/zoom relative cursor-zoom-in overflow-hidden bg-muted"
+          className="group/zoom relative cursor-zoom-in overflow-hidden bg-[radial-gradient(circle_at_top,#f5eadc_0%,#eee3d2_55%,#e3d4be_100%)]"
           onClick={() => setLightboxIndex(0)}
         >
           <AspectRatio ratio={4 / 5}>
@@ -44,7 +44,7 @@ export function ProductGallery({ images, badge }: ProductGalleryProps) {
               fill
               priority
               sizes={mainImage.sizes ?? "(max-width: 1024px) 100vw, 50vw"}
-              className="object-cover transition-transform duration-500 ease-out group-hover/zoom:scale-[1.06]"
+              className="object-contain transition-transform duration-500 ease-out group-hover/zoom:scale-[1.04]"
               {...(mainImage.lqip ? { placeholder: "blur", blurDataURL: mainImage.lqip } : {})}
             />
           </AspectRatio>
@@ -61,7 +61,7 @@ export function ProductGallery({ images, badge }: ProductGalleryProps) {
             {galleryImages.map((img, i) => (
               <div
                 key={img.src + i}
-                className="group/zoom relative cursor-zoom-in overflow-hidden bg-muted"
+                className="group/zoom relative cursor-zoom-in overflow-hidden bg-[radial-gradient(circle_at_top,#f5eadc_0%,#eee3d2_55%,#e3d4be_100%)]"
                 onClick={() => setLightboxIndex(i + 1)}
               >
                 <AspectRatio ratio={4 / 5}>
@@ -70,7 +70,7 @@ export function ProductGallery({ images, badge }: ProductGalleryProps) {
                     alt={img.alt}
                     fill
                     sizes={img.sizes ?? "(max-width: 1024px) 50vw, 25vw"}
-                    className="object-cover transition-transform duration-500 ease-out group-hover/zoom:scale-[1.06]"
+                    className="object-contain transition-transform duration-500 ease-out group-hover/zoom:scale-[1.04]"
                     {...(img.lqip ? { placeholder: "blur", blurDataURL: img.lqip } : {})}
                   />
                 </AspectRatio>

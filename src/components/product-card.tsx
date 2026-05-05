@@ -56,7 +56,7 @@ export function ProductCard({ product, className, priority, onQuickView, hideQui
             priority={priority}
             onLoad={() => setImageLoaded(true)}
             className={cn(
-              "object-cover transition-all duration-700 ease-out group-hover:scale-[1.03] group-hover:opacity-0",
+              "object-cover object-top transition-all duration-700 ease-out group-hover:scale-[1.03] group-hover:opacity-0",
               !imageLoaded && "opacity-0"
             )}
           />
@@ -147,11 +147,11 @@ export function ProductCard({ product, className, priority, onQuickView, hideQui
           {product.category} weave
         </p>
 
-        <div className="mt-4 flex items-end justify-between gap-3 border-t border-border/50 pt-3">
+        <div className="mt-4 flex flex-col items-start gap-2 border-t border-border/50 pt-3 sm:flex-row sm:items-end sm:justify-between sm:gap-3">
           <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
             Ready to wear elegance
           </p>
-          <div className="shrink-0 text-right">
+          <div className="shrink-0 text-left sm:text-right">
             <p className="font-serif text-base leading-tight md:text-lg">
               {formatCurrency(product.price)}
             </p>
