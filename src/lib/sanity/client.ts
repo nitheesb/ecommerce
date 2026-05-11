@@ -1,6 +1,8 @@
 import { createClient, type SanityClient } from "@sanity/client";
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID ?? "";
+const token = process.env.SANITY_API_TOKEN;
+const hasToken = Boolean(token && !token.startsWith("your-"));
 
 /** Whether Sanity is properly configured with real credentials */
 export const isSanityConfigured =
@@ -14,7 +16,8 @@ function getClient(): SanityClient {
       projectId,
       dataset: process.env.NEXT_PUBLIC_SANITY_DATASET ?? "production",
       apiVersion: "2024-01-01",
-      useCdn: process.env.NODE_ENV === "production",
+      token: hasToken ? token : undefined,
+      useCdn: hasToken ? false : process.env.NODE_ENV === "production",
     });
   }
   return _client;
