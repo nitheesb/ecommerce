@@ -5,7 +5,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { X, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { absoluteUrl, formatCurrency } from "@/lib/utils"
+import { absoluteUrl, cn, formatCurrency } from "@/lib/utils"
 import { useLenisStore } from "@/hooks/use-lenis"
 import type { Product } from "@/lib/products"
 
@@ -37,6 +37,7 @@ export function QuickView({ product, onClose }: QuickViewProps) {
   if (!product) return null
   const productUrl = absoluteUrl(`/product/${product.slug}`)
   const productImage = absoluteUrl(product.image)
+  const isOutOfStock = product.stockStatus === "outOfStock" || product.stockQuantity === 0
 
   return (
     <div
@@ -91,16 +92,27 @@ export function QuickView({ product, onClose }: QuickViewProps) {
           <div className="mt-6 flex flex-col gap-3">
             <button
               type="button"
-              className="snipcart-add-item flex items-center justify-center gap-2 bg-foreground py-3.5 text-[11px] uppercase tracking-[0.22em] text-background transition-colors hover:bg-foreground/90"
-              data-item-id={product.id}
-              data-item-name={product.name}
-              data-item-price={product.price}
-              data-item-url={productUrl}
-              data-item-image={productImage}
-              data-item-description={product.description}
+              disabled={isOutOfStock}
+              aria-disabled={isOutOfStock}
+              className={cn(
+                "flex items-center justify-center gap-2 py-3.5 text-[11px] uppercase tracking-[0.22em] transition-colors",
+                isOutOfStock
+                  ? "cursor-not-allowed bg-muted text-muted-foreground hover:bg-muted"
+                  : "snipcart-add-item bg-foreground text-background hover:bg-foreground/90",
+              )}
+              {...(isOutOfStock
+                ? {}
+                : {
+                    "data-item-id": product.id,
+                    "data-item-name": product.name,
+                    "data-item-price": product.price,
+                    "data-item-url": productUrl,
+                    "data-item-image": productImage,
+                    "data-item-description": product.description,
+                  })}
             >
               <Plus className="h-3.5 w-3.5" />
-              Add to Cart
+              {isOutOfStock ? "Out of Stock" : "Add to Cart"}
             </button>
             <Button asChild variant="outline" size="lg" className="w-full">
               <Link href={`/product/${product.slug}`} onClick={onClose}>

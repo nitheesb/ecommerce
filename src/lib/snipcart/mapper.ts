@@ -48,7 +48,7 @@ export function mapProductToSnipcartItem(
     price: effectivePrice,
     image: imageUrl,
     description: product.description,
-    maxQuantity: variant?.stockQuantity,
+    maxQuantity: variant?.stockQuantity ?? product.stockQuantity,
     customFields: customFields.length > 0 ? customFields : undefined,
   };
 }

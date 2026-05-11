@@ -25,6 +25,7 @@ export function ProductCard({ product, className, priority, onQuickView, hideQui
 
   const productUrl = absoluteUrl(`/product/${product.slug}`)
   const productImage = absoluteUrl(product.image)
+  const isOutOfStock = product.stockStatus === "outOfStock" || product.stockQuantity === 0
 
   const badgeVariant =
     product.badge === "Limited Edition"
@@ -81,6 +82,14 @@ export function ProductCard({ product, className, priority, onQuickView, hideQui
             {product.badge}
           </Badge>
         )}
+        {isOutOfStock && (
+          <Badge
+            variant="outline"
+            className={cn("absolute left-3 bg-background/90 text-foreground backdrop-blur", product.badge ? "top-12" : "top-3")}
+          >
+            Out of Stock
+          </Badge>
+        )}
 
         {/* Wishlist */}
         <div className="absolute right-3 top-3 flex flex-col gap-2">
@@ -120,17 +129,28 @@ export function ProductCard({ product, className, priority, onQuickView, hideQui
           <button
             type="button"
             onClick={(e) => e.preventDefault()}
-            className="snipcart-add-item absolute inset-x-3 bottom-3 hidden items-center justify-center gap-2 bg-foreground py-3 text-[11px] uppercase tracking-[0.22em] text-background transition-all duration-500 hover:bg-foreground/90 lg:flex lg:translate-y-2 lg:opacity-0 lg:group-hover:translate-y-0 lg:group-hover:opacity-100"
-            aria-label={`Quick add ${product.name}`}
-            data-item-id={product.id}
-            data-item-name={product.name}
-            data-item-price={product.price}
-            data-item-url={productUrl}
-            data-item-image={productImage}
-            data-item-description={product.description}
+            disabled={isOutOfStock}
+            aria-disabled={isOutOfStock}
+            className={cn(
+              "absolute inset-x-3 bottom-3 hidden items-center justify-center gap-2 py-3 text-[11px] uppercase tracking-[0.22em] transition-all duration-500 lg:flex lg:translate-y-2 lg:opacity-0 lg:group-hover:translate-y-0 lg:group-hover:opacity-100",
+              isOutOfStock
+                ? "cursor-not-allowed bg-background/90 text-muted-foreground backdrop-blur hover:bg-background/90"
+                : "snipcart-add-item bg-foreground text-background hover:bg-foreground/90",
+            )}
+            aria-label={isOutOfStock ? `${product.name} is out of stock` : `Quick add ${product.name}`}
+            {...(isOutOfStock
+              ? {}
+              : {
+                  "data-item-id": product.id,
+                  "data-item-name": product.name,
+                  "data-item-price": product.price,
+                  "data-item-url": productUrl,
+                  "data-item-image": productImage,
+                  "data-item-description": product.description,
+                })}
           >
             <Plus className="h-3.5 w-3.5" />
-            Quick Add
+            {isOutOfStock ? "Out of Stock" : "Quick Add"}
           </button>
         )}
       </div>
@@ -149,7 +169,7 @@ export function ProductCard({ product, className, priority, onQuickView, hideQui
 
         <div className="mt-4 flex flex-col items-start gap-2 border-t border-border/50 pt-3 sm:flex-row sm:items-end sm:justify-between sm:gap-3">
           <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
-            Ready to wear elegance
+            {isOutOfStock ? "Currently out of stock" : "Ready to wear elegance"}
           </p>
           <div className="shrink-0 text-left sm:text-right">
             <p className="font-serif text-base leading-tight md:text-lg">

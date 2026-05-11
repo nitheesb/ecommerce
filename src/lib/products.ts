@@ -9,6 +9,8 @@ export type Product = {
   image: string
   hoverImage: string
   badge?: "Limited Edition" | "New" | "Bestseller" | "Heritage"
+  stockStatus?: "inStock" | "lowStock" | "madeToOrder" | "outOfStock"
+  stockQuantity?: number
   palette: string[]
   description: string
 }

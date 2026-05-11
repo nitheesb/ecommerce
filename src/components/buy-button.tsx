@@ -2,6 +2,7 @@
 
 import type { IProduct, IProductVariant, ISnipcartItem, ISnipcartCustomField } from "@/types";
 import { mapProductToSnipcartItem } from "@/lib/snipcart/mapper";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ShoppingBag } from "lucide-react";
 
@@ -15,6 +16,10 @@ interface BuyButtonProps {
 /** Renders a Snipcart-compatible add-to-cart button with all required data attributes. */
 export function BuyButton({ product, variant, className, children }: BuyButtonProps) {
   const item = mapProductToSnipcartItem(product, variant);
+  const stockQuantity = variant?.stockQuantity ?? product.stockQuantity;
+  const isOutOfStock = variant
+    ? variant.stockQuantity <= 0
+    : product.stockStatus === "outOfStock" || stockQuantity === 0;
 
   const dataAttributes: Record<string, string | number | undefined> = {
     "data-item-id": item.id,
@@ -43,10 +48,22 @@ export function BuyButton({ product, variant, className, children }: BuyButtonPr
 
   return (
     <Button
-      className={`snipcart-add-item ${className ?? ""}`}
-      {...dataAttributes}
+      type="button"
+      disabled={isOutOfStock}
+      aria-disabled={isOutOfStock}
+      className={cn(
+        !isOutOfStock && "snipcart-add-item",
+        isOutOfStock && "cursor-not-allowed bg-muted text-muted-foreground hover:bg-muted",
+        className,
+      )}
+      {...(isOutOfStock ? {} : dataAttributes)}
     >
-      {children ?? (
+      {isOutOfStock ? (
+        <>
+          <ShoppingBag className="mr-2 h-4 w-4" />
+          Out of Stock
+        </>
+      ) : children ?? (
         <>
           <ShoppingBag className="mr-2 h-4 w-4" />
           Add to Cart

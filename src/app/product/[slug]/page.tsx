@@ -6,7 +6,7 @@ import { Breadcrumbs } from "@/components/breadcrumbs"
 import { InnerPageShell } from "@/components/inner-page-shell"
 import { ProductCare } from "@/components/product-care"
 import { Separator } from "@/components/ui/separator"
-import { absoluteUrl, formatCurrency } from "@/lib/utils"
+import { absoluteUrl, cn, formatCurrency } from "@/lib/utils"
 import { sanityFetch } from "@/lib/sanity/client"
 import { productBySlugQuery, allProductSlugsQuery } from "@/lib/sanity/queries"
 import { products as staticProducts, type Product } from "@/lib/products"
@@ -113,6 +113,7 @@ function SanityProductDetail({ product }: { product: IProduct }) {
   const mainImageUrl = product.mainImage?.url ?? "/images/hero.jpg"
   const productUrl = absoluteUrl(`/product/${product.slug.current}`)
   const lqip = product.mainImage?.lqip
+  const isOutOfStock = isSanityProductOutOfStock(product)
   const productSchema = buildProductSchema({
     name: product.title,
     description: product.description,
@@ -122,6 +123,7 @@ function SanityProductDetail({ product }: { product: IProduct }) {
     slug: product.slug.current,
     category: product.category,
     collection: product.collection ?? product.weaveType ?? "Saree",
+    isOutOfStock,
   })
 
   const badgeVariant =
@@ -290,6 +292,7 @@ function SanityProductDetail({ product }: { product: IProduct }) {
 function StaticProductDetail({ product }: { product: Product }) {
   const productUrl = absoluteUrl(`/product/${product.slug}`)
   const productImage = absoluteUrl(product.image)
+  const isOutOfStock = isStaticProductOutOfStock(product)
   const productSchema = buildProductSchema({
     name: product.name,
     description: product.description,
@@ -299,6 +302,7 @@ function StaticProductDetail({ product }: { product: Product }) {
     slug: product.slug,
     category: product.category,
     collection: product.collection,
+    isOutOfStock,
   })
 
   const badgeVariant =
@@ -421,16 +425,33 @@ function StaticProductDetail({ product }: { product: Product }) {
                   </p>
                 </div>
                 <button
-                  className="snipcart-add-item mt-6 w-full rounded-full bg-foreground py-4 text-[11px] font-medium uppercase tracking-[0.22em] text-background transition-colors hover:bg-foreground/90"
-                  data-item-id={product.id}
-                  data-item-name={product.name}
-                  data-item-price={product.price}
-                  data-item-url={productUrl}
-                  data-item-image={productImage}
-                  data-item-description={product.description}
+                  type="button"
+                  disabled={isOutOfStock}
+                  aria-disabled={isOutOfStock}
+                  className={cn(
+                    "mt-6 w-full rounded-full py-4 text-[11px] font-medium uppercase tracking-[0.22em] transition-colors",
+                    isOutOfStock
+                      ? "cursor-not-allowed bg-muted text-muted-foreground hover:bg-muted"
+                      : "snipcart-add-item bg-foreground text-background hover:bg-foreground/90",
+                  )}
+                  {...(isOutOfStock
+                    ? {}
+                    : {
+                        "data-item-id": product.id,
+                        "data-item-name": product.name,
+                        "data-item-price": product.price,
+                        "data-item-url": productUrl,
+                        "data-item-image": productImage,
+                        "data-item-description": product.description,
+                      })}
                 >
-                  Add to Cart — {formatCurrency(product.price)}
+                  {isOutOfStock ? "Out of Stock" : `Add to Cart — ${formatCurrency(product.price)}`}
                 </button>
+                {isOutOfStock && (
+                  <p className="mt-3 rounded-full bg-red-50 px-4 py-2 text-center text-xs font-medium text-red-700">
+                    This saree is currently out of stock, but it stays visible for wishlists and restock enquiries.
+                  </p>
+                )}
                 <PurchaseConfidence />
                 <a
                   href={`https://wa.me/919585628565?text=${encodeURIComponent(`Hi, I'm interested in the ${product.name} saree (${formatCurrency(product.price)}). ${productUrl}`)}`}
@@ -453,6 +474,7 @@ function StaticProductDetail({ product }: { product: Product }) {
           product={product}
           productUrl={productUrl}
           productImage={productImage}
+          isOutOfStock={isOutOfStock}
         />
         <RecentlyViewedTracker
           item={{
@@ -472,10 +494,12 @@ function MobileStaticPurchaseBar({
   product,
   productUrl,
   productImage,
+  isOutOfStock,
 }: {
   product: Product
   productUrl: string
   productImage: string
+  isOutOfStock: boolean
 }) {
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 px-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] md:hidden">
@@ -496,16 +520,27 @@ function MobileStaticPurchaseBar({
         <div className="grid grid-cols-[1fr_auto] gap-2">
           <button
             type="button"
-            className="snipcart-add-item flex h-12 items-center justify-center gap-2 rounded-full bg-foreground px-5 text-[10px] font-medium uppercase tracking-[0.18em] text-background transition-colors hover:bg-foreground/90"
-            data-item-id={product.id}
-            data-item-name={product.name}
-            data-item-price={product.price}
-            data-item-url={productUrl}
-            data-item-image={productImage}
-            data-item-description={product.description}
+            disabled={isOutOfStock}
+            aria-disabled={isOutOfStock}
+            className={cn(
+              "flex h-12 items-center justify-center gap-2 rounded-full px-5 text-[10px] font-medium uppercase tracking-[0.18em] transition-colors",
+              isOutOfStock
+                ? "cursor-not-allowed bg-muted text-muted-foreground hover:bg-muted"
+                : "snipcart-add-item bg-foreground text-background hover:bg-foreground/90",
+            )}
+            {...(isOutOfStock
+              ? {}
+              : {
+                  "data-item-id": product.id,
+                  "data-item-name": product.name,
+                  "data-item-price": product.price,
+                  "data-item-url": productUrl,
+                  "data-item-image": productImage,
+                  "data-item-description": product.description,
+                })}
           >
             <ShoppingBag className="h-4 w-4" strokeWidth={1.5} />
-            Add to Cart
+            {isOutOfStock ? "Out of Stock" : "Add to Cart"}
           </button>
           <a
             href={`https://wa.me/919585628565?text=${encodeURIComponent(`Hi, I'm interested in the ${product.name} saree (${formatCurrency(product.price)}). ${productUrl}`)}`}
@@ -573,17 +608,27 @@ function PurchaseConfidence() {
 }
 
 function getStockLabel(status?: string, quantity?: number) {
+  if (quantity === 0 || status === "outOfStock") {
+    return "Out of stock";
+  }
+
   switch (status) {
     case "lowStock":
       return quantity && quantity > 0 ? `Only ${quantity} left` : "Low stock";
     case "madeToOrder":
       return "Made to order";
-    case "outOfStock":
-      return "Out of stock";
     case "inStock":
     default:
       return quantity && quantity > 0 ? `${quantity} available` : "In stock";
   }
+}
+
+function isSanityProductOutOfStock(product: IProduct) {
+  return product.stockStatus === "outOfStock" || product.stockQuantity === 0;
+}
+
+function isStaticProductOutOfStock(product: Product) {
+  return product.stockStatus === "outOfStock" || product.stockQuantity === 0;
 }
 
 function buildProductSchema({
@@ -595,6 +640,7 @@ function buildProductSchema({
   slug,
   category,
   collection,
+  isOutOfStock,
 }: {
   name: string
   description: string
@@ -604,6 +650,7 @@ function buildProductSchema({
   slug: string
   category: string
   collection: string
+  isOutOfStock: boolean
 }) {
   return {
     "@context": "https://schema.org",
@@ -621,7 +668,9 @@ function buildProductSchema({
       url: absoluteUrl(`/product/${slug}`),
       priceCurrency: "INR",
       price,
-      availability: "https://schema.org/InStock",
+      availability: isOutOfStock
+        ? "https://schema.org/OutOfStock"
+        : "https://schema.org/InStock",
       itemCondition: "https://schema.org/NewCondition",
     },
     ...(compareAtPrice

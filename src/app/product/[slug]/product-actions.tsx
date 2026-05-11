@@ -18,6 +18,14 @@ export function ProductActions({ product }: ProductActionsProps) {
 
   const hasVariants = product.variants && product.variants.length > 0
   const effectivePrice = selectedVariant?.price ?? product.price
+  const stockQuantity = selectedVariant?.stockQuantity ?? product.stockQuantity
+  const isOutOfStock = selectedVariant
+    ? selectedVariant.stockQuantity <= 0
+    : product.stockStatus === "outOfStock" || stockQuantity === 0
+  const isLowStock =
+    !isOutOfStock &&
+    (product.stockStatus === "lowStock" ||
+      (typeof stockQuantity === "number" && stockQuantity > 0 && stockQuantity <= 3))
   const productUrl = absoluteUrl(`/product/${product.slug.current}`)
   const whatsappHref = `https://wa.me/919585628565?text=${encodeURIComponent(
     `Hi, I'm interested in the ${product.title} saree (${formatCurrency(effectivePrice)}). ${productUrl}`,
@@ -54,15 +62,20 @@ export function ProductActions({ product }: ProductActionsProps) {
                 Size: {selectedVariant.size}
               </p>
             )}
-            {selectedVariant && selectedVariant.stockQuantity <= 3 && selectedVariant.stockQuantity > 0 && (
-              <p className="mt-2 text-xs text-amber-700">
-                Only {selectedVariant.stockQuantity} left in stock
-              </p>
-            )}
-            {selectedVariant && selectedVariant.stockQuantity === 0 && (
-              <p className="mt-2 text-xs text-red-600">Out of stock</p>
-            )}
           </div>
+        )}
+
+        {isLowStock && (
+          <p className="rounded-full bg-amber-100 px-4 py-2 text-xs font-medium text-amber-800">
+            {typeof stockQuantity === "number"
+              ? `Only ${stockQuantity} left in stock`
+              : "Low stock"}
+          </p>
+        )}
+        {isOutOfStock && (
+          <p className="rounded-full bg-red-50 px-4 py-2 text-xs font-medium text-red-700">
+            This saree is currently out of stock, but you can still save it or ask us about restock timing.
+          </p>
         )}
 
         {/* Buy Button */}
