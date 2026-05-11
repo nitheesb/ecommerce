@@ -196,6 +196,48 @@ function SanityProductDetail({ product }: { product: IProduct }) {
                 {product.description}
               </p>
 
+              <div className="mt-6 space-y-3">
+                <h3 className="text-xs font-medium uppercase tracking-[0.2em]">Product Details</h3>
+                <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm">
+                  <dt className="text-muted-foreground">Fabric</dt>
+                  <dd>{product.fabric ?? product.category}</dd>
+                  <dt className="text-muted-foreground">Collection</dt>
+                  <dd>{product.collection ?? product.weaveType ?? "Saree"}</dd>
+                  {product.printType && (
+                    <>
+                      <dt className="text-muted-foreground">Print</dt>
+                      <dd>{product.printType}</dd>
+                    </>
+                  )}
+                  {product.colorFamily && (
+                    <>
+                      <dt className="text-muted-foreground">Colour</dt>
+                      <dd>{product.colorFamily}</dd>
+                    </>
+                  )}
+                  <dt className="text-muted-foreground">Blouse</dt>
+                  <dd>{product.blouseIncluded === false ? "Not included" : "Included"}</dd>
+                  <dt className="text-muted-foreground">Stock</dt>
+                  <dd>{getStockLabel(product.stockStatus, product.stockQuantity)}</dd>
+                  <dt className="text-muted-foreground">Care</dt>
+                  <dd>{product.careInstructions ?? "Dry clean recommended"}</dd>
+                </dl>
+              </div>
+
+              {product.highlights && product.highlights.length > 0 && (
+                <div className="mt-6 rounded-lg bg-secondary/40 px-5 py-4">
+                  <h3 className="text-xs font-medium uppercase tracking-[0.2em]">Why You&apos;ll Love This</h3>
+                  <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
+                    {product.highlights.map((highlight) => (
+                      <li key={highlight} className="flex items-start gap-2">
+                        <span className="mt-1 h-1 w-1 shrink-0 rounded-full bg-foreground/40" />
+                        {highlight}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
               <div className="mt-8 rounded-[30px] border border-border/60 bg-[linear-gradient(180deg,rgba(252,250,245,0.98)_0%,rgba(247,242,233,0.98)_100%)] p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)] md:p-6">
                 <div className="border-b border-border/50 pb-4">
                   <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-muted-foreground">
@@ -528,6 +570,20 @@ function PurchaseConfidence() {
       </div>
     </div>
   )
+}
+
+function getStockLabel(status?: string, quantity?: number) {
+  switch (status) {
+    case "lowStock":
+      return quantity && quantity > 0 ? `Only ${quantity} left` : "Low stock";
+    case "madeToOrder":
+      return "Made to order";
+    case "outOfStock":
+      return "Out of stock";
+    case "inStock":
+    default:
+      return quantity && quantity > 0 ? `${quantity} available` : "In stock";
+  }
 }
 
 function buildProductSchema({

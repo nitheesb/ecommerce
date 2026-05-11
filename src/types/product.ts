@@ -34,6 +34,14 @@ export type ProductCategory = "Silk" | "Cotton" | "Heritage";
 /** Badge labels surfaced on product cards */
 export type ProductBadge = "Limited Edition" | "New" | "Bestseller" | "Heritage";
 
+export type ProductStatus = "draft" | "active" | "archived";
+
+export type ProductStockStatus =
+  | "inStock"
+  | "lowStock"
+  | "madeToOrder"
+  | "outOfStock";
+
 /** Weave/sub-collection for detailed classification */
 export type WeaveType =
   | "Kanjeevaram"
@@ -80,9 +88,15 @@ export interface IProduct {
     current: string;
   };
   description: string;
+  status?: ProductStatus;
+  sku?: string;
 
   category: ProductCategory;
-  weaveType: WeaveType;
+  fabric?: string;
+  weaveType?: WeaveType;
+  printType?: string;
+  occasion?: string[];
+  colorFamily?: string;
   collection: string;
 
   mainImage: ISanityImage;
@@ -102,6 +116,13 @@ export interface IProduct {
   palette: string[];
 
   badge?: ProductBadge;
+  stockStatus?: ProductStockStatus;
+  stockQuantity?: number;
+  blouseIncluded?: boolean;
+  careInstructions?: string;
+  featured?: boolean;
+  sortOrder?: number;
+  highlights?: string[];
 
   /** SEO metadata pulled for generateMetadata */
   seo?: {
@@ -125,6 +146,17 @@ export interface IProductCard
     | "badge"
     | "palette"
     | "description"
+    | "status"
+    | "sku"
+    | "fabric"
+    | "printType"
+    | "occasion"
+    | "colorFamily"
+    | "stockStatus"
+    | "stockQuantity"
+    | "blouseIncluded"
+    | "featured"
+    | "sortOrder"
   > {
   mainImageUrl: string;
   mainImageLqip?: string;

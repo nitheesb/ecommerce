@@ -10,14 +10,15 @@ export function mapProductToSnipcartItem(
   variant?: IProductVariant,
 ): ISnipcartItem {
   const effectivePrice = variant?.price ?? product.price;
+  const variants = product.variants ?? [];
   const imageUrl = variant?.image
     ? urlFor(variant.image).width(400).height(500).url()
     : urlFor(product.mainImage).width(400).height(500).url();
 
   const customFields: ISnipcartCustomField[] = [];
 
-  if (product.variants.length > 0) {
-    const colorOptions = product.variants.map((v) => v.color).join("|");
+  if (variants.length > 0) {
+    const colorOptions = variants.map((v) => v.color).join("|");
     customFields.push({
       name: "Color",
       options: colorOptions,
@@ -26,7 +27,7 @@ export function mapProductToSnipcartItem(
       value: variant?.color,
     });
 
-    const sizesAvailable = product.variants
+    const sizesAvailable = variants
       .filter((v) => v.size)
       .map((v) => v.size!);
     if (sizesAvailable.length > 0) {
@@ -41,7 +42,7 @@ export function mapProductToSnipcartItem(
   }
 
   return {
-    id: variant?.sku ?? product._id,
+    id: variant?.sku ?? product.sku ?? product._id,
     url: absoluteUrl(`/product/${product.slug.current}`),
     name: product.title,
     price: effectivePrice,
