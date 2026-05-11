@@ -193,6 +193,7 @@ for (const [index, product] of products.entries()) {
     _type: "saree",
     title: product.name,
     slug: { _type: "slug", current: product.slug },
+    shortDescription: product.highlights[0],
     description: product.description,
     status: "active",
     sku: `THZ-${String(index + 1).padStart(3, "0")}`,
@@ -227,6 +228,22 @@ for (const [index, product] of products.entries()) {
   await client.createOrReplace(doc);
   console.log(`Seeded ${product.name} (${product.slug})`);
 }
+
+await client.createOrReplace({
+  _id: "siteSettings",
+  _type: "siteSettings",
+  brandName: "House of Thazhuval",
+  tagline: "The comfort that embraces you",
+  announcement: "Complimentary shipping on orders above ₹2,000",
+  supportPhone: "919585628565",
+  shippingNote: "Complimentary shipping above ₹2,000 and support throughout delivery.",
+  defaultSeo: {
+    metaTitle: "House of Thazhuval",
+    metaDescription: "Sarees chosen for the way the house wants to be remembered.",
+  },
+  socialLinks: [],
+});
+console.log("Seeded site settings");
 
 const total = await client.fetch('count(*[_type == "saree"])');
 console.log(`Done. Sanity now has ${total} saree document(s).`);

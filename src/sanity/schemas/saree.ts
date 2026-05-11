@@ -1,54 +1,113 @@
 import { defineField, defineType } from "sanity";
 
+const imageWithAltFields = [
+  defineField({
+    name: "alt",
+    title: "Alt Text",
+    type: "string",
+    description: "Describe the image for accessibility and SEO.",
+    validation: (Rule) =>
+      Rule.max(140).warning("Keep alt text short and descriptive."),
+  }),
+];
+
+const hexColorValidation = (Rule: any) =>
+  Rule.regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, {
+    name: "hex color",
+    invert: false,
+  }).warning("Use a hex colour such as #667313.");
+
 export const sareeSchema = defineType({
   name: "saree",
   title: "Saree",
   type: "document",
+  groups: [
+    { name: "content", title: "Content", default: true },
+    { name: "media", title: "Media" },
+    { name: "merchandising", title: "Merchandising" },
+    { name: "inventory", title: "Inventory" },
+    { name: "seo", title: "SEO" },
+    { name: "admin", title: "Admin" },
+  ],
+  orderings: [
+    {
+      title: "Manual Sort",
+      name: "manualSort",
+      by: [{ field: "sortOrder", direction: "asc" }],
+    },
+    {
+      title: "Newest First",
+      name: "newestFirst",
+      by: [{ field: "_createdAt", direction: "desc" }],
+    },
+    {
+      title: "Price: Low to High",
+      name: "priceLowToHigh",
+      by: [{ field: "price", direction: "asc" }],
+    },
+  ],
+  initialValue: {
+    status: "draft",
+    stockStatus: "inStock",
+    stockQuantity: 1,
+    blouseIncluded: true,
+    careInstructions: "Dry clean recommended.",
+    featured: false,
+    sortOrder: 100,
+    variants: [],
+  },
   fields: [
     defineField({
       name: "title",
-      title: "Title",
+      title: "Product Name",
       type: "string",
-      validation: (Rule) => Rule.required(),
+      group: "content",
+      validation: (Rule) =>
+        Rule.required().min(2).max(80).error("Product name is required."),
     }),
     defineField({
       name: "slug",
-      title: "Slug",
+      title: "URL Slug",
       type: "slug",
+      group: "content",
+      description: "Used in the product URL. Generate from the product name, then keep stable.",
       options: { source: "title", maxLength: 96 },
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: "shortDescription",
+      title: "Card Description",
+      type: "string",
+      group: "content",
+      description: "Optional short line for future cards, ads, and quick previews.",
+      validation: (Rule) => Rule.max(120),
+    }),
+    defineField({
       name: "description",
-      title: "Description",
+      title: "Product Description",
       type: "text",
       rows: 4,
+      group: "content",
+      validation: (Rule) =>
+        Rule.required()
+          .min(40)
+          .max(420)
+          .warning("Aim for 40-420 characters for a polished product detail page."),
     }),
     defineField({
-      name: "status",
-      title: "Publishing Status",
-      type: "string",
-      initialValue: "draft",
-      options: {
-        list: [
-          { title: "Draft", value: "draft" },
-          { title: "Active", value: "active" },
-          { title: "Archived", value: "archived" },
-        ],
-        layout: "radio",
-      },
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
-      name: "sku",
-      title: "Base SKU",
-      type: "string",
-      description: "Internal product code used when there are no separate variants.",
+      name: "highlights",
+      title: "Product Highlights",
+      type: "array",
+      group: "content",
+      of: [{ type: "string" }],
+      description: "Short bullets such as 'Lightweight chiffon' or 'Ready to ship'.",
+      validation: (Rule) => Rule.max(6),
     }),
     defineField({
       name: "category",
-      title: "Category",
+      title: "Primary Category",
       type: "string",
+      group: "content",
       options: {
         list: [
           { title: "Silk", value: "Silk" },
@@ -63,6 +122,7 @@ export const sareeSchema = defineType({
       name: "fabric",
       title: "Fabric",
       type: "string",
+      group: "content",
       options: {
         list: [
           "Chiffon",
@@ -84,6 +144,7 @@ export const sareeSchema = defineType({
       name: "weaveType",
       title: "Weave Type",
       type: "string",
+      group: "content",
       options: {
         list: [
           "Kanjeevaram",
@@ -105,13 +166,17 @@ export const sareeSchema = defineType({
     }),
     defineField({
       name: "collection",
-      title: "Collection",
+      title: "Collection / Edit Name",
       type: "string",
+      group: "content",
+      description: "Shown on cards, filters, product detail pages, and search results.",
+      validation: (Rule) => Rule.required().max(60),
     }),
     defineField({
       name: "printType",
       title: "Print Type",
       type: "string",
+      group: "content",
       options: {
         list: [
           "Ajrakh Print",
@@ -134,6 +199,7 @@ export const sareeSchema = defineType({
       name: "occasion",
       title: "Occasion",
       type: "array",
+      group: "content",
       of: [{ type: "string" }],
       options: {
         list: [
@@ -150,6 +216,7 @@ export const sareeSchema = defineType({
       name: "colorFamily",
       title: "Color Family",
       type: "string",
+      group: "content",
       options: {
         list: [
           "Black",
@@ -174,39 +241,60 @@ export const sareeSchema = defineType({
     }),
     defineField({
       name: "mainImage",
-      title: "Main Image",
+      title: "Main Product Image",
       type: "image",
+      group: "media",
       options: { hotspot: true },
+      fields: imageWithAltFields,
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "hoverImage",
-      title: "Hover Image",
+      title: "Hover / Detail Image",
       type: "image",
+      group: "media",
+      description: "Used as product-card hover image and gallery secondary image.",
       options: { hotspot: true },
+      fields: imageWithAltFields,
     }),
     defineField({
       name: "imageGallery",
-      title: "Image Gallery",
+      title: "Product Gallery",
       type: "array",
-      of: [{ type: "image", options: { hotspot: true } }],
+      group: "media",
+      of: [
+        {
+          type: "image",
+          options: { hotspot: true },
+          fields: imageWithAltFields,
+        },
+      ],
+      validation: (Rule) => Rule.max(10).warning("Keep galleries focused; 3-6 images is ideal."),
     }),
     defineField({
       name: "price",
       title: "Price (INR)",
       type: "number",
+      group: "merchandising",
       validation: (Rule) => Rule.required().positive(),
     }),
     defineField({
       name: "compareAtPrice",
       title: "Compare-at Price (INR)",
       type: "number",
-      validation: (Rule) => Rule.positive(),
+      group: "merchandising",
+      validation: (Rule) =>
+        Rule.positive().custom((compareAtPrice, context) => {
+          const price = (context.document?.price ?? 0) as number;
+          if (!compareAtPrice || !price) return true;
+          return compareAtPrice > price || "Compare-at price should be greater than the selling price.";
+        }),
     }),
     defineField({
       name: "badge",
-      title: "Badge",
+      title: "Product Badge",
       type: "string",
+      group: "merchandising",
       options: {
         list: [
           { title: "Limited Edition", value: "Limited Edition" },
@@ -220,14 +308,60 @@ export const sareeSchema = defineType({
       name: "palette",
       title: "Palette Colors",
       type: "array",
-      of: [{ type: "string" }],
-      description: "Hex color values for product card swatches",
+      group: "merchandising",
+      of: [
+        defineField({
+          name: "color",
+          title: "Hex Color",
+          type: "string",
+          validation: hexColorValidation,
+        }),
+      ],
+      description: "Hex color values for product card swatches.",
+      validation: (Rule) => Rule.max(5),
+    }),
+    defineField({
+      name: "featured",
+      title: "Feature on Homepage",
+      type: "boolean",
+      group: "merchandising",
+    }),
+    defineField({
+      name: "sortOrder",
+      title: "Manual Sort Order",
+      type: "number",
+      group: "merchandising",
+      description: "Lower numbers appear earlier in featured and collection lists.",
+      validation: (Rule) => Rule.integer().min(0),
+    }),
+    defineField({
+      name: "status",
+      title: "Publishing Status",
+      type: "string",
+      group: "inventory",
+      options: {
+        list: [
+          { title: "Draft", value: "draft" },
+          { title: "Active", value: "active" },
+          { title: "Archived", value: "archived" },
+        ],
+        layout: "radio",
+      },
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "sku",
+      title: "Base SKU",
+      type: "string",
+      group: "inventory",
+      description: "Internal product code used when there are no separate variants.",
+      validation: (Rule) => Rule.max(40),
     }),
     defineField({
       name: "stockStatus",
       title: "Stock Status",
       type: "string",
-      initialValue: "inStock",
+      group: "inventory",
       options: {
         list: [
           { title: "In stock", value: "inStock" },
@@ -243,46 +377,29 @@ export const sareeSchema = defineType({
       name: "stockQuantity",
       title: "Stock Quantity",
       type: "number",
-      initialValue: 1,
-      validation: (Rule) => Rule.min(0),
+      group: "inventory",
+      validation: (Rule) => Rule.integer().min(0),
     }),
     defineField({
       name: "blouseIncluded",
       title: "Blouse Piece Included",
       type: "boolean",
-      initialValue: true,
+      group: "inventory",
     }),
     defineField({
       name: "careInstructions",
       title: "Care Instructions",
       type: "text",
       rows: 3,
-      initialValue: "Dry clean recommended.",
-    }),
-    defineField({
-      name: "featured",
-      title: "Feature on Homepage",
-      type: "boolean",
-      initialValue: false,
-    }),
-    defineField({
-      name: "sortOrder",
-      title: "Manual Sort Order",
-      type: "number",
-      description: "Lower numbers appear earlier in featured and collection lists.",
-      initialValue: 100,
-    }),
-    defineField({
-      name: "highlights",
-      title: "Product Highlights",
-      type: "array",
-      of: [{ type: "string" }],
-      description: "Short bullets such as 'Lightweight chiffon' or 'Ready to ship'.",
+      group: "inventory",
+      validation: (Rule) => Rule.max(280),
     }),
     defineField({
       name: "variants",
       title: "Variants",
       type: "array",
+      group: "inventory",
+      description: "Use variants only when colour/size/SKU/stock differs.",
       of: [
         {
           type: "object",
@@ -293,7 +410,7 @@ export const sareeSchema = defineType({
               name: "sku",
               title: "SKU",
               type: "string",
-              validation: (Rule) => Rule.required(),
+              validation: (Rule) => Rule.required().max(40),
             }),
             defineField({
               name: "color",
@@ -305,7 +422,7 @@ export const sareeSchema = defineType({
               name: "colorHex",
               title: "Color Hex",
               type: "string",
-              validation: (Rule) => Rule.required(),
+              validation: hexColorValidation,
             }),
             defineField({
               name: "size",
@@ -322,22 +439,34 @@ export const sareeSchema = defineType({
               name: "compareAtPrice",
               title: "Compare-at Price (INR)",
               type: "number",
+              validation: (Rule) => Rule.positive(),
             }),
             defineField({
               name: "stockQuantity",
               title: "Stock Quantity",
               type: "number",
-              validation: (Rule) => Rule.required().min(0),
+              validation: (Rule) => Rule.required().integer().min(0),
             }),
             defineField({
               name: "image",
               title: "Variant Image",
               type: "image",
               options: { hotspot: true },
+              fields: imageWithAltFields,
             }),
           ],
           preview: {
-            select: { title: "color", subtitle: "sku" },
+            select: {
+              title: "color",
+              subtitle: "sku",
+              media: "image",
+            },
+            prepare({ title, subtitle }) {
+              return {
+                title: title ?? "Variant",
+                subtitle,
+              };
+            },
           },
         },
       ],
@@ -346,31 +475,64 @@ export const sareeSchema = defineType({
       name: "seo",
       title: "SEO",
       type: "object",
+      group: "seo",
       fields: [
         defineField({
           name: "metaTitle",
           title: "Meta Title",
           type: "string",
+          validation: (Rule) =>
+            Rule.max(60).warning("Search titles usually perform best under 60 characters."),
         }),
         defineField({
           name: "metaDescription",
           title: "Meta Description",
           type: "text",
           rows: 3,
+          validation: (Rule) =>
+            Rule.max(160).warning("Search descriptions usually perform best under 160 characters."),
         }),
         defineField({
           name: "ogImage",
           title: "Open Graph Image",
           type: "image",
+          options: { hotspot: true },
+          fields: imageWithAltFields,
         }),
       ],
+    }),
+    defineField({
+      name: "internalNotes",
+      title: "Internal Notes",
+      type: "text",
+      rows: 3,
+      group: "admin",
+      description: "Private notes for the team. Not shown on the website.",
     }),
   ],
   preview: {
     select: {
       title: "title",
-      subtitle: "status",
+      status: "status",
+      price: "price",
+      stockStatus: "stockStatus",
       media: "mainImage",
+    },
+    prepare({ title, status, price, stockStatus, media }) {
+      const formattedPrice =
+        typeof price === "number"
+          ? new Intl.NumberFormat("en-IN", {
+              style: "currency",
+              currency: "INR",
+              maximumFractionDigits: 0,
+            }).format(price)
+          : "No price";
+
+      return {
+        title: title ?? "Untitled saree",
+        subtitle: `${status ?? "draft"} · ${stockStatus ?? "stock unknown"} · ${formattedPrice}`,
+        media,
+      };
     },
   },
 });

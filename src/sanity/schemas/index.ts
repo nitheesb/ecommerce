@@ -1,3 +1,4 @@
 import { sareeSchema } from "./saree";
+import { siteSettingsSchema } from "./site-settings";
 
-export const schemaTypes = [sareeSchema];
+export const schemaTypes = [siteSettingsSchema, sareeSchema];
