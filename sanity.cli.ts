@@ -8,6 +8,7 @@ export default defineCliConfig({
     projectId,
     dataset,
   },
+  studioHost: "thazhuval",
   server: {
     hostname: "localhost",
     port: 3333,
