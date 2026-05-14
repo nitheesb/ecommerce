@@ -1,5 +1,7 @@
 import type { StructureResolver } from "sanity/structure";
 
+const publishedOnly = '!(_id in path("drafts.**"))';
+
 export const structure: StructureResolver = (S) =>
   S.list()
     .title("House of Thazhuval")
@@ -21,7 +23,15 @@ export const structure: StructureResolver = (S) =>
           S.list()
             .title("Sarees")
             .items([
-              S.documentTypeListItem("saree").title("All Sarees"),
+              S.listItem()
+                .title("All Sarees")
+                .child(
+                  S.documentList()
+                    .title("All Sarees")
+                    .schemaType("saree")
+                    .filter(`_type == "saree" && ${publishedOnly}`)
+                    .defaultOrdering([{ field: "sortOrder", direction: "asc" }]),
+                ),
               S.divider(),
               S.listItem()
                 .title("Active")
@@ -29,7 +39,7 @@ export const structure: StructureResolver = (S) =>
                   S.documentList()
                     .title("Active Sarees")
                     .schemaType("saree")
-                    .filter('_type == "saree" && status == "active"')
+                    .filter(`_type == "saree" && ${publishedOnly} && status == "active"`)
                     .defaultOrdering([{ field: "sortOrder", direction: "asc" }]),
                 ),
               S.listItem()
@@ -38,7 +48,7 @@ export const structure: StructureResolver = (S) =>
                   S.documentList()
                     .title("Draft Sarees")
                     .schemaType("saree")
-                    .filter('_type == "saree" && status == "draft"')
+                    .filter(`_type == "saree" && ${publishedOnly} && status == "draft"`)
                     .defaultOrdering([{ field: "_updatedAt", direction: "desc" }]),
                 ),
               S.listItem()
@@ -47,7 +57,16 @@ export const structure: StructureResolver = (S) =>
                   S.documentList()
                     .title("Archived Sarees")
                     .schemaType("saree")
-                    .filter('_type == "saree" && status == "archived"')
+                    .filter(`_type == "saree" && ${publishedOnly} && status == "archived"`)
+                    .defaultOrdering([{ field: "_updatedAt", direction: "desc" }]),
+                ),
+              S.listItem()
+                .title("Unpublished Changes")
+                .child(
+                  S.documentList()
+                    .title("Sarees With Unpublished Changes")
+                    .schemaType("saree")
+                    .filter('_type == "saree" && _id in path("drafts.**")')
                     .defaultOrdering([{ field: "_updatedAt", direction: "desc" }]),
                 ),
               S.divider(),
@@ -57,7 +76,7 @@ export const structure: StructureResolver = (S) =>
                   S.documentList()
                     .title("Featured Sarees")
                     .schemaType("saree")
-                    .filter('_type == "saree" && featured == true')
+                    .filter(`_type == "saree" && ${publishedOnly} && featured == true`)
                     .defaultOrdering([{ field: "sortOrder", direction: "asc" }]),
                 ),
               S.listItem()
@@ -66,7 +85,7 @@ export const structure: StructureResolver = (S) =>
                   S.documentList()
                     .title("Low Stock Sarees")
                     .schemaType("saree")
-                    .filter('_type == "saree" && (stockStatus == "lowStock" || stockQuantity <= 3)')
+                    .filter(`_type == "saree" && ${publishedOnly} && (stockStatus == "lowStock" || stockQuantity <= 3)`)
                     .defaultOrdering([{ field: "stockQuantity", direction: "asc" }]),
                 ),
               S.listItem()
@@ -75,7 +94,7 @@ export const structure: StructureResolver = (S) =>
                   S.documentList()
                     .title("Out of Stock Sarees")
                     .schemaType("saree")
-                    .filter('_type == "saree" && (stockStatus == "outOfStock" || stockQuantity == 0)')
+                    .filter(`_type == "saree" && ${publishedOnly} && (stockStatus == "outOfStock" || stockQuantity == 0)`)
                     .defaultOrdering([{ field: "_updatedAt", direction: "desc" }]),
                 ),
               S.listItem()
@@ -84,7 +103,7 @@ export const structure: StructureResolver = (S) =>
                   S.documentList()
                     .title("Sarees Missing SEO")
                     .schemaType("saree")
-                    .filter('_type == "saree" && (!defined(seo.metaTitle) || !defined(seo.metaDescription))')
+                    .filter(`_type == "saree" && ${publishedOnly} && (!defined(seo.metaTitle) || !defined(seo.metaDescription))`)
                     .defaultOrdering([{ field: "_updatedAt", direction: "desc" }]),
                 ),
             ]),
