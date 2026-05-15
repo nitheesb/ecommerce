@@ -15,5 +15,15 @@ export default defineConfig({
   plugins: [structureTool({ structure })],
   schema: {
     types: schemaTypes,
+    templates: (templates) =>
+      templates.filter((template) => template.schemaType !== "siteSettings"),
+  },
+  document: {
+    actions: (actions, context) => {
+      if (context.schemaType !== "siteSettings") return actions;
+      return actions.filter(
+        (action) => !["delete", "duplicate", "unpublish"].includes(action.action ?? ""),
+      );
+    },
   },
 });

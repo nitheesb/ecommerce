@@ -7,7 +7,7 @@ const imageWithAltFields = [
     type: "string",
     description: "Describe the image for accessibility and SEO.",
     validation: (Rule) =>
-      Rule.max(140).warning("Keep alt text short and descriptive."),
+      Rule.required().max(140).warning("Keep alt text short and descriptive."),
   }),
 ];
 
@@ -16,6 +16,12 @@ const hexColorValidation = (Rule: any) =>
     name: "hex color",
     invert: false,
   }).warning("Use a hex colour such as #667313.");
+
+const activeProductRequires = (context: any, condition: boolean, message: string) => {
+  const status = context.document?.status;
+  if (status !== "active") return true;
+  return condition || message;
+};
 
 export const sareeSchema = defineType({
   name: "saree",
@@ -27,7 +33,7 @@ export const sareeSchema = defineType({
     { name: "merchandising", title: "Merchandising" },
     { name: "inventory", title: "Inventory" },
     { name: "seo", title: "SEO" },
-    { name: "admin", title: "Admin" },
+    { name: "admin", title: "Admin / QA" },
   ],
   orderings: [
     {
@@ -54,6 +60,7 @@ export const sareeSchema = defineType({
     careInstructions: "Dry clean recommended.",
     featured: false,
     sortOrder: 100,
+    contentStatus: "needsReview",
     variants: [],
   },
   fields: [
@@ -72,7 +79,14 @@ export const sareeSchema = defineType({
       group: "content",
       description: "Used in the product URL. Generate from the product name, then keep stable.",
       options: { source: "title", maxLength: 96 },
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) =>
+        Rule.required().custom((slug) => {
+          if (!slug?.current) return "URL slug is required.";
+          if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug.current)) {
+            return "Use lowercase words separated by hyphens only.";
+          }
+          return true;
+        }),
     }),
     defineField({
       name: "shortDescription",
@@ -80,7 +94,14 @@ export const sareeSchema = defineType({
       type: "string",
       group: "content",
       description: "Optional short line for future cards, ads, and quick previews.",
-      validation: (Rule) => Rule.max(120),
+      validation: (Rule) =>
+        Rule.max(120).custom((value, context) =>
+          activeProductRequires(
+            context,
+            Boolean(value && value.length >= 12),
+            "Active products should have a concise card description.",
+          ),
+        ),
     }),
     defineField({
       name: "description",
@@ -91,7 +112,7 @@ export const sareeSchema = defineType({
       validation: (Rule) =>
         Rule.required()
           .min(40)
-          .max(420)
+          .max(520)
           .warning("Aim for 40-420 characters for a polished product detail page."),
     }),
     defineField({
@@ -101,7 +122,14 @@ export const sareeSchema = defineType({
       group: "content",
       of: [{ type: "string" }],
       description: "Short bullets such as 'Lightweight chiffon' or 'Ready to ship'.",
-      validation: (Rule) => Rule.max(6),
+      validation: (Rule) =>
+        Rule.max(6).custom((value, context) =>
+          activeProductRequires(
+            context,
+            Array.isArray(value) && value.length >= 3,
+            "Active products should have at least 3 customer-facing highlights.",
+          ),
+        ),
     }),
     defineField({
       name: "category",
@@ -256,6 +284,14 @@ export const sareeSchema = defineType({
       description: "Used as product-card hover image and gallery secondary image.",
       options: { hotspot: true },
       fields: imageWithAltFields,
+      validation: (Rule) =>
+        Rule.custom((value, context) =>
+          activeProductRequires(
+            context,
+            Boolean(value?.asset),
+            "Active products should have a hover/detail image.",
+          ),
+        ).warning(),
     }),
     defineField({
       name: "imageGallery",
@@ -269,7 +305,17 @@ export const sareeSchema = defineType({
           fields: imageWithAltFields,
         },
       ],
-      validation: (Rule) => Rule.max(10).warning("Keep galleries focused; 3-6 images is ideal."),
+      validation: (Rule) =>
+        Rule.max(10)
+          .warning("Keep galleries focused; 3-6 images is ideal.")
+          .custom((value, context) =>
+            activeProductRequires(
+              context,
+              Array.isArray(value) && value.length >= 1,
+              "Active products should include at least one gallery image.",
+            ),
+          )
+          .warning(),
     }),
     defineField({
       name: "price",
@@ -318,7 +364,14 @@ export const sareeSchema = defineType({
         }),
       ],
       description: "Hex color values for product card swatches.",
-      validation: (Rule) => Rule.max(5),
+      validation: (Rule) =>
+        Rule.max(5).custom((value, context) =>
+          activeProductRequires(
+            context,
+            Array.isArray(value) && value.length >= 2,
+            "Active products should include at least 2 palette colours.",
+          ),
+        ),
     }),
     defineField({
       name: "featured",
@@ -347,7 +400,15 @@ export const sareeSchema = defineType({
         ],
         layout: "radio",
       },
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) =>
+        Rule.required()
+          .custom((status, context) => {
+            if (status === "active" && context.document?.contentStatus !== "approved") {
+              return "Active products should be marked Approved in Content QA before launch.";
+            }
+            return true;
+          })
+          .warning(),
     }),
     defineField({
       name: "sku",
@@ -355,7 +416,15 @@ export const sareeSchema = defineType({
       type: "string",
       group: "inventory",
       description: "Internal product code used when there are no separate variants.",
-      validation: (Rule) => Rule.max(40),
+      validation: (Rule) =>
+        Rule.max(40).custom((value, context) => {
+          const variants = (context.document?.variants ?? []) as unknown[];
+          return activeProductRequires(
+            context,
+            variants.length > 0 || Boolean(value),
+            "Active products without variants need a base SKU.",
+          );
+        }),
     }),
     defineField({
       name: "stockStatus",
@@ -378,7 +447,22 @@ export const sareeSchema = defineType({
       title: "Stock Quantity",
       type: "number",
       group: "inventory",
-      validation: (Rule) => Rule.integer().min(0),
+      validation: (Rule) =>
+        Rule.integer()
+          .min(0)
+          .custom((value, context) => {
+            const stockStatus = context.document?.stockStatus;
+            if (stockStatus === "outOfStock" && value !== 0) {
+              return "Out-of-stock products should have quantity set to 0.";
+            }
+            if ((stockStatus === "inStock" || stockStatus === "lowStock") && (!value || value < 1)) {
+              return "In-stock products need a stock quantity of at least 1.";
+            }
+            if (stockStatus === "lowStock" && value && value > 3) {
+              return "Low stock is intended for quantities of 3 or fewer.";
+            }
+            return true;
+          }),
     }),
     defineField({
       name: "blouseIncluded",
@@ -392,7 +476,14 @@ export const sareeSchema = defineType({
       type: "text",
       rows: 3,
       group: "inventory",
-      validation: (Rule) => Rule.max(280),
+      validation: (Rule) =>
+        Rule.max(280).custom((value, context) =>
+          activeProductRequires(
+            context,
+            Boolean(value && value.length >= 12),
+            "Active products should include care instructions.",
+          ),
+        ),
     }),
     defineField({
       name: "variants",
@@ -400,6 +491,14 @@ export const sareeSchema = defineType({
       type: "array",
       group: "inventory",
       description: "Use variants only when colour/size/SKU/stock differs.",
+      validation: (Rule) =>
+        Rule.max(12)
+          .warning("Large variant sets are harder to maintain. Keep this focused.")
+          .custom((variants) => {
+            if (!Array.isArray(variants)) return true;
+            const skus = variants.map((variant: any) => variant?.sku).filter(Boolean);
+            return new Set(skus).size === skus.length || "Variant SKUs must be unique.";
+          }),
       of: [
         {
           type: "object",
@@ -422,7 +521,7 @@ export const sareeSchema = defineType({
               name: "colorHex",
               title: "Color Hex",
               type: "string",
-              validation: hexColorValidation,
+              validation: (Rule) => hexColorValidation(Rule.required()),
             }),
             defineField({
               name: "size",
@@ -494,12 +593,29 @@ export const sareeSchema = defineType({
         }),
         defineField({
           name: "ogImage",
-          title: "Open Graph Image",
+              title: "Open Graph Image",
           type: "image",
           options: { hotspot: true },
           fields: imageWithAltFields,
         }),
       ],
+    }),
+    defineField({
+      name: "contentStatus",
+      title: "Content QA Status",
+      type: "string",
+      group: "admin",
+      description: "Internal editorial workflow. This does not publish or hide the product by itself.",
+      options: {
+        list: [
+          { title: "Needs copy", value: "needsCopy" },
+          { title: "Needs images", value: "needsImages" },
+          { title: "Needs review", value: "needsReview" },
+          { title: "Approved", value: "approved" },
+        ],
+        layout: "radio",
+      },
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "internalNotes",
@@ -516,9 +632,10 @@ export const sareeSchema = defineType({
       status: "status",
       price: "price",
       stockStatus: "stockStatus",
+      contentStatus: "contentStatus",
       media: "mainImage",
     },
-    prepare({ title, status, price, stockStatus, media }) {
+    prepare({ title, status, price, stockStatus, contentStatus, media }) {
       const formattedPrice =
         typeof price === "number"
           ? new Intl.NumberFormat("en-IN", {
@@ -530,7 +647,7 @@ export const sareeSchema = defineType({
 
       return {
         title: title ?? "Untitled saree",
-        subtitle: `${status ?? "draft"} · ${stockStatus ?? "stock unknown"} · ${formattedPrice}`,
+        subtitle: `${status ?? "draft"} · ${contentStatus ?? "needs review"} · ${stockStatus ?? "stock unknown"} · ${formattedPrice}`,
         media,
       };
     },

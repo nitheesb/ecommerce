@@ -216,6 +216,7 @@ for (const [index, product] of products.entries()) {
     careInstructions: "Dry clean recommended.",
     featured: index < 4,
     sortOrder: (index + 1) * 10,
+    contentStatus: "approved",
     highlights: product.highlights,
     variants: [],
     seo: {
@@ -235,7 +236,14 @@ await client.createOrReplace({
   brandName: "House of Thazhuval",
   tagline: "The comfort that embraces you",
   announcement: "Complimentary shipping on orders above ₹2,000",
+  announcementEnabled: true,
+  currency: "INR",
+  freeShippingThreshold: 2000,
+  shippingLeadTime: "Ships in 2-4 business days.",
+  returnWindowHours: 48,
+  publicEmail: "houseofthazhuval@gmail.com",
   supportPhone: "919585628565",
+  whatsappDefaultMessage: "Hi, I need help with House of Thazhuval.",
   shippingNote: "Complimentary shipping above ₹2,000 and support throughout delivery.",
   defaultSeo: {
     metaTitle: "House of Thazhuval",
