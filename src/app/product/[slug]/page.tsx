@@ -141,7 +141,7 @@ function SanityProductDetail({ product }: { product: IProduct }) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
         />
-        <div className="mx-auto max-w-7xl px-6 pb-32 pt-8 md:pb-8 lg:px-12">
+        <div className="mx-auto max-w-7xl px-6 pb-10 pt-8 md:pb-8 lg:px-12">
           <Breadcrumbs
             items={[
               { label: "Home", href: "/" },
@@ -265,12 +265,10 @@ function SanityProductDetail({ product }: { product: IProduct }) {
                 </a>
               </div>
 
-              <Separator className="my-6" />
-
-              <ProductCare />
             </div>
           </div>
         </div>
+        <ProductCare compact />
         <RecentlyViewedTracker
           item={{
             id: product._id,
@@ -320,7 +318,7 @@ function StaticProductDetail({ product }: { product: Product }) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
         />
-        <div className="mx-auto max-w-7xl px-6 pb-32 pt-8 md:pb-8 lg:px-12">
+        <div className="mx-auto max-w-7xl px-6 pb-10 pt-8 md:pb-8 lg:px-12">
           <Breadcrumbs
             items={[
               { label: "Home", href: "/" },
@@ -464,12 +462,10 @@ function StaticProductDetail({ product }: { product: Product }) {
                 </a>
               </div>
 
-              <Separator className="my-6" />
-
-              <ProductCare />
             </div>
           </div>
         </div>
+        <ProductCare compact />
         <MobileStaticPurchaseBar
           product={product}
           productUrl={productUrl}

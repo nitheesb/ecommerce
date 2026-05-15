@@ -4,11 +4,17 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import { cn } from "@/lib/utils"
 
-export function ProductCare() {
+export function ProductCare({ compact = false }: { compact?: boolean }) {
   return (
     <section className="border-t border-border/60">
-      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 py-14 md:grid-cols-[1fr_1.3fr] md:gap-20 lg:px-12 lg:py-20">
+      <div
+        className={cn(
+          "mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 md:grid-cols-[1fr_1.3fr] md:gap-20 lg:px-12",
+          compact ? "py-10 lg:py-14" : "py-14 lg:py-20",
+        )}
+      >
         <div>
           <p className="text-[11px] font-medium uppercase tracking-[0.32em] text-muted-foreground">
             Forever Yours
