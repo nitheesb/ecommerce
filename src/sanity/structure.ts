@@ -224,4 +224,31 @@ export const structure: StructureResolver = (S) =>
                 .child(productList(S, "Heritage Sarees", `${saree} && category == "Heritage"`)),
             ]),
         ),
+      S.listItem()
+        .title("Browse by Fabric")
+        .id("browseByFabric")
+        .child(
+          S.list()
+            .title("Browse by Fabric")
+            .items([
+              S.listItem()
+                .title("Banana Silk")
+                .child(productList(S, "Banana Silk Sarees", `${saree} && fabric == "Banana Silk"`)),
+              S.listItem()
+                .title("Soft Silk")
+                .child(productList(S, "Soft Silk Sarees", `${saree} && fabric == "Soft Silk"`)),
+              S.listItem()
+                .title("Silk Cotton")
+                .child(productList(S, "Silk Cotton Sarees", `${saree} && fabric == "Silk Cotton"`)),
+              S.listItem()
+                .title("Tussar")
+                .child(productList(S, "Tussar Sarees", `${saree} && fabric == "Tussar"`)),
+              S.listItem()
+                .title("Chiffon")
+                .child(productList(S, "Chiffon Sarees", `${saree} && fabric == "Chiffon"`)),
+              S.listItem()
+                .title("Cotton")
+                .child(productList(S, "Cotton Sarees", `${saree} && fabric == "Cotton"`)),
+            ]),
+        ),
     ]);

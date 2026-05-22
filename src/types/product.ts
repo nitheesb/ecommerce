@@ -31,6 +31,21 @@ export interface ISanityImage {
 /** Union of product categories used for filtering and routing */
 export type ProductCategory = "Silk" | "Cotton" | "Heritage";
 
+export type ProductFabric =
+  | "Banana Silk"
+  | "Chiffon"
+  | "Cotton"
+  | "Crepe"
+  | "Georgette"
+  | "Handloom Cotton"
+  | "Linen"
+  | "Modal"
+  | "Organza"
+  | "Raw Silk"
+  | "Silk Cotton"
+  | "Soft Silk"
+  | "Tussar";
+
 /** Badge labels surfaced on product cards */
 export type ProductBadge = "Limited Edition" | "New" | "Bestseller" | "Heritage";
 
@@ -92,7 +107,7 @@ export interface IProduct {
   sku?: string;
 
   category: ProductCategory;
-  fabric?: string;
+  fabric?: ProductFabric;
   weaveType?: WeaveType;
   printType?: string;
   occasion?: string[];

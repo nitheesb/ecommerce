@@ -16,7 +16,7 @@ interface SearchPageClientProps {
   initialQuery?: string
 }
 
-const popularSearches = ["silk", "cotton", "festive", "banarasi", "bridal", "ajrakh"]
+const popularSearches = ["silk", "banana silk", "cotton", "festive", "banarasi", "ajrakh"]
 
 const suggestedCollections = [
   {
@@ -25,6 +25,13 @@ const suggestedCollections = [
     href: "/collections/silk",
     image: "/images/client/12-purple-chiffon.webp",
     keywords: ["silk", "kanjeevaram", "banarasi", "ceremony", "wedding"],
+  },
+  {
+    title: "Banana Silk",
+    description: "Plant-silk softness with a gentle sheen and elegant lightweight drape.",
+    href: "/collections/banana-silk",
+    image: "/images/client/10-pink-saree.webp",
+    keywords: ["banana silk", "plant silk", "soft sheen", "lightweight"],
   },
   {
     title: "Festive Edit",

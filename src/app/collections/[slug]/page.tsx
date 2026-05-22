@@ -80,6 +80,12 @@ const collectionMeta: Record<string, CollectionMeta> = {
       "Pure mulberry silk, woven with threads of gold and silver. Every Thazhuval silk is a quiet heirloom — heavy with memory, luminous with light.",
     sanityCategory: "Silk",
   },
+  "banana-silk": {
+    title: "Banana Silk Sarees",
+    kicker: "Plant Silk · Soft Sheen",
+    description:
+      "Banana silk sarees with a gentle lustre, lightweight comfort, and a refined plant-fibre story for elegant everyday and festive drapes.",
+  },
   "soft-silks": {
     title: "Soft Silk Sarees",
     kicker: "Lightweight Silk · Everyday Luxury",

@@ -4,6 +4,7 @@ export type Product = {
   name: string
   collection: string
   category: "Silk" | "Cotton" | "Heritage"
+  fabric?: string
   price: number
   compareAt?: number
   image: string
@@ -31,6 +32,7 @@ function getSearchableText(product: Product) {
     product.slug,
     product.collection,
     product.category,
+    product.fabric ?? "",
     product.badge ?? "",
     product.description,
   ]
@@ -71,6 +73,8 @@ export function filterProductsByCollectionSlug(products: Product[], slug: string
       return products.filter((product) => product.category === "Cotton")
     case "silk":
       return products.filter((product) => product.category === "Silk")
+    case "banana-silk":
+      return products.filter((product) => product.fabric === "Banana Silk")
     case "heritage":
       return products.filter((product) => product.category === "Heritage")
     case "dailywear":
@@ -223,6 +227,7 @@ export const categories = [
       { label: "Linen", href: "/collections/linen" },
       { label: "Modal", href: "/collections/modal" },
       { label: "Silk", href: "/collections/silk" },
+      { label: "Banana Silk", href: "/collections/banana-silk" },
       { label: "Soft Silks", href: "/collections/soft-silks" },
       { label: "Tussar", href: "/collections/tussar" },
       { label: "Silk Cotton", href: "/collections/silk-cotton" },

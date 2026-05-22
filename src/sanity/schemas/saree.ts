@@ -153,6 +153,7 @@ export const sareeSchema = defineType({
       group: "content",
       options: {
         list: [
+          "Banana Silk",
           "Chiffon",
           "Cotton",
           "Crepe",

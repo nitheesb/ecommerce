@@ -9,7 +9,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import type { Product } from "@/lib/products"
 
 const fabricOptions = [
-  "Cotton", "Linen", "Modal", "Silk", "Soft Silks", "Tussar",
+  "Cotton", "Linen", "Modal", "Silk", "Banana Silk", "Soft Silks", "Tussar",
   "Silk Cotton", "Crepe", "Chiffon", "Organza", "Georgette",
 ]
 
@@ -53,6 +53,7 @@ export function FeaturedGridSection({ products }: FeaturedGridSectionProps) {
         const matchesFabric = selectedFabrics.some(
           (fabric) =>
             product.category.toLowerCase() === fabric.toLowerCase() ||
+            product.fabric?.toLowerCase() === fabric.toLowerCase() ||
             product.collection.toLowerCase().includes(fabric.toLowerCase())
         )
         if (!matchesFabric) return false
