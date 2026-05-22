@@ -7,12 +7,12 @@ export function HeroMobile() {
       {/* Background image — compact, not full viewport */}
       <div className="relative h-[55vh] min-h-[360px] max-h-[480px] overflow-hidden">
         <Image
-          src="/images/hero-cover.jpg"
-          alt="A woman in a red and gold saree standing in a golden mustard field"
+          src="/images/cover-image-thazhuval.jpg"
+          alt="A woman in a red saree standing in warm window light"
           fill
           priority
           sizes="100vw"
-          className="object-cover"
+          className="object-cover object-[68%_center]"
         />
         {/* Vignette overlay */}
         <div

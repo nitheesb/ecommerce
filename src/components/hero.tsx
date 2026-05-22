@@ -119,17 +119,17 @@ export function Hero() {
           className="absolute inset-0 will-change-transform"
         >
           <Image
-            src="/images/hero-red-portrait.png"
-            alt="A woman in a red saree standing in a warmly lit heritage corridor"
+            src="/images/cover-image-thazhuval.jpg"
+            alt="A woman in a red saree standing in warm window light"
             fill
             priority
             sizes="100vw"
-            className="object-cover object-[72%_center]"
+            className="object-cover object-[70%_center]"
           />
         </div>
       <div
         aria-hidden
-          className="absolute inset-0 bg-gradient-to-r from-foreground/76 via-foreground/32 to-foreground/16"
+          className="absolute inset-0 bg-gradient-to-r from-foreground/82 via-foreground/32 to-foreground/10"
         />
         <div
           aria-hidden
@@ -145,7 +145,7 @@ export function Hero() {
         <div className="mx-auto w-full max-w-7xl px-6 pb-10 pt-28 md:px-8 md:pb-14 md:pt-32 lg:pb-16 lg:pt-36">
           <div
             ref={contentRef}
-            className="max-w-[43rem] rounded-[32px] border border-background/14 bg-background/6 px-7 py-8 text-background shadow-[0_20px_80px_rgba(12,10,9,0.16)] backdrop-blur-[6px] md:px-9 md:py-10 lg:px-10 lg:py-11"
+            className="max-w-[43rem] rounded-[32px] border border-background/18 bg-foreground/24 px-7 py-8 text-background shadow-[0_20px_80px_rgba(12,10,9,0.24)] backdrop-blur-[10px] md:px-9 md:py-10 lg:px-10 lg:py-11"
           >
             <p className="text-[11px] font-medium uppercase tracking-[0.32em] text-background/70">
               House of Thazhuval
@@ -156,7 +156,7 @@ export function Hero() {
               </span>
               <span
                 ref={line2Ref}
-                className="mt-2 block italic text-[hsl(var(--sand))] will-change-transform"
+                className="mt-2 block italic text-background/90 will-change-transform"
               >
                 it&apos;s an embrace.
               </span>
