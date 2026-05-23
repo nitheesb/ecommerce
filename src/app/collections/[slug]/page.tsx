@@ -6,6 +6,7 @@ import { ProductCare } from "@/components/product-care"
 import { CollectionGrid } from "@/components/collection-grid"
 import {
   filterProductsByCollectionSlug,
+  getVisibleProducts,
   products as staticProducts,
   type Product,
   type ProductCategory,
@@ -370,7 +371,7 @@ export default async function CollectionPage({ params }: { params: { slug: strin
 
   // Try Sanity first if we know the category
   const sanityProducts = await sanityFetch<Product[]>(allProductsQuery)
-  const catalog = sanityProducts && sanityProducts.length > 0 ? sanityProducts : staticProducts
+  const catalog = sanityProducts && sanityProducts.length > 0 ? sanityProducts : getVisibleProducts(staticProducts)
   const products = filterProductsByCollectionSlug(catalog, params.slug)
 
   return (

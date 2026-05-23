@@ -156,6 +156,7 @@ export const sareeSchema = defineType({
       group: "content",
       options: {
         list: [
+          { title: "None", value: "None" },
           { title: "Silk", value: "Silk" },
           { title: "Cotton", value: "Cotton" },
           { title: "Heritage", value: "Heritage" },

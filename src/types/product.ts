@@ -29,7 +29,7 @@ export interface ISanityImage {
 }
 
 /** Union of product categories used for filtering and routing */
-export type ProductCategory = "Silk" | "Cotton" | "Heritage" | "Designer";
+export type ProductCategory = "None" | "Silk" | "Cotton" | "Heritage" | "Designer";
 
 export type ProductFabric =
   | "Banana Silk"

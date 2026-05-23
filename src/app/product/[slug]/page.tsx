@@ -7,7 +7,7 @@ import { ProductCard } from "@/components/product-card"
 import { absoluteUrl, cn, formatCurrency } from "@/lib/utils"
 import { sanityFetch } from "@/lib/sanity/client"
 import { productBySlugQuery, allProductSlugsQuery, allProductsQuery } from "@/lib/sanity/queries"
-import { products as staticProducts, type Product } from "@/lib/products"
+import { getVisibleProducts, products as staticProducts, type Product } from "@/lib/products"
 import type { IProduct } from "@/types"
 import { ProductActions } from "./product-actions"
 import { ProductGallery } from "./product-gallery"
@@ -24,7 +24,7 @@ export async function generateStaticParams() {
     return sanitySlugs.map((slug) => ({ slug }))
   }
 
-  return staticProducts.map((p) => ({ slug: p.slug }))
+  return getVisibleProducts(staticProducts).map((p) => ({ slug: p.slug }))
 }
 
 // ---------------------------------------------------------------------------
@@ -64,7 +64,7 @@ export async function generateMetadata({
     }
   }
 
-  const staticProduct = staticProducts.find((p) => p.slug === params.slug)
+  const staticProduct = getVisibleProducts(staticProducts).find((p) => p.slug === params.slug)
   if (!staticProduct) return { title: "Product Not Found" }
 
   return {
@@ -110,14 +110,15 @@ export default async function ProductPage({
     )
   }
 
-  const staticProduct = staticProducts.find((p) => p.slug === params.slug)
+  const visibleStaticProducts = getVisibleProducts(staticProducts)
+  const staticProduct = visibleStaticProducts.find((p) => p.slug === params.slug)
   if (!staticProduct) return notFound()
 
   return (
     <StaticProductDetail
       product={staticProduct}
       relatedProducts={getRelatedProducts(
-        staticProducts,
+        visibleStaticProducts,
         staticProduct.slug,
         staticProduct.category,
         staticProduct.collection,
@@ -176,6 +177,11 @@ function SanityProductDetail({
 
   const isOutOfStock = isSanityProductOutOfStock(product)
   const availabilityLabel = getAvailabilityLabel(product.stockStatus, product.stockQuantity)
+  const productKicker = getProductKicker(product.category, product.collection)
+  const breadcrumbItems = [
+    { label: "Home", href: "/" },
+    { label: product.title },
+  ]
   const productSchema = buildProductSchema({
     name: product.title,
     description: product.description,
@@ -205,11 +211,7 @@ function SanityProductDetail({
         />
         <div className="mx-auto max-w-[1440px] px-4 pb-12 pt-6 md:px-6 md:pb-14 md:pt-8 lg:px-10">
           <Breadcrumbs
-            items={[
-              { label: "Home", href: "/" },
-              { label: product.category, href: `/collections/${product.category.toLowerCase()}` },
-              { label: product.title },
-            ]}
+            items={breadcrumbItems}
           />
 
           <div className="mt-7 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1.12fr)_minmax(390px,0.72fr)] lg:items-start lg:gap-10 xl:gap-14">
@@ -230,7 +232,7 @@ function SanityProductDetail({
               <div className="rounded-[34px] border border-border/70 bg-[linear-gradient(145deg,rgba(255,253,248,0.97)_0%,rgba(246,240,230,0.94)_100%)] p-5 shadow-[0_24px_80px_rgba(15,23,42,0.08)] backdrop-blur md:p-7 xl:p-8">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <p className="text-[10px] font-medium uppercase tracking-[0.26em] text-muted-foreground">
-                    {product.category} / {product.collection ?? "Saree"}
+                    {productKicker}
                   </p>
                   <span
                     className={cn(
@@ -249,7 +251,7 @@ function SanityProductDetail({
                 </h1>
 
                 <div className="mt-5 flex items-baseline gap-3">
-                  <span className="font-serif text-3xl leading-none text-foreground">
+                  <span className="font-sans text-[2.35rem] font-medium leading-none tracking-[-0.055em] text-foreground md:text-[2.75rem]">
                     {formatCurrency(product.price)}
                   </span>
                   {product.compareAtPrice && (
@@ -304,6 +306,11 @@ function StaticProductDetail({
   const productImage = absoluteUrl(product.image)
   const isOutOfStock = isStaticProductOutOfStock(product)
   const availabilityLabel = getAvailabilityLabel(product.stockStatus, product.stockQuantity)
+  const productKicker = getProductKicker(product.category, product.collection)
+  const breadcrumbItems = [
+    { label: "Home", href: "/" },
+    { label: product.name },
+  ]
   const productSchema = buildProductSchema({
     name: product.name,
     description: product.description,
@@ -352,11 +359,7 @@ function StaticProductDetail({
         />
         <div className="mx-auto max-w-[1440px] px-4 pb-12 pt-6 md:px-6 md:pb-14 md:pt-8 lg:px-10">
           <Breadcrumbs
-            items={[
-              { label: "Home", href: "/" },
-              { label: product.category, href: `/collections/${product.category.toLowerCase()}` },
-              { label: product.name },
-            ]}
+            items={breadcrumbItems}
           />
 
           <div className="mt-7 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1.12fr)_minmax(390px,0.72fr)] lg:items-start lg:gap-10 xl:gap-14">
@@ -380,7 +383,7 @@ function StaticProductDetail({
               <div className="rounded-[34px] border border-border/70 bg-[linear-gradient(145deg,rgba(255,253,248,0.97)_0%,rgba(246,240,230,0.94)_100%)] p-5 shadow-[0_24px_80px_rgba(15,23,42,0.08)] backdrop-blur md:p-7 xl:p-8">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <p className="text-[10px] font-medium uppercase tracking-[0.26em] text-muted-foreground">
-                    {product.category} / {product.collection}
+                    {productKicker}
                   </p>
                   <span
                     className={cn(
@@ -399,7 +402,7 @@ function StaticProductDetail({
                 </h1>
 
                 <div className="mt-5 flex items-baseline gap-3">
-                  <span className="font-serif text-3xl leading-none text-foreground">
+                  <span className="font-sans text-[2.35rem] font-medium leading-none tracking-[-0.055em] text-foreground md:text-[2.75rem]">
                     {formatCurrency(product.price)}
                   </span>
                   {product.compareAt && (
@@ -547,6 +550,11 @@ function getAvailabilityLabel(status?: string, quantity?: number) {
     return typeof quantity === "number" && quantity > 0 ? `Only ${quantity} left` : "Low stock";
   }
   return "In stock";
+}
+
+function getProductKicker(category?: string, collection?: string) {
+  if (collection) return collection
+  return category && category !== "None" ? category : "Saree"
 }
 
 function buildProductSchema({

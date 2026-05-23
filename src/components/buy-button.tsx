@@ -17,9 +17,10 @@ interface BuyButtonProps {
 export function BuyButton({ product, variant, className, children }: BuyButtonProps) {
   const item = mapProductToSnipcartItem(product, variant);
   const stockQuantity = variant?.stockQuantity ?? product.stockQuantity;
+  const productOutOfStock = product.stockStatus === "outOfStock" || product.stockQuantity === 0;
   const isOutOfStock = variant
-    ? variant.stockQuantity <= 0
-    : product.stockStatus === "outOfStock" || stockQuantity === 0;
+    ? productOutOfStock || variant.stockQuantity <= 0
+    : productOutOfStock || stockQuantity === 0;
 
   const dataAttributes: Record<string, string | number | undefined> = {
     "data-item-id": item.id,

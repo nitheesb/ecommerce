@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next"
 
-import { categories, products as staticProducts, type Product } from "@/lib/products"
+import { categories, getVisibleProducts, products as staticProducts, type Product } from "@/lib/products"
 import { sanityFetch } from "@/lib/sanity/client"
 import { allProductsQuery } from "@/lib/sanity/queries"
 import { absoluteUrl } from "@/lib/utils"
@@ -26,7 +26,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   const sanityProducts = await sanityFetch<Product[]>(allProductsQuery)
-  const products = sanityProducts && sanityProducts.length > 0 ? sanityProducts : staticProducts
+  const products = sanityProducts && sanityProducts.length > 0 ? sanityProducts : getVisibleProducts(staticProducts)
 
   const entries: MetadataRoute.Sitemap = [
     ...staticPages.map((path) => ({

@@ -4,7 +4,7 @@ import { InnerPageShell } from "@/components/inner-page-shell"
 import { SearchPageClient } from "@/components/search-page-client"
 import { sanityFetch } from "@/lib/sanity/client"
 import { allProductsQuery } from "@/lib/sanity/queries"
-import { products as staticProducts, type Product } from "@/lib/products"
+import { getVisibleProducts, products as staticProducts, type Product } from "@/lib/products"
 
 export const metadata: Metadata = {
   title: "Search",
@@ -21,7 +21,7 @@ export default async function SearchPage({
   searchParams?: { q?: string }
 }) {
   const sanityProducts = await sanityFetch<Product[]>(allProductsQuery)
-  const products = sanityProducts && sanityProducts.length > 0 ? sanityProducts : staticProducts
+  const products = sanityProducts && sanityProducts.length > 0 ? sanityProducts : getVisibleProducts(staticProducts)
   const initialQuery = searchParams?.q?.trim() ?? ""
 
   return (

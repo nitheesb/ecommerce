@@ -11,11 +11,11 @@ import { SectionDivider } from "@/components/section-divider"
 import { WeaveJourney } from "@/components/weave-journey"
 import { sanityFetch } from "@/lib/sanity/client"
 import { allProductsQuery } from "@/lib/sanity/queries"
-import { products as staticProducts, type Product } from "@/lib/products"
+import { getVisibleProducts, products as staticProducts, type Product } from "@/lib/products"
 
 export default async function HomePage() {
   const sanityProducts = await sanityFetch<Product[]>(allProductsQuery)
-  const products = sanityProducts && sanityProducts.length > 0 ? sanityProducts : staticProducts
+  const products = sanityProducts && sanityProducts.length > 0 ? sanityProducts : getVisibleProducts(staticProducts)
 
   return (
     <>

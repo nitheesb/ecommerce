@@ -17,9 +17,10 @@ export function ProductActions({ product }: ProductActionsProps) {
 
   const hasVariants = product.variants && product.variants.length > 0
   const stockQuantity = selectedVariant?.stockQuantity ?? product.stockQuantity
+  const productOutOfStock = product.stockStatus === "outOfStock" || product.stockQuantity === 0
   const isOutOfStock = selectedVariant
-    ? selectedVariant.stockQuantity <= 0
-    : product.stockStatus === "outOfStock" || stockQuantity === 0
+    ? productOutOfStock || selectedVariant.stockQuantity <= 0
+    : productOutOfStock || stockQuantity === 0
   const isLowStock =
     !isOutOfStock &&
     (product.stockStatus === "lowStock" ||

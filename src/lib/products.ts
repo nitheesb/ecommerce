@@ -3,7 +3,8 @@ export type Product = {
   slug: string
   name: string
   collection: string
-  category: "Silk" | "Cotton" | "Heritage" | "Designer"
+  category: "None" | "Silk" | "Cotton" | "Heritage" | "Designer"
+  status?: "draft" | "active" | "archived"
   fabric?: string
   price: number
   compareAt?: number
@@ -32,13 +33,17 @@ function getSearchableText(product: Product) {
     product.name,
     product.slug,
     product.collection,
-    product.category,
+    product.category === "None" ? "" : product.category,
     product.fabric ?? "",
     product.badge ?? "",
     product.description,
   ]
     .join(" ")
     .toLowerCase()
+}
+
+export function getVisibleProducts(products: Product[]) {
+  return products.filter((product) => product.status !== "draft" && product.status !== "archived")
 }
 
 export function searchProducts(products: Product[], query: string) {
@@ -209,6 +214,9 @@ export const products: Product[] = [
     name: "Tara",
     collection: "Teal Green",
     category: "Cotton",
+    status: "archived",
+    stockStatus: "outOfStock",
+    stockQuantity: 0,
     price: 10800,
     image: "/images/client/20-teal-green-2.webp",
     hoverImage: "/images/client/19-teal-green-1.webp",
