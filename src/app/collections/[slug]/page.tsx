@@ -135,6 +135,13 @@ const collectionMeta: Record<string, CollectionMeta> = {
       "Protected weaves from India's most storied ateliers. Rare techniques, small editions, and six yards that carry centuries.",
     sanityCategory: "Heritage",
   },
+  designer: {
+    title: "Designer Sarees",
+    kicker: "Statement Drapes · Signature Edits",
+    description:
+      "Designer sarees curated for standout occasions, expressive styling, and the pieces that carry a stronger editorial point of view.",
+    sanityCategory: "Designer",
+  },
 
   // ── Prints ────────────────────────────────────────────────────────────
   prints: {

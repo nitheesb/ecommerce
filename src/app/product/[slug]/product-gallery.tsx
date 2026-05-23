@@ -26,8 +26,9 @@ export function ProductGallery({ images, badge }: ProductGalleryProps) {
 
   if (images.length === 0) return null
 
-  const mainImage = images[0]
-  const galleryImages = images.slice(1)
+  const displayImages = images.slice(0, 2)
+  const mainImage = displayImages[0]
+  const secondImage = displayImages[1]
 
   return (
     <>
@@ -55,27 +56,22 @@ export function ProductGallery({ images, badge }: ProductGalleryProps) {
           )}
         </div>
 
-        {/* Gallery grid */}
-        {galleryImages.length > 0 && (
-          <div className="grid grid-cols-2 gap-4">
-            {galleryImages.map((img, i) => (
-              <div
-                key={img.src + i}
-                className="group/zoom relative cursor-zoom-in overflow-hidden bg-[radial-gradient(circle_at_top,#f5eadc_0%,#eee3d2_55%,#e3d4be_100%)]"
-                onClick={() => setLightboxIndex(i + 1)}
-              >
-                <AspectRatio ratio={4 / 5}>
-                  <Image
-                    src={img.src}
-                    alt={img.alt}
-                    fill
-                    sizes={img.sizes ?? "(max-width: 1024px) 50vw, 25vw"}
-                    className="object-contain transition-transform duration-500 ease-out group-hover/zoom:scale-[1.04]"
-                    {...(img.lqip ? { placeholder: "blur", blurDataURL: img.lqip } : {})}
-                  />
-                </AspectRatio>
-              </div>
-            ))}
+        {/* Second image */}
+        {secondImage && (
+          <div
+            className="group/zoom relative cursor-zoom-in overflow-hidden bg-[radial-gradient(circle_at_top,#f5eadc_0%,#eee3d2_55%,#e3d4be_100%)]"
+            onClick={() => setLightboxIndex(1)}
+          >
+            <AspectRatio ratio={4 / 5}>
+              <Image
+                src={secondImage.src}
+                alt={secondImage.alt}
+                fill
+                sizes={secondImage.sizes ?? "(max-width: 1024px) 100vw, 50vw"}
+                className="object-contain transition-transform duration-500 ease-out group-hover/zoom:scale-[1.04]"
+                {...(secondImage.lqip ? { placeholder: "blur", blurDataURL: secondImage.lqip } : {})}
+              />
+            </AspectRatio>
           </div>
         )}
       </div>
@@ -83,7 +79,7 @@ export function ProductGallery({ images, badge }: ProductGalleryProps) {
       {/* Lightbox */}
       {lightboxIndex !== null && (
         <ImageLightbox
-          images={images.map((img) => ({ src: img.src, alt: img.alt, lqip: img.lqip }))}
+          images={displayImages.map((img) => ({ src: img.src, alt: img.alt, lqip: img.lqip }))}
           initialIndex={lightboxIndex}
           onClose={() => setLightboxIndex(null)}
         />

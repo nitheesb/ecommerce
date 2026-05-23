@@ -222,6 +222,9 @@ export const structure: StructureResolver = (S) =>
               S.listItem()
                 .title("Heritage")
                 .child(productList(S, "Heritage Sarees", `${saree} && category == "Heritage"`)),
+              S.listItem()
+                .title("Designer")
+                .child(productList(S, "Designer Sarees", `${saree} && category == "Designer"`)),
             ]),
         ),
       S.listItem()

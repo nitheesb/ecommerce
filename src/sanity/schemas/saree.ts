@@ -141,6 +141,7 @@ export const sareeSchema = defineType({
           { title: "Silk", value: "Silk" },
           { title: "Cotton", value: "Cotton" },
           { title: "Heritage", value: "Heritage" },
+          { title: "Designer", value: "Designer" },
         ],
         layout: "radio",
       },
@@ -279,10 +280,10 @@ export const sareeSchema = defineType({
     }),
     defineField({
       name: "hoverImage",
-      title: "Hover / Detail Image",
+      title: "Second Product Image",
       type: "image",
       group: "media",
-      description: "Used as product-card hover image and gallery secondary image.",
+      description: "Shown below the main product image on the product page and used as the product-card hover image.",
       options: { hotspot: true },
       fields: imageWithAltFields,
       validation: (Rule) =>

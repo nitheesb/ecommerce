@@ -40,6 +40,7 @@ const comingSoonCards = [
 const fallbackCollections = [
   { label: "All Sarees", href: "/collections/all-sarees" },
   { label: "Silk", href: "/collections/silk" },
+  { label: "Designer", href: "/collections/designer" },
   { label: "Festive", href: "/collections/festive" },
   { label: "Cotton", href: "/collections/cotton" },
 ]

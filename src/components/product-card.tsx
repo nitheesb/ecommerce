@@ -157,30 +157,27 @@ export function ProductCard({ product, className, priority, onQuickView, hideQui
 
       {/* Meta */}
       <div className="mt-4 px-0.5">
-        <p className="text-[10px] uppercase tracking-[0.24em] text-muted-foreground/90">
-          {product.collection}
-        </p>
-        <h3 className="mt-2 font-serif text-[21px] leading-[1.15] tracking-tight text-foreground">
+        <h3 className="font-serif text-[21px] leading-[1.15] tracking-tight text-foreground">
           {product.name}
         </h3>
-        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-          {product.category} weave
+        <p className="mt-2 overflow-hidden text-sm leading-relaxed text-muted-foreground [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">
+          {product.description}
         </p>
 
-        <div className="mt-4 flex flex-col items-start gap-2 border-t border-border/50 pt-3 sm:flex-row sm:items-end sm:justify-between sm:gap-3">
-          <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
-            {isOutOfStock ? "Currently out of stock" : "Ready to wear elegance"}
+        <div className="mt-3">
+          <p className="font-serif text-base leading-tight md:text-lg">
+            {formatCurrency(product.price)}
           </p>
-          <div className="shrink-0 text-left sm:text-right">
-            <p className="font-serif text-base leading-tight md:text-lg">
-              {formatCurrency(product.price)}
+          {product.compareAt && (
+            <p className="mt-1 text-[11px] text-muted-foreground line-through">
+              {formatCurrency(product.compareAt)}
             </p>
-            {product.compareAt && (
-              <p className="mt-1 text-[11px] text-muted-foreground line-through">
-                {formatCurrency(product.compareAt)}
-              </p>
-            )}
-          </div>
+          )}
+          {isOutOfStock && (
+            <p className="mt-2 text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+              Currently out of stock
+            </p>
+          )}
         </div>
       </div>
     </Link>

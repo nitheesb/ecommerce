@@ -11,7 +11,7 @@ const productCardFields = `{
   "id": _id,
   "name": title,
   "slug": slug.current,
-  description,
+  "description": coalesce(shortDescription, description),
   status,
   sku,
   category,

@@ -3,7 +3,7 @@ export type Product = {
   slug: string
   name: string
   collection: string
-  category: "Silk" | "Cotton" | "Heritage"
+  category: "Silk" | "Cotton" | "Heritage" | "Designer"
   fabric?: string
   price: number
   compareAt?: number
@@ -77,6 +77,8 @@ export function filterProductsByCollectionSlug(products: Product[], slug: string
       return products.filter((product) => product.fabric === "Banana Silk")
     case "heritage":
       return products.filter((product) => product.category === "Heritage")
+    case "designer":
+      return products.filter((product) => product.category === "Designer")
     case "dailywear":
       return products.filter((product) => product.category === "Cotton" || product.price < 15000)
     case "festive":
@@ -84,6 +86,7 @@ export function filterProductsByCollectionSlug(products: Product[], slug: string
         (product) =>
           product.category === "Silk" ||
           product.category === "Heritage" ||
+          product.category === "Designer" ||
           product.price >= 15000,
       )
     default: {
@@ -231,6 +234,7 @@ export const categories = [
       { label: "Soft Silks", href: "/collections/soft-silks" },
       { label: "Tussar", href: "/collections/tussar" },
       { label: "Silk Cotton", href: "/collections/silk-cotton" },
+      { label: "Designer", href: "/collections/designer" },
       { label: "Crepe", href: "/collections/crepe" },
       { label: "Chiffon", href: "/collections/chiffon" },
       { label: "Organza", href: "/collections/organza" },

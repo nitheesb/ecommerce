@@ -9,7 +9,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import type { Product } from "@/lib/products"
 
 const fabricOptions = [
-  "Cotton", "Linen", "Modal", "Silk", "Banana Silk", "Soft Silks", "Tussar",
+  "Cotton", "Linen", "Modal", "Silk", "Designer", "Banana Silk", "Soft Silks", "Tussar",
   "Silk Cotton", "Crepe", "Chiffon", "Organza", "Georgette",
 ]
 
@@ -66,7 +66,7 @@ export function FeaturedGridSection({ products }: FeaturedGridSectionProps) {
             return product.category === "Cotton" || product.price < 15000
           }
           if (occasion === "Festive") {
-            return product.category === "Silk" || product.category === "Heritage" || product.price >= 15000
+            return product.category === "Silk" || product.category === "Heritage" || product.category === "Designer" || product.price >= 15000
           }
           return false
         })

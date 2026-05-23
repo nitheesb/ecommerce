@@ -16,7 +16,7 @@ interface SearchPageClientProps {
   initialQuery?: string
 }
 
-const popularSearches = ["silk", "banana silk", "cotton", "festive", "banarasi", "ajrakh"]
+const popularSearches = ["silk", "designer", "banana silk", "cotton", "festive", "ajrakh"]
 
 const suggestedCollections = [
   {
@@ -39,6 +39,13 @@ const suggestedCollections = [
     href: "/collections/festive",
     image: "/images/client/18-red-chiffon.webp",
     keywords: ["festive", "bridal", "wedding", "occasion", "celebration"],
+  },
+  {
+    title: "Designer Sarees",
+    description: "Statement drapes with a stronger editorial point of view.",
+    href: "/collections/designer",
+    image: "/images/client/17-red-chiffon-saree.webp",
+    keywords: ["designer", "statement", "editorial", "occasion"],
   },
   {
     title: "Shop by Prints",
@@ -185,14 +192,11 @@ export function SearchPageClient({
                         />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
-                          {product.collection}
-                        </p>
-                        <h3 className="mt-1 truncate font-serif text-lg leading-tight sm:text-xl">
+                        <h3 className="truncate font-serif text-lg leading-tight sm:text-xl">
                           {product.name}
                         </h3>
                         <p className="mt-1 line-clamp-1 text-sm text-muted-foreground">
-                          {product.category} weave
+                          {product.description}
                         </p>
                       </div>
                       <p className="hidden shrink-0 font-serif text-base sm:block">

@@ -113,6 +113,22 @@ function SanityProductDetail({ product }: { product: IProduct }) {
   const mainImageUrl = product.mainImage?.url ?? "/images/hero.jpg"
   const productUrl = absoluteUrl(`/product/${product.slug.current}`)
   const lqip = product.mainImage?.lqip
+  const fallbackGalleryImage = product.imageGallery?.find((img) => img.url)
+  const secondImage = product.hoverImage?.url
+    ? {
+        src: product.hoverImage.url,
+        alt: product.hoverImage.alt ?? `${product.title} second product image`,
+        lqip: product.hoverImage.lqip ?? undefined,
+        sizes: "(max-width: 1024px) 100vw, 50vw",
+      }
+    : fallbackGalleryImage?.url
+      ? {
+          src: fallbackGalleryImage.url,
+          alt: fallbackGalleryImage.alt ?? `${product.title} second product image`,
+          lqip: fallbackGalleryImage.lqip ?? undefined,
+          sizes: "(max-width: 1024px) 100vw, 50vw",
+        }
+      : null
   const isOutOfStock = isSanityProductOutOfStock(product)
   const productSchema = buildProductSchema({
     name: product.title,
@@ -160,12 +176,7 @@ function SanityProductDetail({ product }: { product: IProduct }) {
                   lqip: lqip ?? undefined,
                   sizes: "(max-width: 1024px) 100vw, 50vw",
                 },
-                ...(product.imageGallery ?? []).map((img, i) => ({
-                  src: img.url ?? "/images/hero.jpg",
-                  alt: img.alt ?? `${product.title} gallery image ${i + 1}`,
-                  lqip: img.lqip ?? undefined,
-                  sizes: "(max-width: 1024px) 50vw, 25vw",
-                })),
+                ...(secondImage ? [secondImage] : []),
               ]}
               badge={
                 product.badge
@@ -381,7 +392,7 @@ function StaticProductDetail({ product }: { product: Product }) {
                 <h3 className="text-xs font-medium uppercase tracking-[0.2em]">Product Details</h3>
                 <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm">
                   <dt className="text-muted-foreground">Fabric</dt>
-                  <dd>{product.category === "Silk" ? "Pure Silk" : product.category === "Cotton" ? "Handloom Cotton" : "Heritage Weave"}</dd>
+                  <dd>{product.fabric ?? getStaticFabricLabel(product.category)}</dd>
                   <dt className="text-muted-foreground">Weave</dt>
                   <dd>{product.collection}</dd>
                   <dt className="text-muted-foreground">Length</dt>
@@ -403,7 +414,7 @@ function StaticProductDetail({ product }: { product: Product }) {
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="mt-1 h-1 w-1 shrink-0 rounded-full bg-foreground/40" />
-                    {product.category === "Silk" ? "Pure mulberry silk with authentic zari work" : product.category === "Cotton" ? "Breathable handloom fabric, perfect for all-day wear" : "Rare heritage technique, limited production"}
+                    {getStaticCategoryHighlight(product.category)}
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="mt-1 h-1 w-1 shrink-0 rounded-full bg-foreground/40" />
@@ -625,6 +636,34 @@ function isSanityProductOutOfStock(product: IProduct) {
 
 function isStaticProductOutOfStock(product: Product) {
   return product.stockStatus === "outOfStock" || product.stockQuantity === 0;
+}
+
+function getStaticFabricLabel(category: Product["category"]) {
+  switch (category) {
+    case "Silk":
+      return "Pure Silk";
+    case "Cotton":
+      return "Handloom Cotton";
+    case "Designer":
+      return "Designer Saree";
+    case "Heritage":
+    default:
+      return "Heritage Weave";
+  }
+}
+
+function getStaticCategoryHighlight(category: Product["category"]) {
+  switch (category) {
+    case "Silk":
+      return "Pure mulberry silk with authentic zari work";
+    case "Cotton":
+      return "Breathable handloom fabric, perfect for all-day wear";
+    case "Designer":
+      return "Statement styling with an elevated designer finish";
+    case "Heritage":
+    default:
+      return "Rare heritage technique, limited production";
+  }
 }
 
 function buildProductSchema({
