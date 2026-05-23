@@ -23,6 +23,24 @@ const activeProductRequires = (context: any, condition: boolean, message: string
   return condition || message;
 };
 
+const getImageAssetRef = (image: any) => image?.asset?._ref;
+
+const hasExtraGalleryImage = (images: any[] | undefined, context: any) => {
+  const existingProductImageRefs = new Set(
+    [
+      getImageAssetRef(context.document?.mainImage),
+      getImageAssetRef(context.document?.hoverImage),
+      getImageAssetRef(context.document?.thirdImage),
+    ]
+      .filter(Boolean),
+  );
+
+  return Array.isArray(images) && images.some((image) => {
+    const imageRef = getImageAssetRef(image);
+    return imageRef && !existingProductImageRefs.has(imageRef);
+  });
+};
+
 export const sareeSchema = defineType({
   name: "saree",
   title: "Saree",
@@ -296,10 +314,28 @@ export const sareeSchema = defineType({
         ).warning(),
     }),
     defineField({
+      name: "thirdImage",
+      title: "Third Product Image",
+      type: "image",
+      group: "media",
+      description: "Dedicated third image slot for the product detail page. Use a different angle, border close-up, or drape detail.",
+      options: { hotspot: true },
+      fields: imageWithAltFields,
+      validation: (Rule) =>
+        Rule.custom((value, context) =>
+          activeProductRequires(
+            context,
+            Boolean(value?.asset),
+            "Active products should have a third product image for the PDP.",
+          ),
+        ).warning(),
+    }),
+    defineField({
       name: "imageGallery",
-      title: "Product Gallery",
+      title: "Optional Extra Gallery Images",
       type: "array",
       group: "media",
+      description: "Optional extra detail/lifestyle images beyond the first three product images.",
       of: [
         {
           type: "image",
@@ -309,12 +345,12 @@ export const sareeSchema = defineType({
       ],
       validation: (Rule) =>
         Rule.max(10)
-          .warning("Keep galleries focused; 3-6 images is ideal.")
+          .warning("Keep optional galleries focused; 1-4 extra images is ideal.")
           .custom((value, context) =>
             activeProductRequires(
               context,
-              Array.isArray(value) && value.length >= 1,
-              "Active products should include at least one gallery image.",
+              Boolean(getImageAssetRef(context.document?.thirdImage)) || hasExtraGalleryImage(value, context),
+              "Active products should include a third product image or at least one optional extra gallery image.",
             ),
           )
           .warning(),

@@ -170,7 +170,7 @@ export const structure: StructureResolver = (S) =>
                   productList(
                     S,
                     "Missing Alt Text",
-                    `${saree} && (!defined(mainImage.alt) || !defined(hoverImage.alt) || count(imageGallery[!defined(alt)]) > 0)`,
+                    `${saree} && (!defined(mainImage.alt) || !defined(hoverImage.alt) || !defined(thirdImage.alt) || count(imageGallery[!defined(alt)]) > 0)`,
                     [{ field: "_updatedAt", direction: "desc" }],
                   ),
                 ),
@@ -190,7 +190,7 @@ export const structure: StructureResolver = (S) =>
                   productList(
                     S,
                     "Missing Gallery",
-                    `${saree} && (!defined(hoverImage.asset) || count(imageGallery[]) == 0)`,
+                    `${saree} && (!defined(hoverImage.asset) || !defined(thirdImage.asset))`,
                     [{ field: "_updatedAt", direction: "desc" }],
                   ),
                 ),
@@ -200,7 +200,7 @@ export const structure: StructureResolver = (S) =>
                   productList(
                     S,
                     "Launch Blockers",
-                    `${saree} && status == "active" && (contentStatus != "approved" || !defined(mainImage.asset) || !defined(mainImage.alt) || !defined(price) || !defined(slug.current) || !defined(description) || !defined(seo.metaTitle) || !defined(seo.metaDescription))`,
+                    `${saree} && status == "active" && (contentStatus != "approved" || !defined(mainImage.asset) || !defined(mainImage.alt) || !defined(hoverImage.asset) || !defined(hoverImage.alt) || !defined(thirdImage.asset) || !defined(thirdImage.alt) || !defined(price) || !defined(slug.current) || !defined(description) || !defined(seo.metaTitle) || !defined(seo.metaDescription))`,
                     [{ field: "_updatedAt", direction: "desc" }],
                   ),
                 ),

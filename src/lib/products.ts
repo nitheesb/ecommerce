@@ -9,6 +9,7 @@ export type Product = {
   compareAt?: number
   image: string
   hoverImage: string
+  detailImage?: string
   badge?: "Limited Edition" | "New" | "Bestseller" | "Heritage"
   stockStatus?: "inStock" | "lowStock" | "madeToOrder" | "outOfStock"
   stockQuantity?: number

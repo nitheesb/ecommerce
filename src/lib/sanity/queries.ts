@@ -4,7 +4,11 @@
 
 const imageFragment = `{
   asset->{ _id, url, metadata { lqip, dimensions } },
-  hotspot, crop, alt
+  "url": asset->url,
+  "lqip": asset->metadata.lqip,
+  hotspot,
+  crop,
+  alt
 }`;
 
 const productCardFields = `{
@@ -76,6 +80,7 @@ export const productBySlugQuery = `
     highlights,
     mainImage ${imageFragment},
     hoverImage ${imageFragment},
+    thirdImage ${imageFragment},
     "imageGallery": coalesce(imageGallery[] ${imageFragment}, []),
     "variants": coalesce(variants[]{
       _key, sku, color, colorHex, size, price, compareAtPrice, stockQuantity,

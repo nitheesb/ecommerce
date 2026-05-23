@@ -1,14 +1,12 @@
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
-import { BadgeCheck, MessageCircle, MessageCircleHeart, ShieldCheck, ShoppingBag, Truck } from "lucide-react"
 
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import { InnerPageShell } from "@/components/inner-page-shell"
-import { ProductCare } from "@/components/product-care"
-import { Separator } from "@/components/ui/separator"
+import { ProductCard } from "@/components/product-card"
 import { absoluteUrl, cn, formatCurrency } from "@/lib/utils"
 import { sanityFetch } from "@/lib/sanity/client"
-import { productBySlugQuery, allProductSlugsQuery } from "@/lib/sanity/queries"
+import { productBySlugQuery, allProductSlugsQuery, allProductsQuery } from "@/lib/sanity/queries"
 import { products as staticProducts, type Product } from "@/lib/products"
 import type { IProduct } from "@/types"
 import { ProductActions } from "./product-actions"
@@ -91,45 +89,93 @@ export default async function ProductPage({
 }: {
   params: { slug: string }
 }) {
-  const sanityProduct = await sanityFetch<IProduct | null>(productBySlugQuery, {
-    slug: params.slug,
-  })
+  const [sanityProduct, sanityProducts] = await Promise.all([
+    sanityFetch<IProduct | null>(productBySlugQuery, {
+      slug: params.slug,
+    }),
+    sanityFetch<Product[]>(allProductsQuery),
+  ])
 
   if (sanityProduct) {
-    return <SanityProductDetail product={sanityProduct} />
+    return (
+      <SanityProductDetail
+        product={sanityProduct}
+        relatedProducts={getRelatedProducts(
+          sanityProducts ?? [],
+          sanityProduct.slug.current,
+          sanityProduct.category,
+          sanityProduct.collection,
+        )}
+      />
+    )
   }
 
   const staticProduct = staticProducts.find((p) => p.slug === params.slug)
   if (!staticProduct) return notFound()
 
-  return <StaticProductDetail product={staticProduct} />
+  return (
+    <StaticProductDetail
+      product={staticProduct}
+      relatedProducts={getRelatedProducts(
+        staticProducts,
+        staticProduct.slug,
+        staticProduct.category,
+        staticProduct.collection,
+      )}
+    />
+  )
 }
 
 // ---------------------------------------------------------------------------
-// Sanity Product Detail (full PDP with variants, gallery, LQIP)
+// Sanity Product Detail (Sanity-backed PDP with card-matched imagery)
 // ---------------------------------------------------------------------------
 
-function SanityProductDetail({ product }: { product: IProduct }) {
+function SanityProductDetail({
+  product,
+  relatedProducts,
+}: {
+  product: IProduct
+  relatedProducts: Product[]
+}) {
   const mainImageUrl = product.mainImage?.url ?? "/images/hero.jpg"
-  const productUrl = absoluteUrl(`/product/${product.slug.current}`)
-  const lqip = product.mainImage?.lqip
-  const fallbackGalleryImage = product.imageGallery?.find((img) => img.url)
-  const secondImage = product.hoverImage?.url
-    ? {
-        src: product.hoverImage.url,
-        alt: product.hoverImage.alt ?? `${product.title} second product image`,
-        lqip: product.hoverImage.lqip ?? undefined,
-        sizes: "(max-width: 1024px) 100vw, 50vw",
-      }
-    : fallbackGalleryImage?.url
-      ? {
-          src: fallbackGalleryImage.url,
-          alt: fallbackGalleryImage.alt ?? `${product.title} second product image`,
-          lqip: fallbackGalleryImage.lqip ?? undefined,
-          sizes: "(max-width: 1024px) 100vw, 50vw",
-        }
-      : null
+  const imageUrls = new Set<string>()
+  const productImages: Array<{
+    src: string
+    alt: string
+    lqip?: string
+    sizes: string
+  }> = []
+  const addProductImage = (
+    image: IProduct["mainImage"] | undefined,
+    fallbackAlt: string,
+  ) => {
+    if (!image?.url || imageUrls.has(image.url) || productImages.length >= 3) return
+
+    imageUrls.add(image.url)
+    productImages.push({
+      src: image.url,
+      alt: image.alt ?? fallbackAlt,
+      lqip: image.lqip ?? undefined,
+      sizes: "(max-width: 1024px) 100vw, 50vw",
+    })
+  }
+
+  addProductImage(product.mainImage, `${product.title} saree`)
+  addProductImage(product.hoverImage, `${product.title} alternate product image`)
+  addProductImage(product.thirdImage, `${product.title} drape detail image`)
+  product.imageGallery?.forEach((image) => {
+    addProductImage(image, `${product.title} extra product image`)
+  })
+  if (productImages.length === 0) {
+    productImages.push({
+      src: mainImageUrl,
+      alt: `${product.title} saree`,
+      sizes: "(max-width: 1024px) 100vw, 50vw",
+    })
+  }
+
   const isOutOfStock = isSanityProductOutOfStock(product)
+  const availabilityLabel = getAvailabilityLabel(product.stockStatus, product.stockQuantity)
   const productSchema = buildProductSchema({
     name: product.title,
     description: product.description,
@@ -157,7 +203,7 @@ function SanityProductDetail({ product }: { product: IProduct }) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
         />
-        <div className="mx-auto max-w-7xl px-6 pb-10 pt-8 md:pb-8 lg:px-12">
+        <div className="mx-auto max-w-[1440px] px-4 pb-12 pt-6 md:px-6 md:pb-14 md:pt-8 lg:px-10">
           <Breadcrumbs
             items={[
               { label: "Home", href: "/" },
@@ -166,120 +212,69 @@ function SanityProductDetail({ product }: { product: IProduct }) {
             ]}
           />
 
-          <div className="mt-8 grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-16">
+          <div className="mt-7 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1.12fr)_minmax(390px,0.72fr)] lg:items-start lg:gap-10 xl:gap-14">
             {/* Image Gallery */}
-            <ProductGallery
-              images={[
-                {
-                  src: mainImageUrl,
-                  alt: product.mainImage?.alt ?? `${product.title} saree`,
-                  lqip: lqip ?? undefined,
-                  sizes: "(max-width: 1024px) 100vw, 50vw",
-                },
-                ...(secondImage ? [secondImage] : []),
-              ]}
-              badge={
-                product.badge
-                  ? { text: product.badge, variant: badgeVariant }
-                  : undefined
-              }
-            />
+            <div className="order-2 lg:order-1">
+              <ProductGallery
+                images={productImages}
+                badge={
+                  product.badge
+                    ? { text: product.badge, variant: badgeVariant }
+                    : undefined
+                }
+              />
+            </div>
 
             {/* Product Info */}
-            <div className="flex flex-col">
-              <p className="text-[10px] font-medium uppercase tracking-[0.28em] text-muted-foreground">
-                {product.weaveType ?? product.collection}
-              </p>
-              <h1 className="mt-3 font-serif text-4xl leading-tight tracking-tight md:text-5xl">
-                {product.title}
-              </h1>
-
-              <div className="mt-4 flex items-baseline gap-3">
-                <span className="font-serif text-2xl">{formatCurrency(product.price)}</span>
-                {product.compareAtPrice && (
-                  <span className="text-sm text-muted-foreground line-through">
-                    {formatCurrency(product.compareAtPrice)}
+            <div className="order-1 lg:sticky lg:top-32 lg:order-2">
+              <div className="rounded-[34px] border border-border/70 bg-[linear-gradient(145deg,rgba(255,253,248,0.97)_0%,rgba(246,240,230,0.94)_100%)] p-5 shadow-[0_24px_80px_rgba(15,23,42,0.08)] backdrop-blur md:p-7 xl:p-8">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <p className="text-[10px] font-medium uppercase tracking-[0.26em] text-muted-foreground">
+                    {product.category} / {product.collection ?? "Saree"}
+                  </p>
+                  <span
+                    className={cn(
+                      "rounded-full px-3 py-1 text-[10px] font-medium uppercase tracking-[0.18em]",
+                      isOutOfStock
+                        ? "bg-red-50 text-red-700"
+                        : "bg-emerald-50 text-emerald-800",
+                    )}
+                  >
+                    {availabilityLabel}
                   </span>
-                )}
-              </div>
-
-              <Separator className="my-6" />
-
-              <p className="max-w-md leading-relaxed text-muted-foreground">
-                {product.description}
-              </p>
-
-              <div className="mt-6 space-y-3">
-                <h3 className="text-xs font-medium uppercase tracking-[0.2em]">Product Details</h3>
-                <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm">
-                  <dt className="text-muted-foreground">Fabric</dt>
-                  <dd>{product.fabric ?? product.category}</dd>
-                  <dt className="text-muted-foreground">Collection</dt>
-                  <dd>{product.collection ?? product.weaveType ?? "Saree"}</dd>
-                  {product.printType && (
-                    <>
-                      <dt className="text-muted-foreground">Print</dt>
-                      <dd>{product.printType}</dd>
-                    </>
-                  )}
-                  {product.colorFamily && (
-                    <>
-                      <dt className="text-muted-foreground">Colour</dt>
-                      <dd>{product.colorFamily}</dd>
-                    </>
-                  )}
-                  <dt className="text-muted-foreground">Blouse</dt>
-                  <dd>{product.blouseIncluded === false ? "Not included" : "Included"}</dd>
-                  <dt className="text-muted-foreground">Stock</dt>
-                  <dd>{getStockLabel(product.stockStatus, product.stockQuantity)}</dd>
-                  <dt className="text-muted-foreground">Care</dt>
-                  <dd>{product.careInstructions ?? "Dry clean recommended"}</dd>
-                </dl>
-              </div>
-
-              {product.highlights && product.highlights.length > 0 && (
-                <div className="mt-6 rounded-lg bg-secondary/40 px-5 py-4">
-                  <h3 className="text-xs font-medium uppercase tracking-[0.2em]">Why You&apos;ll Love This</h3>
-                  <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-                    {product.highlights.map((highlight) => (
-                      <li key={highlight} className="flex items-start gap-2">
-                        <span className="mt-1 h-1 w-1 shrink-0 rounded-full bg-foreground/40" />
-                        {highlight}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              <div className="mt-8 rounded-[30px] border border-border/60 bg-[linear-gradient(180deg,rgba(252,250,245,0.98)_0%,rgba(247,242,233,0.98)_100%)] p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)] md:p-6">
-                <div className="border-b border-border/50 pb-4">
-                  <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-muted-foreground">
-                    Purchase with confidence
-                  </p>
-                  <p className="mt-2 max-w-lg text-sm leading-relaxed text-muted-foreground">
-                    The buy area is designed to answer the practical questions first: authenticity,
-                    support, secure checkout, and delivery care.
-                  </p>
                 </div>
 
-                <ProductActions product={product} />
-                <PurchaseConfidence />
+                <h1 className="mt-5 font-serif text-4xl leading-[0.96] tracking-tight text-foreground md:text-5xl xl:text-6xl">
+                  {product.title}
+                </h1>
 
-                <a
-                  href={`https://wa.me/919585628565?text=${encodeURIComponent(`Hi, I'm interested in the ${product.title} saree (${formatCurrency(product.price)}). ${productUrl}`)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border border-border/70 py-4 text-[11px] font-medium uppercase tracking-[0.22em] text-foreground transition-colors hover:bg-secondary/50"
-                >
-                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                  Ask About This Saree
-                </a>
+                <div className="mt-5 flex items-baseline gap-3">
+                  <span className="font-serif text-3xl leading-none text-foreground">
+                    {formatCurrency(product.price)}
+                  </span>
+                  {product.compareAtPrice && (
+                    <span className="text-sm text-muted-foreground line-through">
+                      {formatCurrency(product.compareAtPrice)}
+                    </span>
+                  )}
+                </div>
+
+                <p className="mt-6 max-w-xl text-base leading-8 text-muted-foreground">
+                  {product.description}
+                </p>
+
+                <div className="mt-7">
+                  <ProductActions product={product} />
+                </div>
+
+                <p className="mt-5 text-center text-xs leading-relaxed text-muted-foreground">
+                  Secure checkout, careful packing, and direct support before dispatch.
+                </p>
               </div>
-
             </div>
           </div>
         </div>
-        <ProductCare compact />
+        <RelatedProducts products={relatedProducts} />
         <RecentlyViewedTracker
           item={{
             id: product._id,
@@ -298,10 +293,17 @@ function SanityProductDetail({ product }: { product: IProduct }) {
 // Static Product Detail (fallback when Sanity is not configured)
 // ---------------------------------------------------------------------------
 
-function StaticProductDetail({ product }: { product: Product }) {
+function StaticProductDetail({
+  product,
+  relatedProducts,
+}: {
+  product: Product
+  relatedProducts: Product[]
+}) {
   const productUrl = absoluteUrl(`/product/${product.slug}`)
   const productImage = absoluteUrl(product.image)
   const isOutOfStock = isStaticProductOutOfStock(product)
+  const availabilityLabel = getAvailabilityLabel(product.stockStatus, product.stockQuantity)
   const productSchema = buildProductSchema({
     name: product.name,
     description: product.description,
@@ -322,6 +324,25 @@ function StaticProductDetail({ product }: { product: Product }) {
       : product.badge === "Bestseller"
       ? "sand"
       : "outline"
+  const staticProductImages = [
+    {
+      src: product.image,
+      alt: `${product.name} — ${product.collection} saree`,
+      sizes: "(max-width: 1024px) 100vw, 50vw",
+    },
+    {
+      src: product.hoverImage,
+      alt: `${product.name} — alternate view`,
+      sizes: "(max-width: 1024px) 100vw, 50vw",
+    },
+    product.detailImage
+      ? {
+          src: product.detailImage,
+          alt: `${product.name} — drape detail`,
+          sizes: "(max-width: 1024px) 100vw, 50vw",
+        }
+      : null,
+  ].filter(Boolean) as Array<{ src: string; alt: string; sizes: string }>
 
   return (
     <InnerPageShell>
@@ -329,7 +350,7 @@ function StaticProductDetail({ product }: { product: Product }) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
         />
-        <div className="mx-auto max-w-7xl px-6 pb-10 pt-8 md:pb-8 lg:px-12">
+        <div className="mx-auto max-w-[1440px] px-4 pb-12 pt-6 md:px-6 md:pb-14 md:pt-8 lg:px-10">
           <Breadcrumbs
             items={[
               { label: "Home", href: "/" },
@@ -338,151 +359,99 @@ function StaticProductDetail({ product }: { product: Product }) {
             ]}
           />
 
-          <div className="mt-8 grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-16">
+          <div className="mt-7 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1.12fr)_minmax(390px,0.72fr)] lg:items-start lg:gap-10 xl:gap-14">
             {/* Images */}
-            <ProductGallery
-              images={[
-                {
-                  src: product.image,
-                  alt: `${product.name} — ${product.collection} saree`,
-                  sizes: "(max-width: 1024px) 100vw, 50vw",
-                },
-                {
-                  src: product.hoverImage,
-                  alt: `${product.name} — alternate view`,
-                  sizes: "(max-width: 1024px) 100vw, 50vw",
-                },
-              ]}
-              badge={
-                product.badge
-                  ? {
-                      text: product.badge,
-                      variant: badgeVariant,
-                    }
-                  : undefined
-              }
-            />
+            <div className="order-2 lg:order-1">
+              <ProductGallery
+                images={staticProductImages}
+                badge={
+                  product.badge
+                    ? {
+                        text: product.badge,
+                        variant: badgeVariant,
+                      }
+                    : undefined
+                }
+              />
+            </div>
 
             {/* Product Info */}
-            <div className="flex flex-col">
-              <p className="text-[10px] font-medium uppercase tracking-[0.28em] text-muted-foreground">
-                {product.collection}
-              </p>
-              <h1 className="mt-3 font-serif text-4xl leading-tight tracking-tight md:text-5xl">
-                {product.name}
-              </h1>
-
-              <div className="mt-4 flex items-baseline gap-3">
-                <span className="font-serif text-2xl">{formatCurrency(product.price)}</span>
-                {product.compareAt && (
-                  <span className="text-sm text-muted-foreground line-through">
-                    {formatCurrency(product.compareAt)}
+            <div className="order-1 lg:sticky lg:top-32 lg:order-2">
+              <div className="rounded-[34px] border border-border/70 bg-[linear-gradient(145deg,rgba(255,253,248,0.97)_0%,rgba(246,240,230,0.94)_100%)] p-5 shadow-[0_24px_80px_rgba(15,23,42,0.08)] backdrop-blur md:p-7 xl:p-8">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <p className="text-[10px] font-medium uppercase tracking-[0.26em] text-muted-foreground">
+                    {product.category} / {product.collection}
+                  </p>
+                  <span
+                    className={cn(
+                      "rounded-full px-3 py-1 text-[10px] font-medium uppercase tracking-[0.18em]",
+                      isOutOfStock
+                        ? "bg-red-50 text-red-700"
+                        : "bg-emerald-50 text-emerald-800",
+                    )}
+                  >
+                    {availabilityLabel}
                   </span>
-                )}
-              </div>
-
-              <Separator className="my-6" />
-
-              <p className="max-w-md leading-relaxed text-muted-foreground">
-                {product.description}
-              </p>
-
-              {/* Product Details */}
-              <div className="mt-6 space-y-3">
-                <h3 className="text-xs font-medium uppercase tracking-[0.2em]">Product Details</h3>
-                <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm">
-                  <dt className="text-muted-foreground">Fabric</dt>
-                  <dd>{product.fabric ?? getStaticFabricLabel(product.category)}</dd>
-                  <dt className="text-muted-foreground">Weave</dt>
-                  <dd>{product.collection}</dd>
-                  <dt className="text-muted-foreground">Length</dt>
-                  <dd>6.3 meters (with blouse piece)</dd>
-                  <dt className="text-muted-foreground">Origin</dt>
-                  <dd>{product.collection === "Kanjeevaram" || product.collection === "Bridal" ? "Kanchipuram, Tamil Nadu" : product.collection === "Banarasi" ? "Varanasi, Uttar Pradesh" : product.collection === "Chanderi" ? "Chanderi, Madhya Pradesh" : product.collection === "Patola" ? "Patan, Gujarat" : "India"}</dd>
-                  <dt className="text-muted-foreground">Care</dt>
-                  <dd>Dry clean recommended</dd>
-                </dl>
-              </div>
-
-              {/* Why You'll Love This */}
-              <div className="mt-6 rounded-lg bg-secondary/40 px-5 py-4">
-                <h3 className="text-xs font-medium uppercase tracking-[0.2em]">Why You&apos;ll Love This</h3>
-                <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-                  <li className="flex items-start gap-2">
-                    <span className="mt-1 h-1 w-1 shrink-0 rounded-full bg-foreground/40" />
-                    Handcrafted by master artisans with generations of expertise
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="mt-1 h-1 w-1 shrink-0 rounded-full bg-foreground/40" />
-                    {getStaticCategoryHighlight(product.category)}
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="mt-1 h-1 w-1 shrink-0 rounded-full bg-foreground/40" />
-                    Comes with a matching blouse piece
-                  </li>
-                </ul>
-              </div>
-
-              {/* Add to Cart — Snipcart */}
-              <div className="mt-8 rounded-[30px] border border-border/60 bg-[linear-gradient(180deg,rgba(252,250,245,0.98)_0%,rgba(247,242,233,0.98)_100%)] p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)] md:p-6">
-                <div className="border-b border-border/50 pb-4">
-                  <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-muted-foreground">
-                    Purchase with confidence
-                  </p>
-                  <p className="mt-2 max-w-lg text-sm leading-relaxed text-muted-foreground">
-                    Practical clarity on craftsmanship, delivery, and support before you add this piece to cart.
-                  </p>
                 </div>
-                <button
-                  type="button"
-                  disabled={isOutOfStock}
-                  aria-disabled={isOutOfStock}
-                  className={cn(
-                    "mt-6 w-full rounded-full py-4 text-[11px] font-medium uppercase tracking-[0.22em] transition-colors",
-                    isOutOfStock
-                      ? "cursor-not-allowed bg-muted text-muted-foreground hover:bg-muted"
-                      : "snipcart-add-item bg-foreground text-background hover:bg-foreground/90",
-                  )}
-                  {...(isOutOfStock
-                    ? {}
-                    : {
-                        "data-item-id": product.id,
-                        "data-item-name": product.name,
-                        "data-item-price": product.price,
-                        "data-item-url": productUrl,
-                        "data-item-image": productImage,
-                        "data-item-description": product.description,
-                      })}
-                >
-                  {isOutOfStock ? "Out of Stock" : `Add to Cart — ${formatCurrency(product.price)}`}
-                </button>
-                {isOutOfStock && (
-                  <p className="mt-3 rounded-full bg-red-50 px-4 py-2 text-center text-xs font-medium text-red-700">
-                    This saree is currently out of stock, but it stays visible for wishlists and restock enquiries.
-                  </p>
-                )}
-                <PurchaseConfidence />
-                <a
-                  href={`https://wa.me/919585628565?text=${encodeURIComponent(`Hi, I'm interested in the ${product.name} saree (${formatCurrency(product.price)}). ${productUrl}`)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border border-border/70 py-4 text-[11px] font-medium uppercase tracking-[0.22em] text-foreground transition-colors hover:bg-secondary/50"
-                >
-                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                  Ask About This Saree
-                </a>
-              </div>
 
+                <h1 className="mt-5 font-serif text-4xl leading-[0.96] tracking-tight text-foreground md:text-5xl xl:text-6xl">
+                  {product.name}
+                </h1>
+
+                <div className="mt-5 flex items-baseline gap-3">
+                  <span className="font-serif text-3xl leading-none text-foreground">
+                    {formatCurrency(product.price)}
+                  </span>
+                  {product.compareAt && (
+                    <span className="text-sm text-muted-foreground line-through">
+                      {formatCurrency(product.compareAt)}
+                    </span>
+                  )}
+                </div>
+
+                <p className="mt-6 max-w-xl text-base leading-8 text-muted-foreground">
+                  {product.description}
+                </p>
+
+                <div className="mt-7">
+                  <button
+                    type="button"
+                    disabled={isOutOfStock}
+                    aria-disabled={isOutOfStock}
+                    className={cn(
+                      "w-full rounded-full py-4 text-[11px] font-medium uppercase tracking-[0.22em] transition-colors",
+                      isOutOfStock
+                        ? "cursor-not-allowed bg-muted text-muted-foreground hover:bg-muted"
+                        : "snipcart-add-item bg-foreground text-background hover:bg-foreground/90",
+                    )}
+                    {...(isOutOfStock
+                      ? {}
+                      : {
+                          "data-item-id": product.id,
+                          "data-item-name": product.name,
+                          "data-item-price": product.price,
+                          "data-item-url": productUrl,
+                          "data-item-image": productImage,
+                          "data-item-description": product.description,
+                        })}
+                  >
+                    {isOutOfStock ? "Out of Stock" : `Add to Cart — ${formatCurrency(product.price)}`}
+                  </button>
+                  {isOutOfStock && (
+                    <p className="mt-3 rounded-full bg-red-50 px-4 py-2 text-center text-xs font-medium text-red-700">
+                      This saree is currently out of stock, but it stays visible for wishlists and restock enquiries.
+                    </p>
+                  )}
+                </div>
+
+                <p className="mt-5 text-center text-xs leading-relaxed text-muted-foreground">
+                  Secure checkout, careful packing, and direct support before dispatch.
+                </p>
+              </div>
             </div>
           </div>
         </div>
-        <ProductCare compact />
-        <MobileStaticPurchaseBar
-          product={product}
-          productUrl={productUrl}
-          productImage={productImage}
-          isOutOfStock={isOutOfStock}
-        />
+        <RelatedProducts products={relatedProducts} />
         <RecentlyViewedTracker
           item={{
             id: product.id,
@@ -497,173 +466,87 @@ function StaticProductDetail({ product }: { product: Product }) {
   )
 }
 
-function MobileStaticPurchaseBar({
-  product,
-  productUrl,
-  productImage,
-  isOutOfStock,
-}: {
-  product: Product
-  productUrl: string
-  productImage: string
-  isOutOfStock: boolean
-}) {
-  return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 px-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] md:hidden">
-      <div className="pointer-events-auto mx-auto max-w-md rounded-[26px] border border-border/60 bg-background/94 p-3 shadow-[0_-14px_45px_rgba(15,23,42,0.16)] backdrop-blur-xl">
-        <div className="mb-2 flex items-center justify-between gap-3 px-1">
-          <div className="min-w-0">
-            <p className="truncate text-[10px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
-              {product.name}
-            </p>
-            <p className="mt-0.5 truncate text-xs text-muted-foreground">
-              {product.collection}
-            </p>
-          </div>
-          <p className="shrink-0 font-serif text-lg leading-none">
-            {formatCurrency(product.price)}
-          </p>
-        </div>
-        <div className="grid grid-cols-[1fr_auto] gap-2">
-          <button
-            type="button"
-            disabled={isOutOfStock}
-            aria-disabled={isOutOfStock}
-            className={cn(
-              "flex h-12 items-center justify-center gap-2 rounded-full px-5 text-[10px] font-medium uppercase tracking-[0.18em] transition-colors",
-              isOutOfStock
-                ? "cursor-not-allowed bg-muted text-muted-foreground hover:bg-muted"
-                : "snipcart-add-item bg-foreground text-background hover:bg-foreground/90",
-            )}
-            {...(isOutOfStock
-              ? {}
-              : {
-                  "data-item-id": product.id,
-                  "data-item-name": product.name,
-                  "data-item-price": product.price,
-                  "data-item-url": productUrl,
-                  "data-item-image": productImage,
-                  "data-item-description": product.description,
-                })}
-          >
-            <ShoppingBag className="h-4 w-4" strokeWidth={1.5} />
-            {isOutOfStock ? "Out of Stock" : "Add to Cart"}
-          </button>
-          <a
-            href={`https://wa.me/919585628565?text=${encodeURIComponent(`Hi, I'm interested in the ${product.name} saree (${formatCurrency(product.price)}). ${productUrl}`)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Ask about this saree on WhatsApp"
-            className="flex h-12 w-12 items-center justify-center rounded-full border border-border/70 bg-background text-foreground shadow-sm transition-colors hover:bg-secondary/60"
-          >
-            <MessageCircle className="h-4 w-4" strokeWidth={1.5} />
-          </a>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function PurchaseConfidence() {
-  const highlights = [
-    {
-      title: "Certified Craft",
-      description: "Each piece is reviewed before dispatch and paired with origin-led product details.",
-      icon: BadgeCheck,
-    },
-    {
-      title: "Concierge Support",
-      description: "Ask for styling, drape, and occasion guidance before you commit to the piece.",
-      icon: MessageCircleHeart,
-    },
-    {
-      title: "Protected Checkout",
-      description: "Secure cart flow, careful packing, and support once your order is placed.",
-      icon: ShieldCheck,
-    },
-  ]
-
-  return (
-    <div className="mt-5 space-y-4">
-      <div className="grid gap-3 sm:grid-cols-3">
-        {highlights.map((highlight) => {
-          const Icon = highlight.icon
-
-          return (
-            <div
-              key={highlight.title}
-              className="rounded-[22px] border border-border/60 bg-background/70 px-4 py-4 shadow-[0_8px_26px_rgba(15,23,42,0.04)]"
-            >
-              <Icon className="h-4 w-4 text-foreground/70" strokeWidth={1.5} />
-              <p className="mt-3 text-[11px] font-medium uppercase tracking-[0.22em] text-foreground">
-                {highlight.title}
-              </p>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                {highlight.description}
-              </p>
-            </div>
-          )
-        })}
-      </div>
-
-      <div className="flex items-center gap-2 rounded-[22px] border border-border/60 bg-background/65 px-4 py-3 text-sm text-muted-foreground">
-        <Truck className="h-4 w-4 shrink-0 text-foreground/70" strokeWidth={1.5} />
-        Complimentary shipping above ₹2,000 and support throughout delivery.
-      </div>
-    </div>
-  )
-}
-
-function getStockLabel(status?: string, quantity?: number) {
-  if (quantity === 0 || status === "outOfStock") {
-    return "Out of stock";
-  }
-
-  switch (status) {
-    case "lowStock":
-      return quantity && quantity > 0 ? `Only ${quantity} left` : "Low stock";
-    case "madeToOrder":
-      return "Made to order";
-    case "inStock":
-    default:
-      return quantity && quantity > 0 ? `${quantity} available` : "In stock";
-  }
-}
-
 function isSanityProductOutOfStock(product: IProduct) {
   return product.stockStatus === "outOfStock" || product.stockQuantity === 0;
+}
+
+function RelatedProducts({ products }: { products: Product[] }) {
+  if (products.length === 0) return null
+
+  return (
+    <section className="mx-auto max-w-[1440px] px-4 pb-16 pt-4 md:px-6 md:pb-20 lg:px-10">
+      <div className="border-t border-border/60 pt-10 md:pt-12">
+        <div className="mb-7 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-[10px] font-medium uppercase tracking-[0.28em] text-muted-foreground">
+              You may also like
+            </p>
+            <h2 className="mt-3 font-serif text-3xl leading-tight tracking-tight md:text-4xl">
+              Related Sarees
+            </h2>
+          </div>
+          <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
+            Similar pieces from the same house edit, chosen by collection and category.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-x-4 gap-y-9 md:grid-cols-3 lg:grid-cols-4 lg:gap-x-6">
+          {products.map((product, index) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              priority={index < 2}
+              hideQuickAdd
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function getRelatedProducts(
+  products: Product[],
+  currentSlug: string,
+  category: string,
+  collection?: string,
+) {
+  return products
+    .filter((product) => product.slug !== currentSlug)
+    .sort((a, b) => {
+      const aScore = getRelatedProductScore(a, category, collection)
+      const bScore = getRelatedProductScore(b, category, collection)
+      return bScore - aScore
+    })
+    .slice(0, 4)
+}
+
+function getRelatedProductScore(
+  product: Product,
+  category: string,
+  collection?: string,
+) {
+  let score = 0
+  if (product.category === category) score += 4
+  if (collection && product.collection === collection) score += 3
+  if (collection && product.collection.toLowerCase().includes(collection.toLowerCase())) {
+    score += 1
+  }
+  if (product.badge === "Bestseller" || product.badge === "New") score += 1
+  return score
 }
 
 function isStaticProductOutOfStock(product: Product) {
   return product.stockStatus === "outOfStock" || product.stockQuantity === 0;
 }
 
-function getStaticFabricLabel(category: Product["category"]) {
-  switch (category) {
-    case "Silk":
-      return "Pure Silk";
-    case "Cotton":
-      return "Handloom Cotton";
-    case "Designer":
-      return "Designer Saree";
-    case "Heritage":
-    default:
-      return "Heritage Weave";
+function getAvailabilityLabel(status?: string, quantity?: number) {
+  if (status === "outOfStock" || quantity === 0) return "Out of stock";
+  if (status === "madeToOrder") return "Made to order";
+  if (status === "lowStock" || (typeof quantity === "number" && quantity > 0 && quantity <= 3)) {
+    return typeof quantity === "number" && quantity > 0 ? `Only ${quantity} left` : "Low stock";
   }
-}
-
-function getStaticCategoryHighlight(category: Product["category"]) {
-  switch (category) {
-    case "Silk":
-      return "Pure mulberry silk with authentic zari work";
-    case "Cotton":
-      return "Breathable handloom fabric, perfect for all-day wear";
-    case "Designer":
-      return "Statement styling with an elevated designer finish";
-    case "Heritage":
-    default:
-      return "Rare heritage technique, limited production";
-  }
+  return "In stock";
 }
 
 function buildProductSchema({

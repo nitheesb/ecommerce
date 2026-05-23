@@ -115,10 +115,12 @@ export interface IProduct {
   collection: string;
 
   mainImage: ISanityImage;
-  /** Additional gallery images for the PDP */
-  imageGallery: ISanityImage[];
   /** Hover image for product cards (resolved URL) */
   hoverImage?: ISanityImage;
+  /** Dedicated third PDP image slot */
+  thirdImage?: ISanityImage;
+  /** Optional extra gallery images for future PDP expansion */
+  imageGallery: ISanityImage[];
 
   /** Variants with independent SKU, pricing, and stock */
   variants: IProductVariant[];
