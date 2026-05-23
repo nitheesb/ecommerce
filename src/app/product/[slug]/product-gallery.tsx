@@ -111,9 +111,6 @@ function GalleryFrame({
         className="object-cover object-top transition-transform duration-700 ease-out group-hover/zoom:scale-[1.035]"
         {...(image.lqip ? { placeholder: "blur", blurDataURL: image.lqip } : {})}
       />
-      <span className="absolute bottom-4 right-4 rounded-full bg-background/82 px-3 py-1 text-[10px] font-medium uppercase tracking-[0.18em] text-foreground shadow-sm backdrop-blur">
-        {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
-      </span>
       {children}
     </button>
   )

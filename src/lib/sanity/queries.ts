@@ -81,7 +81,6 @@ export const productBySlugQuery = `
     mainImage ${imageFragment},
     hoverImage ${imageFragment},
     thirdImage ${imageFragment},
-    "imageGallery": coalesce(imageGallery[] ${imageFragment}, []),
     "variants": coalesce(variants[]{
       _key, sku, color, colorHex, size, price, compareAtPrice, stockQuantity,
       image ${imageFragment}

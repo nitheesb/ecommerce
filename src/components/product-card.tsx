@@ -165,7 +165,7 @@ export function ProductCard({ product, className, priority, onQuickView, hideQui
         </p>
 
         <div className="mt-3">
-          <p className="font-serif text-base leading-tight md:text-lg">
+          <p className="font-sans text-[1.35rem] font-medium leading-none tracking-[-0.05em] text-foreground md:text-[1.55rem]">
             {formatCurrency(product.price)}
           </p>
           {product.compareAt && (

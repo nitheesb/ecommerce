@@ -199,7 +199,7 @@ export function SearchPageClient({
                           {product.description}
                         </p>
                       </div>
-                      <p className="hidden shrink-0 font-serif text-base sm:block">
+                      <p className="hidden shrink-0 font-sans text-[1.2rem] font-medium leading-none tracking-[-0.05em] text-foreground sm:block">
                         {formatCurrency(product.price)}
                       </p>
                     </Link>

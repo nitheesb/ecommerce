@@ -78,7 +78,9 @@ export function QuickView({ product, onClose }: QuickViewProps) {
           </p>
           <h3 className="mt-2 font-serif text-3xl tracking-tight">{product.name}</h3>
           <div className="mt-3 flex items-baseline gap-3">
-            <span className="font-serif text-2xl">{formatCurrency(product.price)}</span>
+            <span className="font-sans text-[1.65rem] font-medium leading-none tracking-[-0.05em] text-foreground">
+              {formatCurrency(product.price)}
+            </span>
             {product.compareAt && (
               <span className="text-sm text-muted-foreground line-through">
                 {formatCurrency(product.compareAt)}

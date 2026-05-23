@@ -164,9 +164,6 @@ function SanityProductDetail({
   addProductImage(product.mainImage, `${product.title} saree`)
   addProductImage(product.hoverImage, `${product.title} alternate product image`)
   addProductImage(product.thirdImage, `${product.title} drape detail image`)
-  product.imageGallery?.forEach((image) => {
-    addProductImage(image, `${product.title} extra product image`)
-  })
   if (productImages.length === 0) {
     productImages.push({
       src: mainImageUrl,
@@ -176,7 +173,6 @@ function SanityProductDetail({
   }
 
   const isOutOfStock = isSanityProductOutOfStock(product)
-  const availabilityLabel = getAvailabilityLabel(product.stockStatus, product.stockQuantity)
   const productKicker = getProductKicker(product.category, product.collection)
   const breadcrumbItems = [
     { label: "Home", href: "/" },
@@ -234,16 +230,6 @@ function SanityProductDetail({
                   <p className="text-[10px] font-medium uppercase tracking-[0.26em] text-muted-foreground">
                     {productKicker}
                   </p>
-                  <span
-                    className={cn(
-                      "rounded-full px-3 py-1 text-[10px] font-medium uppercase tracking-[0.18em]",
-                      isOutOfStock
-                        ? "bg-red-50 text-red-700"
-                        : "bg-emerald-50 text-emerald-800",
-                    )}
-                  >
-                    {availabilityLabel}
-                  </span>
                 </div>
 
                 <h1 className="mt-5 font-serif text-4xl leading-[0.96] tracking-tight text-foreground md:text-5xl xl:text-6xl">
@@ -305,7 +291,6 @@ function StaticProductDetail({
   const productUrl = absoluteUrl(`/product/${product.slug}`)
   const productImage = absoluteUrl(product.image)
   const isOutOfStock = isStaticProductOutOfStock(product)
-  const availabilityLabel = getAvailabilityLabel(product.stockStatus, product.stockQuantity)
   const productKicker = getProductKicker(product.category, product.collection)
   const breadcrumbItems = [
     { label: "Home", href: "/" },
@@ -385,16 +370,6 @@ function StaticProductDetail({
                   <p className="text-[10px] font-medium uppercase tracking-[0.26em] text-muted-foreground">
                     {productKicker}
                   </p>
-                  <span
-                    className={cn(
-                      "rounded-full px-3 py-1 text-[10px] font-medium uppercase tracking-[0.18em]",
-                      isOutOfStock
-                        ? "bg-red-50 text-red-700"
-                        : "bg-emerald-50 text-emerald-800",
-                    )}
-                  >
-                    {availabilityLabel}
-                  </span>
                 </div>
 
                 <h1 className="mt-5 font-serif text-4xl leading-[0.96] tracking-tight text-foreground md:text-5xl xl:text-6xl">
@@ -541,15 +516,6 @@ function getRelatedProductScore(
 
 function isStaticProductOutOfStock(product: Product) {
   return product.stockStatus === "outOfStock" || product.stockQuantity === 0;
-}
-
-function getAvailabilityLabel(status?: string, quantity?: number) {
-  if (status === "outOfStock" || quantity === 0) return "Out of stock";
-  if (status === "madeToOrder") return "Made to order";
-  if (status === "lowStock" || (typeof quantity === "number" && quantity > 0 && quantity <= 3)) {
-    return typeof quantity === "number" && quantity > 0 ? `Only ${quantity} left` : "Low stock";
-  }
-  return "In stock";
 }
 
 function getProductKicker(category?: string, collection?: string) {

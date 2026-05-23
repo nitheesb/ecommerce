@@ -106,7 +106,7 @@ export function RecentlyViewedDrawer() {
                   <p className="mt-0.5 truncate font-serif text-sm leading-tight group-hover/rv:underline">
                     {item.name}
                   </p>
-                  <p className="mt-1 font-serif text-sm text-muted-foreground">
+                  <p className="mt-1 font-sans text-base font-medium leading-none tracking-[-0.045em] text-foreground">
                     {formatCurrency(item.price)}
                   </p>
                 </div>

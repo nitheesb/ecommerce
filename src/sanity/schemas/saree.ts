@@ -23,24 +23,6 @@ const activeProductRequires = (context: any, condition: boolean, message: string
   return condition || message;
 };
 
-const getImageAssetRef = (image: any) => image?.asset?._ref;
-
-const hasExtraGalleryImage = (images: any[] | undefined, context: any) => {
-  const existingProductImageRefs = new Set(
-    [
-      getImageAssetRef(context.document?.mainImage),
-      getImageAssetRef(context.document?.hoverImage),
-      getImageAssetRef(context.document?.thirdImage),
-    ]
-      .filter(Boolean),
-  );
-
-  return Array.isArray(images) && images.some((image) => {
-    const imageRef = getImageAssetRef(image);
-    return imageRef && !existingProductImageRefs.has(imageRef);
-  });
-};
-
 export const sareeSchema = defineType({
   name: "saree",
   title: "Saree",
@@ -51,7 +33,7 @@ export const sareeSchema = defineType({
     { name: "merchandising", title: "Merchandising" },
     { name: "inventory", title: "Inventory" },
     { name: "seo", title: "SEO" },
-    { name: "admin", title: "Admin / QA" },
+    { name: "admin", title: "Admin" },
   ],
   orderings: [
     {
@@ -78,7 +60,6 @@ export const sareeSchema = defineType({
     careInstructions: "Dry clean recommended.",
     featured: false,
     sortOrder: 100,
-    contentStatus: "needsReview",
     variants: [],
   },
   fields: [
@@ -332,31 +313,6 @@ export const sareeSchema = defineType({
         ).warning(),
     }),
     defineField({
-      name: "imageGallery",
-      title: "Optional Extra Gallery Images",
-      type: "array",
-      group: "media",
-      description: "Optional extra detail/lifestyle images beyond the first three product images.",
-      of: [
-        {
-          type: "image",
-          options: { hotspot: true },
-          fields: imageWithAltFields,
-        },
-      ],
-      validation: (Rule) =>
-        Rule.max(10)
-          .warning("Keep optional galleries focused; 1-4 extra images is ideal.")
-          .custom((value, context) =>
-            activeProductRequires(
-              context,
-              Boolean(getImageAssetRef(context.document?.thirdImage)) || hasExtraGalleryImage(value, context),
-              "Active products should include a third product image or at least one optional extra gallery image.",
-            ),
-          )
-          .warning(),
-    }),
-    defineField({
       name: "price",
       title: "Price (INR)",
       type: "number",
@@ -440,14 +396,7 @@ export const sareeSchema = defineType({
         layout: "radio",
       },
       validation: (Rule) =>
-        Rule.required()
-          .custom((status, context) => {
-            if (status === "active" && context.document?.contentStatus !== "approved") {
-              return "Active products should be marked Approved in Content QA before launch.";
-            }
-            return true;
-          })
-          .warning(),
+        Rule.required(),
     }),
     defineField({
       name: "sku",
@@ -640,23 +589,6 @@ export const sareeSchema = defineType({
       ],
     }),
     defineField({
-      name: "contentStatus",
-      title: "Content QA Status",
-      type: "string",
-      group: "admin",
-      description: "Internal editorial workflow. This does not publish or hide the product by itself.",
-      options: {
-        list: [
-          { title: "Needs copy", value: "needsCopy" },
-          { title: "Needs images", value: "needsImages" },
-          { title: "Needs review", value: "needsReview" },
-          { title: "Approved", value: "approved" },
-        ],
-        layout: "radio",
-      },
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
       name: "internalNotes",
       title: "Internal Notes",
       type: "text",
@@ -671,10 +603,9 @@ export const sareeSchema = defineType({
       status: "status",
       price: "price",
       stockStatus: "stockStatus",
-      contentStatus: "contentStatus",
       media: "mainImage",
     },
-    prepare({ title, status, price, stockStatus, contentStatus, media }) {
+    prepare({ title, status, price, stockStatus, media }) {
       const formattedPrice =
         typeof price === "number"
           ? new Intl.NumberFormat("en-IN", {
@@ -686,7 +617,7 @@ export const sareeSchema = defineType({
 
       return {
         title: title ?? "Untitled saree",
-        subtitle: `${status ?? "draft"} · ${contentStatus ?? "needs review"} · ${stockStatus ?? "stock unknown"} · ${formattedPrice}`,
+        subtitle: `${status ?? "draft"} · ${stockStatus ?? "stock unknown"} · ${formattedPrice}`,
         media,
       };
     },

@@ -145,68 +145,6 @@ export const structure: StructureResolver = (S) =>
             ]),
         ),
       S.listItem()
-        .title("Content QA")
-        .id("contentQa")
-        .child(
-          S.list()
-            .title("Content QA")
-            .items([
-              S.listItem()
-                .title("Needs Copy")
-                .child(productList(S, "Needs Copy", `${saree} && contentStatus == "needsCopy"`)),
-              S.listItem()
-                .title("Needs Images")
-                .child(productList(S, "Needs Images", `${saree} && contentStatus == "needsImages"`)),
-              S.listItem()
-                .title("Needs Review")
-                .child(productList(S, "Needs Review", `${saree} && (!defined(contentStatus) || contentStatus == "needsReview")`)),
-              S.listItem()
-                .title("Approved")
-                .child(productList(S, "Approved Content", `${saree} && contentStatus == "approved"`)),
-              S.divider(),
-              S.listItem()
-                .title("Missing Alt Text")
-                .child(
-                  productList(
-                    S,
-                    "Missing Alt Text",
-                    `${saree} && (!defined(mainImage.alt) || !defined(hoverImage.alt) || !defined(thirdImage.alt) || count(imageGallery[!defined(alt)]) > 0)`,
-                    [{ field: "_updatedAt", direction: "desc" }],
-                  ),
-                ),
-              S.listItem()
-                .title("Missing SEO")
-                .child(
-                  productList(
-                    S,
-                    "Missing SEO",
-                    `${saree} && (!defined(seo.metaTitle) || !defined(seo.metaDescription))`,
-                    [{ field: "_updatedAt", direction: "desc" }],
-                  ),
-                ),
-              S.listItem()
-                .title("Missing Gallery")
-                .child(
-                  productList(
-                    S,
-                    "Missing Gallery",
-                    `${saree} && (!defined(hoverImage.asset) || !defined(thirdImage.asset))`,
-                    [{ field: "_updatedAt", direction: "desc" }],
-                  ),
-                ),
-              S.listItem()
-                .title("Launch Blockers")
-                .child(
-                  productList(
-                    S,
-                    "Launch Blockers",
-                    `${saree} && status == "active" && (contentStatus != "approved" || !defined(mainImage.asset) || !defined(mainImage.alt) || !defined(hoverImage.asset) || !defined(hoverImage.alt) || !defined(thirdImage.asset) || !defined(thirdImage.alt) || !defined(price) || !defined(slug.current) || !defined(description) || !defined(seo.metaTitle) || !defined(seo.metaDescription))`,
-                    [{ field: "_updatedAt", direction: "desc" }],
-                  ),
-                ),
-            ]),
-        ),
-      S.listItem()
         .title("Browse by Category")
         .id("browseByCategory")
         .child(

@@ -152,7 +152,6 @@ export function CategoriesSection() {
     }
 
     const onPointerDown = (event: PointerEvent) => {
-      event.preventDefault()
       state.dragging = true
       state.dragStartX = event.clientX
       state.dragStartOffset = state.targetX
@@ -188,7 +187,15 @@ export function CategoriesSection() {
     }
 
     const onPointerUp = (event: PointerEvent) => {
+      const anchor = (event.target as HTMLElement | null)?.closest<HTMLAnchorElement>("a[href]")
+      const shouldNavigate = !state.hasDragged && anchor?.href
+
       endDrag(event.pointerId)
+
+      if (shouldNavigate) {
+        event.preventDefault()
+        anchor.click()
+      }
     }
 
     const onPointerCancel = (event: PointerEvent) => {
@@ -268,8 +275,18 @@ export function CategoriesSection() {
               const isActive = categoryIndex === activeIndex
 
               return (
-                <article
+                <Link
                   key={`${category.title}-${index}`}
+                  href={category.href}
+                  onClick={(event) => {
+                    if (motionStateRef.current.hasDragged) {
+                      event.preventDefault()
+                      event.stopPropagation()
+                      return
+                    }
+
+                    window.location.href = category.href
+                  }}
                   className={`group relative w-[17.5rem] shrink-0 overflow-hidden rounded-[28px] border transition-all duration-500 md:w-[21rem] ${
                     isActive
                       ? "border-foreground/20 shadow-[0_20px_60px_rgba(15,23,42,0.14)]"
@@ -291,21 +308,15 @@ export function CategoriesSection() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-foreground/75 via-foreground/20 to-transparent" />
                     <div className="absolute inset-x-0 bottom-0 p-6 text-background select-none [webkit-user-select:none]">
-                      <p className="text-[10px] uppercase tracking-[0.28em] text-background/72">
-                        Major Category
-                      </p>
-                      <h3 className="mt-3 font-serif text-3xl tracking-tight">{category.title}</h3>
+                      <h3 className="font-serif text-3xl tracking-tight">{category.title}</h3>
                       <p className="mt-2 max-w-xs text-sm leading-relaxed text-background/82">{category.blurb}</p>
-                      <Link
-                        href={category.href}
-                        className="mt-5 inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.22em] text-background/90 transition-colors hover:text-background"
-                      >
+                      <span className="mt-5 inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.22em] text-background/90 transition-colors group-hover:text-background">
                         Explore
                         <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} />
-                      </Link>
+                      </span>
                     </div>
                   </div>
-                </article>
+                </Link>
               )
             })}
           </div>

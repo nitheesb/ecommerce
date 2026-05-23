@@ -119,8 +119,6 @@ export interface IProduct {
   hoverImage?: ISanityImage;
   /** Dedicated third PDP image slot */
   thirdImage?: ISanityImage;
-  /** Optional extra gallery images for future PDP expansion */
-  imageGallery: ISanityImage[];
 
   /** Variants with independent SKU, pricing, and stock */
   variants: IProductVariant[];
