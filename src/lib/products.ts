@@ -6,6 +6,7 @@ export type Product = {
   category: "None" | "Silk" | "Cotton" | "Heritage" | "Designer"
   status?: "draft" | "active" | "archived"
   fabric?: string
+  colorFamily?: string
   price: number
   compareAt?: number
   image: string

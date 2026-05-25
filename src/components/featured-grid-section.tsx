@@ -14,6 +14,25 @@ const fabricOptions = [
 ]
 
 const occasionOptions = ["Dailywear", "Festive"]
+const colourOptions = [
+  "Black",
+  "Blue",
+  "Brown",
+  "Cream",
+  "Gold",
+  "Green",
+  "Grey",
+  "Ivory",
+  "Maroon",
+  "Mustard",
+  "Orange",
+  "Pink",
+  "Purple",
+  "Red",
+  "Teal",
+  "White",
+  "Yellow",
+]
 
 interface FeaturedGridSectionProps {
   products: Product[]
@@ -21,6 +40,7 @@ interface FeaturedGridSectionProps {
 
 export function FeaturedGridSection({ products }: FeaturedGridSectionProps) {
   const [selectedFabrics, setSelectedFabrics] = useState<string[]>([])
+  const [selectedColours, setSelectedColours] = useState<string[]>([])
   const [selectedOccasions, setSelectedOccasions] = useState<string[]>([])
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 130000])
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
@@ -35,10 +55,15 @@ export function FeaturedGridSection({ products }: FeaturedGridSectionProps) {
   )
 
   const hasFilters =
-    selectedFabrics.length > 0 || selectedOccasions.length > 0 || priceRange[0] > 0 || priceRange[1] < 130000
+    selectedFabrics.length > 0 ||
+    selectedColours.length > 0 ||
+    selectedOccasions.length > 0 ||
+    priceRange[0] > 0 ||
+    priceRange[1] < 130000
 
   const clearAll = useCallback(() => {
     setSelectedFabrics([])
+    setSelectedColours([])
     setSelectedOccasions([])
     setPriceRange([0, 130000])
   }, [])
@@ -59,6 +84,23 @@ export function FeaturedGridSection({ products }: FeaturedGridSectionProps) {
         if (!matchesFabric) return false
       }
 
+      // Colour filter — prefer Sanity colour family, then fall back to searchable copy.
+      if (selectedColours.length > 0) {
+        const searchableColourText = [
+          product.colorFamily ?? "",
+          product.name,
+          product.collection,
+          product.description,
+        ]
+          .join(" ")
+          .toLowerCase()
+
+        const matchesColour = selectedColours.some((colour) =>
+          searchableColourText.includes(colour.toLowerCase()),
+        )
+        if (!matchesColour) return false
+      }
+
       // Occasion filter — match against badge or collection keywords
       if (selectedOccasions.length > 0) {
         const matchesOccasion = selectedOccasions.some((occasion) => {
@@ -75,10 +117,13 @@ export function FeaturedGridSection({ products }: FeaturedGridSectionProps) {
 
       return true
     })
-  }, [products, selectedFabrics, selectedOccasions, priceRange])
+  }, [products, selectedFabrics, selectedColours, selectedOccasions, priceRange])
 
   const activeFilterCount =
-    selectedFabrics.length + selectedOccasions.length + (priceRange[0] > 0 || priceRange[1] < 130000 ? 1 : 0)
+    selectedFabrics.length +
+    selectedColours.length +
+    selectedOccasions.length +
+    (priceRange[0] > 0 || priceRange[1] < 130000 ? 1 : 0)
 
   return (
     <section className="mx-auto max-w-7xl px-4 pb-14 pt-5 md:px-6 md:pt-8 lg:px-12 lg:pb-20 lg:pt-12">
@@ -227,6 +272,28 @@ export function FeaturedGridSection({ products }: FeaturedGridSectionProps) {
                         className="h-3.5 w-3.5 rounded-sm border border-border accent-foreground"
                       />
                       <span className="text-foreground/80">{fabric}</span>
+                    </label>
+                  ))}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+
+            {/* Colour */}
+            <AccordionItem value="colour">
+              <AccordionTrigger className="text-sm normal-case tracking-normal">
+                Colour
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="flex flex-col gap-2.5">
+                  {colourOptions.map((colour) => (
+                    <label key={colour} className="flex cursor-pointer items-center gap-2.5 text-sm">
+                      <input
+                        type="checkbox"
+                        checked={selectedColours.includes(colour)}
+                        onChange={() => toggleFilter(colour, selectedColours, setSelectedColours)}
+                        className="h-3.5 w-3.5 rounded-sm border border-border accent-foreground"
+                      />
+                      <span className="text-foreground/80">{colour}</span>
                     </label>
                   ))}
                 </div>

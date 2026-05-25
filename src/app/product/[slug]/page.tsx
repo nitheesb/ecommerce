@@ -237,7 +237,7 @@ function SanityProductDetail({
                 </h1>
 
                 <div className="mt-5 flex items-baseline gap-3">
-                  <span className="font-sans text-[2.35rem] font-medium leading-none tracking-[-0.055em] text-foreground md:text-[2.75rem]">
+                  <span className="font-sans text-[1.9rem] font-medium leading-none tracking-[-0.04em] text-foreground md:text-[2.15rem]">
                     {formatCurrency(product.price)}
                   </span>
                   {product.compareAtPrice && (
@@ -377,7 +377,7 @@ function StaticProductDetail({
                 </h1>
 
                 <div className="mt-5 flex items-baseline gap-3">
-                  <span className="font-sans text-[2.35rem] font-medium leading-none tracking-[-0.055em] text-foreground md:text-[2.75rem]">
+                  <span className="font-sans text-[1.9rem] font-medium leading-none tracking-[-0.04em] text-foreground md:text-[2.15rem]">
                     {formatCurrency(product.price)}
                   </span>
                   {product.compareAt && (
