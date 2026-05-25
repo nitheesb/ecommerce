@@ -7,7 +7,7 @@ export function HeroMobile() {
       {/* Background image — compact, not full viewport */}
       <div className="relative h-[55vh] min-h-[360px] max-h-[480px] overflow-hidden">
         <Image
-          src="/images/cover-image-thazhuval.jpg"
+          src="/images/cover-test-2.jpg"
           alt="A woman in a red saree standing in warm window light"
           fill
           priority

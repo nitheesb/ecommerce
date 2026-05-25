@@ -119,7 +119,7 @@ export function Hero() {
           className="absolute inset-0 will-change-transform"
         >
           <Image
-            src="/images/cover-image-thazhuval.jpg"
+            src="/images/cover-test-2.jpg"
             alt="A woman in a red saree standing in warm window light"
             fill
             priority
