@@ -37,6 +37,7 @@ export function CategoriesSection() {
     lastPointerX: 0,
     velocity: 0,
     hasDragged: false,
+    pendingHref: "",
   })
 
   const topCards = useMemo(() => [...categories, ...categories], [])
@@ -152,12 +153,15 @@ export function CategoriesSection() {
     }
 
     const onPointerDown = (event: PointerEvent) => {
+      const anchor = (event.target as HTMLElement | null)?.closest<HTMLAnchorElement>("a[href]")
+
       state.dragging = true
       state.dragStartX = event.clientX
       state.dragStartOffset = state.targetX
       state.lastPointerX = event.clientX
       state.velocity = 0
       state.hasDragged = false
+      state.pendingHref = anchor?.href ?? ""
       setIsDragging(true)
       viewport.setPointerCapture(event.pointerId)
     }
@@ -187,22 +191,25 @@ export function CategoriesSection() {
     }
 
     const onPointerUp = (event: PointerEvent) => {
-      const anchor = (event.target as HTMLElement | null)?.closest<HTMLAnchorElement>("a[href]")
-      const shouldNavigate = !state.hasDragged && anchor?.href
+      const href = state.pendingHref
+      const shouldNavigate = !state.hasDragged && href.length > 0
+      state.pendingHref = ""
 
       endDrag(event.pointerId)
 
       if (shouldNavigate) {
         event.preventDefault()
-        anchor.click()
+        window.location.assign(href)
       }
     }
 
     const onPointerCancel = (event: PointerEvent) => {
+      state.pendingHref = ""
       endDrag(event.pointerId)
     }
 
     const onLostPointerCapture = () => {
+      state.pendingHref = ""
       endDrag()
     }
 
@@ -282,10 +289,7 @@ export function CategoriesSection() {
                     if (motionStateRef.current.hasDragged) {
                       event.preventDefault()
                       event.stopPropagation()
-                      return
                     }
-
-                    window.location.href = category.href
                   }}
                   className={`group relative w-[17.5rem] shrink-0 overflow-hidden rounded-[28px] border transition-all duration-500 md:w-[21rem] ${
                     isActive
