@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowRight, Bell, Layers3, Sparkles } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 
 import { ProductGrid } from "@/components/product-grid"
 import type { Product } from "@/lib/products"
@@ -14,27 +14,6 @@ const sortOptions: { value: SortKey; label: string }[] = [
   { value: "featured", label: "Featured" },
   { value: "price-asc", label: "Price \u00b7 Low to High" },
   { value: "price-desc", label: "Price \u00b7 High to Low" },
-]
-
-const comingSoonCards = [
-  {
-    title: "Client curation pending",
-    description: "This path is ready for the final assortment once the client approves the product structure.",
-    image: "/images/client/10-pink-saree.webp",
-    icon: Layers3,
-  },
-  {
-    title: "Editorial story ready",
-    description: "The page already has its mood, title, and browsing intent so it will not feel empty during approval.",
-    image: "/images/client/02-mustard-geometric-print-saree.webp",
-    icon: Sparkles,
-  },
-  {
-    title: "Drop alert friendly",
-    description: "Use this space for an upcoming drop, waitlist, or WhatsApp enquiry before backend inventory is live.",
-    image: "/images/client/17-red-chiffon-saree.webp",
-    icon: Bell,
-  },
 ]
 
 const fallbackCollections = [
@@ -91,48 +70,16 @@ export function CollectionGrid({
               </div>
             </div>
 
-            <div className="p-6 md:p-8 lg:p-10">
+            <div className="flex flex-col justify-center p-6 md:p-8 lg:p-10">
               <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-muted-foreground">
-                Not Empty, Just Not Released
+                Explore More
               </p>
               <p className="mt-4 max-w-2xl text-pretty font-serif text-3xl leading-[1.12] tracking-tight md:text-4xl">
-                This category is ready for client approval and future inventory.
+                No sarees are available in this collection right now.
               </p>
               <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base">
-                Until the backend catalogue is connected, this page now behaves like a polished preview instead of a broken shelf.
+                Browse the live collection or choose another path from the house.
               </p>
-
-              <div className="mt-8 grid gap-4 md:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
-                {comingSoonCards.map((card) => {
-                  const Icon = card.icon
-
-                  return (
-                    <article
-                      key={card.title}
-                      className="overflow-hidden rounded-[24px] border border-border/60 bg-background/72 shadow-[0_12px_38px_rgba(15,23,42,0.05)]"
-                    >
-                      <div className="relative h-32 overflow-hidden bg-muted">
-                        <Image
-                          src={card.image}
-                          alt=""
-                          fill
-                          sizes="(max-width: 768px) 100vw, 220px"
-                          className="object-cover"
-                        />
-                        <div className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-background/88 text-foreground backdrop-blur">
-                          <Icon className="h-4 w-4" strokeWidth={1.5} />
-                        </div>
-                      </div>
-                      <div className="p-4">
-                        <h3 className="font-serif text-xl leading-tight">{card.title}</h3>
-                        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                          {card.description}
-                        </p>
-                      </div>
-                    </article>
-                  )
-                })}
-              </div>
 
               <div className="mt-8 flex flex-col gap-4 border-t border-border/60 pt-6 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex flex-wrap gap-2">
