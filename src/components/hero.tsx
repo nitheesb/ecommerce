@@ -4,10 +4,15 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import Image from "next/image"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
+import type { ISanityImage } from "@/types"
 
 gsap.registerPlugin(ScrollTrigger)
 
-export function Hero() {
+interface HeroProps {
+  image?: ISanityImage
+}
+
+export function Hero({ image }: HeroProps) {
   const heroRef = useRef<HTMLElement>(null)
   const imageRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
@@ -16,6 +21,8 @@ export function Hero() {
   const paraRef = useRef<HTMLParagraphElement>(null)
   const scrollIndicRef = useRef<HTMLDivElement>(null)
   const [reducedMotion, setReducedMotion] = useState(false)
+  const heroImageUrl = image?.url ?? "/images/cover-test-2.jpg"
+  const heroImageAlt = image?.alt ?? "A woman in a saree styled in warm natural light"
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)")
@@ -119,11 +126,13 @@ export function Hero() {
           className="absolute inset-0 will-change-transform"
         >
           <Image
-            src="/images/cover-test-2.jpg"
-            alt="A woman in a red saree standing in warm window light"
+            src={heroImageUrl}
+            alt={heroImageAlt}
             fill
             priority
             sizes="100vw"
+            placeholder={image?.lqip ? "blur" : "empty"}
+            blurDataURL={image?.lqip}
             className="object-cover object-[70%_center]"
           />
         </div>

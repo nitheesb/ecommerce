@@ -4,10 +4,23 @@ import { useRef, useLayoutEffect } from "react"
 import Image from "next/image"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
+import type { ISanityImage, ISiteStoryChapter } from "@/types"
 
 gsap.registerPlugin(ScrollTrigger)
 
-const chapters = [
+interface StaticStoryChapter {
+  label: string;
+  title: string;
+  image: string;
+  alt: string;
+  text: string;
+}
+
+interface WeaveJourneyProps {
+  chapters?: ISiteStoryChapter[];
+}
+
+const defaultChapters: StaticStoryChapter[] = [
   {
     label: "Chapter I",
     title: "Where It Begins",
@@ -38,9 +51,30 @@ const chapters = [
   },
 ]
 
-export function WeaveJourney() {
+function getChapterImage(chapter: ISiteStoryChapter | StaticStoryChapter) {
+  const image = chapter.image
+
+  if (typeof image === "string") {
+    return {
+      src: image,
+      alt: "alt" in chapter ? chapter.alt : chapter.title,
+      lqip: undefined,
+    }
+  }
+
+  const sanityImage = image as ISanityImage | undefined
+
+  return {
+    src: sanityImage?.url ?? "/images/hero.jpg",
+    alt: sanityImage?.alt ?? ("alt" in chapter ? chapter.alt : chapter.title),
+    lqip: sanityImage?.lqip,
+  }
+}
+
+export function WeaveJourney({ chapters }: WeaveJourneyProps) {
   const sectionRef = useRef<HTMLDivElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
+  const resolvedChapters = chapters?.length ? chapters : defaultChapters
 
   useLayoutEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
@@ -131,18 +165,23 @@ export function WeaveJourney() {
         className="flex flex-col gap-16 py-10 md:flex-row md:gap-0 md:py-0"
         style={{ width: "fit-content" }}
       >
-        {chapters.map((ch, i) => (
+        {resolvedChapters.map((ch, i) => {
+          const chapterImage = getChapterImage(ch)
+
+          return (
           <div
-            key={i}
+            key={"_key" in ch && ch._key ? ch._key : `${ch.label}-${ch.title}`}
             className="journey-panel flex w-full flex-col px-6 md:h-screen md:w-screen md:flex-row md:items-center md:gap-0 md:px-0"
           >
             {/* Image */}
             <div className="relative aspect-[4/5] w-full overflow-hidden bg-muted md:aspect-auto md:h-full md:w-[55%]">
               <Image
-                src={ch.image}
-                alt={ch.alt}
+                src={chapterImage.src}
+                alt={chapterImage.alt}
                 fill
                 sizes="(max-width: 768px) 100vw, 55vw"
+                placeholder={chapterImage.lqip ? "blur" : "empty"}
+                blurDataURL={chapterImage.lqip}
                 className="object-cover"
                 priority={i === 0}
               />
@@ -164,14 +203,15 @@ export function WeaveJourney() {
               <p className="journey-reveal mt-5 max-w-md text-base leading-relaxed text-muted-foreground md:text-lg">
                 {ch.text}
               </p>
-              {i === chapters.length - 1 && (
+              {i === resolvedChapters.length - 1 && (
                 <p className="journey-reveal mt-6 text-[10px] font-medium uppercase tracking-[0.28em] text-foreground/60">
                   This is Thazhuval.
                 </p>
               )}
             </div>
           </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )

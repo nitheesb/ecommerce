@@ -10,7 +10,8 @@
     "sanity:dev": "sanity dev",
     "sanity:deploy": "sanity deploy",
     "sanity:build": "sanity build",
-    "sanity:seed": "node scripts/seed-sanity-products.mjs"
+    "sanity:seed": "node scripts/seed-sanity-products.mjs",
+    "sanity:seed-site-media": "node scripts/seed-sanity-site-media.mjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.1",

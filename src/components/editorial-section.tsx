@@ -6,14 +6,21 @@ import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
+import type { ISanityImage } from "@/types"
 
 gsap.registerPlugin(ScrollTrigger)
 
-export function EditorialSection() {
+interface EditorialSectionProps {
+  image?: ISanityImage
+}
+
+export function EditorialSection({ image }: EditorialSectionProps) {
   const sectionRef = useRef<HTMLElement>(null)
   const imageWrapRef = useRef<HTMLDivElement>(null)
   const imageRef = useRef<HTMLDivElement>(null)
   const textRef = useRef<HTMLDivElement>(null)
+  const storyImageUrl = image?.url ?? "/images/editorial-2.jpg"
+  const storyImageAlt = image?.alt ?? "Artisan weaver at a traditional handloom"
 
   useEffect(() => {
     const section = sectionRef.current
@@ -66,10 +73,12 @@ export function EditorialSection() {
         <div ref={imageWrapRef} className="relative order-2 aspect-[4/5] overflow-hidden md:order-1">
           <div ref={imageRef} className="absolute inset-[-30px] will-change-transform">
             <Image
-              src="/images/editorial-2.jpg"
-              alt="Artisan weaver at a traditional handloom"
+              src={storyImageUrl}
+              alt={storyImageAlt}
               fill
               sizes="(min-width: 768px) 50vw, 100vw"
+              placeholder={image?.lqip ? "blur" : "empty"}
+              blurDataURL={image?.lqip}
               className="object-cover"
             />
           </div>

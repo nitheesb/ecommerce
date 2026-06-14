@@ -25,3 +25,8 @@ export type {
   ISnipcartCustomField,
   ISnipcartItem,
 } from "./snipcart";
+
+export type {
+  ISiteMedia,
+  ISiteStoryChapter,
+} from "./site";

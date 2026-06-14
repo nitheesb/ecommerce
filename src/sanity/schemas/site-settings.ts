@@ -1,4 +1,15 @@
-import { defineField, defineType } from "sanity";
+import { defineArrayMember, defineField, defineType } from "sanity";
+
+const imageWithAltFields = [
+  defineField({
+    name: "alt",
+    title: "Alt Text",
+    type: "string",
+    description: "Describe the image for accessibility and SEO.",
+    validation: (Rule) =>
+      Rule.required().max(140).warning("Keep alt text short and descriptive."),
+  }),
+];
 
 export const siteSettingsSchema = defineType({
   name: "siteSettings",
@@ -6,6 +17,8 @@ export const siteSettingsSchema = defineType({
   type: "document",
   groups: [
     { name: "brand", title: "Brand", default: true },
+    { name: "homepage", title: "Homepage Media" },
+    { name: "story", title: "Our Story Chapters" },
     { name: "commerce", title: "Commerce" },
     { name: "contact", title: "Contact" },
     { name: "seo", title: "SEO" },
@@ -28,6 +41,75 @@ export const siteSettingsSchema = defineType({
       group: "brand",
       initialValue: "The comfort that embraces you",
       validation: (Rule) => Rule.max(90),
+    }),
+    defineField({
+      name: "heroImage",
+      title: "Hero Cover Image",
+      type: "image",
+      group: "homepage",
+      description: "Main desktop cover image on the homepage hero.",
+      options: { hotspot: true },
+      fields: imageWithAltFields,
+    }),
+    defineField({
+      name: "homepageStoryImage",
+      title: "Homepage Our Story Image",
+      type: "image",
+      group: "homepage",
+      description: "Image used in the Our Story section on the homepage.",
+      options: { hotspot: true },
+      fields: imageWithAltFields,
+    }),
+    defineField({
+      name: "weaveJourneyChapters",
+      title: "Story Chapter Images",
+      type: "array",
+      group: "story",
+      description: "Controls the chapter images and copy shown in the horizontal Our Story journey.",
+      of: [
+        defineArrayMember({
+          name: "chapter",
+          title: "Chapter",
+          type: "object",
+          fields: [
+            defineField({
+              name: "label",
+              title: "Chapter Label",
+              type: "string",
+              validation: (Rule) => Rule.required().max(40),
+            }),
+            defineField({
+              name: "title",
+              title: "Title",
+              type: "string",
+              validation: (Rule) => Rule.required().max(80),
+            }),
+            defineField({
+              name: "text",
+              title: "Text",
+              type: "text",
+              rows: 3,
+              validation: (Rule) => Rule.required().max(360),
+            }),
+            defineField({
+              name: "image",
+              title: "Image",
+              type: "image",
+              options: { hotspot: true },
+              fields: imageWithAltFields,
+              validation: (Rule) => Rule.required(),
+            }),
+          ],
+          preview: {
+            select: {
+              title: "title",
+              subtitle: "label",
+              media: "image",
+            },
+          },
+        }),
+      ],
+      validation: (Rule) => Rule.min(1).max(6),
     }),
     defineField({
       name: "announcement",

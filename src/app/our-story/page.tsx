@@ -2,13 +2,18 @@ import type { Metadata } from "next"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import { InnerPageShell } from "@/components/inner-page-shell"
 import { WeaveJourney } from "@/components/weave-journey"
+import { sanityFetch } from "@/lib/sanity/client"
+import { siteMediaQuery } from "@/lib/sanity/queries"
+import type { ISiteMedia } from "@/types"
 
 export const metadata: Metadata = {
   title: "Our Story",
   description: "House of Thazhuval was born from a simple, powerful feeling — the comfort of being held.",
 }
 
-export default function OurStoryPage() {
+export default async function OurStoryPage() {
+  const siteMedia = await sanityFetch<ISiteMedia>(siteMediaQuery)
+
   return (
     <InnerPageShell>
         <section className="mx-auto max-w-3xl px-6 py-16 lg:px-12 lg:py-24">
@@ -52,7 +57,7 @@ export default function OurStoryPage() {
 
           {/* Story of the Weave — scroll journey */}
           <div className="mt-16 -mx-6 lg:-mx-12">
-            <WeaveJourney />
+            <WeaveJourney chapters={siteMedia?.weaveJourneyChapters} />
           </div>
 
           <div className="mt-14 border-t border-border/60 pt-10">

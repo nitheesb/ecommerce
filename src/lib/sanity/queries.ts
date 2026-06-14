@@ -39,6 +39,14 @@ const productCardFields = `{
 
 const publishedOnly = `!(_id in path("drafts.**"))`;
 
+const storyChapterFields = `{
+  _key,
+  label,
+  title,
+  text,
+  image ${imageFragment}
+}`;
+
 // ---------------------------------------------------------------------------
 // Queries
 // ---------------------------------------------------------------------------
@@ -96,4 +104,13 @@ export const productBySlugQuery = `
 /** Fetch all slugs for generateStaticParams */
 export const allProductSlugsQuery = `
   *[_type == "saree" && ${publishedOnly} && defined(slug.current) && coalesce(status, "active") == "active"].slug.current
+`;
+
+/** Fetch editable homepage and story media from the Site Settings singleton */
+export const siteMediaQuery = `
+  *[_type == "siteSettings"][0] {
+    heroImage ${imageFragment},
+    homepageStoryImage ${imageFragment},
+    "weaveJourneyChapters": coalesce(weaveJourneyChapters[] ${storyChapterFields}, [])
+  }
 `;
