@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createClient } from "@sanity/client";
+import sanityCli from "sanity/cli";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, "..");
@@ -12,18 +13,8 @@ const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID ?? "njd3ihcc";
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET ?? "production";
 const token = process.env.SANITY_API_TOKEN;
 
-if (!token || token.startsWith("your-")) {
-  console.error("Missing SANITY_API_TOKEN in .env.local. Create a Sanity token with write access, then rerun this script.");
-  process.exit(1);
-}
-
-const client = createClient({
-  projectId,
-  dataset,
-  token,
-  apiVersion: "2024-01-01",
-  useCdn: false,
-});
+const apiVersion = "2024-01-01";
+const client = getWritableClient();
 
 const imageCache = new Map();
 
@@ -62,6 +53,33 @@ const chapters = [
   },
 ];
 
+const collectionCards = [
+  {
+    _key: "collection-card-sarees",
+    categoryTitle: "Sarees",
+    image: "client/08-olive-green.webp",
+    alt: "Sarees collection preview",
+  },
+  {
+    _key: "collection-card-prints",
+    categoryTitle: "Shop by Prints",
+    image: "client/03-mustard-geometrical-weave.webp",
+    alt: "Shop by Prints collection preview",
+  },
+  {
+    _key: "collection-card-occasion",
+    categoryTitle: "Shop by Occasion",
+    image: "client/18-red-chiffon.webp",
+    alt: "Shop by Occasion collection preview",
+  },
+  {
+    _key: "collection-card-colors",
+    categoryTitle: "Shop by Colors",
+    image: "client/12-purple-chiffon.webp",
+    alt: "Shop by Colors collection preview",
+  },
+];
+
 await client.createIfNotExists({
   _id: "siteSettings",
   _type: "siteSettings",
@@ -76,6 +94,14 @@ const heroImage = await uploadPublicImage(
 const homepageStoryImage = await uploadPublicImage(
   "editorial-2.jpg",
   "Artisan weaver at a traditional handloom",
+);
+const collectionCardImages = await Promise.all(
+  collectionCards.map(async (card) => ({
+    _key: card._key,
+    _type: "collectionCardImage",
+    categoryTitle: card.categoryTitle,
+    image: await uploadPublicImage(card.image, card.alt),
+  })),
 );
 const weaveJourneyChapters = await Promise.all(
   chapters.map(async (chapter) => ({
@@ -93,11 +119,12 @@ await client
   .set({
     heroImage,
     homepageStoryImage,
+    collectionCardImages,
     weaveJourneyChapters,
   })
   .commit({ autoGenerateArrayKeys: false });
 
-console.log("Seeded editable hero, homepage story, and chapter images into Sanity siteSettings.");
+console.log("Seeded editable hero, homepage story, collection rail, and chapter images into Sanity siteSettings.");
 
 async function uploadPublicImage(filename, alt) {
   if (imageCache.has(filename)) return imageCache.get(filename);
@@ -137,5 +164,26 @@ function loadDotEnv(filePath) {
     const key = trimmed.slice(0, separator).trim();
     const value = trimmed.slice(separator + 1).trim().replace(/^["']|["']$/g, "");
     if (!process.env[key]) process.env[key] = value;
+  }
+}
+
+function getWritableClient() {
+  if (token && !token.startsWith("your-")) {
+    return createClient({
+      projectId,
+      dataset,
+      token,
+      apiVersion,
+      useCdn: false,
+    });
+  }
+
+  try {
+    return sanityCli.getCliClient({ apiVersion });
+  } catch {
+    console.error(
+      "Missing SANITY_API_TOKEN. Either add a write token to .env.local and run the token script, or run through `sanity exec --with-user-token` while logged into Sanity CLI.",
+    );
+    process.exit(1);
   }
 }

@@ -27,9 +27,9 @@ export default async function HomePage() {
       <main id="main-content">
         <Hero image={siteMedia?.heroImage} />
         <div className="relative z-10 bg-background">
-          <MobileShopStart />
+          <MobileShopStart collectionCardImages={siteMedia?.collectionCardImages} />
           <div className="hidden md:block">
-            <CategoriesSection />
+            <CategoriesSection collectionCardImages={siteMedia?.collectionCardImages} />
             <SectionDivider />
           </div>
           <FeaturedGridSection products={products} />

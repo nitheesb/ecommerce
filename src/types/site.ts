@@ -8,8 +8,15 @@ export interface ISiteStoryChapter {
   image?: ISanityImage;
 }
 
+export interface ISiteCollectionCardImage {
+  _key?: string;
+  categoryTitle: string;
+  image?: ISanityImage;
+}
+
 export interface ISiteMedia {
   heroImage?: ISanityImage;
   homepageStoryImage?: ISanityImage;
+  collectionCardImages?: ISiteCollectionCardImage[];
   weaveJourneyChapters?: ISiteStoryChapter[];
 }

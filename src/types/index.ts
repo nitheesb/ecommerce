@@ -27,6 +27,7 @@ export type {
 } from "./snipcart";
 
 export type {
+  ISiteCollectionCardImage,
   ISiteMedia,
   ISiteStoryChapter,
 } from "./site";

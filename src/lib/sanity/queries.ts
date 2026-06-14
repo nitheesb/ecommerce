@@ -47,6 +47,12 @@ const storyChapterFields = `{
   image ${imageFragment}
 }`;
 
+const collectionCardImageFields = `{
+  _key,
+  categoryTitle,
+  image ${imageFragment}
+}`;
+
 // ---------------------------------------------------------------------------
 // Queries
 // ---------------------------------------------------------------------------
@@ -111,6 +117,7 @@ export const siteMediaQuery = `
   *[_type == "siteSettings"][0] {
     heroImage ${imageFragment},
     homepageStoryImage ${imageFragment},
+    "collectionCardImages": coalesce(collectionCardImages[] ${collectionCardImageFields}, []),
     "weaveJourneyChapters": coalesce(weaveJourneyChapters[] ${storyChapterFields}, [])
   }
 `;

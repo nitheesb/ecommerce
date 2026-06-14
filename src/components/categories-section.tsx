@@ -8,6 +8,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { ArrowUpRight } from "lucide-react"
 
 import { categories } from "@/lib/products"
+import type { ISanityImage, ISiteCollectionCardImage } from "@/types"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -18,7 +19,26 @@ const categoryImages: Record<(typeof categories)[number]["title"], string> = {
   "Shop by Colors": "/images/client/12-purple-chiffon.webp",
 }
 
-export function CategoriesSection() {
+interface CategoriesSectionProps {
+  collectionCardImages?: ISiteCollectionCardImage[]
+}
+
+function getCategoryImage(
+  title: (typeof categories)[number]["title"],
+  collectionCardImages?: ISiteCollectionCardImage[],
+) {
+  const sanityImage = collectionCardImages?.find((item) => item.categoryTitle === title)?.image as
+    | ISanityImage
+    | undefined
+
+  return {
+    src: sanityImage?.url ?? categoryImages[title],
+    alt: sanityImage?.alt ?? title,
+    lqip: sanityImage?.lqip,
+  }
+}
+
+export function CategoriesSection({ collectionCardImages }: CategoriesSectionProps) {
   const sectionRef = useRef<HTMLElement>(null)
   const viewportRef = useRef<HTMLDivElement>(null)
   const topTrackRef = useRef<HTMLDivElement>(null)
@@ -280,6 +300,7 @@ export function CategoriesSection() {
             {topCards.map((category, index) => {
               const categoryIndex = index % categories.length
               const isActive = categoryIndex === activeIndex
+              const cardImage = getCategoryImage(category.title, collectionCardImages)
 
               return (
                 <Link
@@ -303,11 +324,13 @@ export function CategoriesSection() {
                 >
                   <div className="relative min-h-[15rem] overflow-hidden">
                     <Image
-                      src={categoryImages[category.title]}
-                      alt={category.title}
+                      src={cardImage.src}
+                      alt={cardImage.alt}
                       fill
                       draggable={false}
                       sizes="(max-width: 768px) 280px, 336px"
+                      placeholder={cardImage.lqip ? "blur" : "empty"}
+                      blurDataURL={cardImage.lqip}
                       className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-foreground/75 via-foreground/20 to-transparent" />

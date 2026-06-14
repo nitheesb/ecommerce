@@ -18,7 +18,6 @@ export const siteSettingsSchema = defineType({
   groups: [
     { name: "brand", title: "Brand", default: true },
     { name: "homepage", title: "Homepage Media" },
-    { name: "story", title: "Our Story Chapters" },
     { name: "commerce", title: "Commerce" },
     { name: "contact", title: "Contact" },
     { name: "seo", title: "SEO" },
@@ -61,11 +60,61 @@ export const siteSettingsSchema = defineType({
       fields: imageWithAltFields,
     }),
     defineField({
-      name: "weaveJourneyChapters",
-      title: "Story Chapter Images",
+      name: "collectionCardImages",
+      title: "Horizontal Collection Rail Images",
       type: "array",
-      group: "story",
-      description: "Controls the chapter images and copy shown in the horizontal Our Story journey.",
+      group: "homepage",
+      description: "Images for the auto-scrolling Shop by collection cards and the mobile Browse the house shortcuts.",
+      of: [
+        defineArrayMember({
+          name: "collectionCardImage",
+          title: "Collection Card Image",
+          type: "object",
+          fields: [
+            defineField({
+              name: "categoryTitle",
+              title: "Collection Card",
+              type: "string",
+              options: {
+                list: [
+                  { title: "Sarees", value: "Sarees" },
+                  { title: "Shop by Prints", value: "Shop by Prints" },
+                  { title: "Shop by Occasion", value: "Shop by Occasion" },
+                  { title: "Shop by Colors", value: "Shop by Colors" },
+                ],
+              },
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: "image",
+              title: "Image",
+              type: "image",
+              options: { hotspot: true },
+              fields: imageWithAltFields,
+              validation: (Rule) => Rule.required(),
+            }),
+          ],
+          preview: {
+            select: {
+              title: "categoryTitle",
+              media: "image",
+            },
+          },
+        }),
+      ],
+      validation: (Rule) =>
+        Rule.max(4).custom((items) => {
+          if (!items?.length) return true;
+          const titles = items.map((item: any) => item?.categoryTitle).filter(Boolean);
+          return new Set(titles).size === titles.length || "Each collection card should only be added once.";
+        }),
+    }),
+    defineField({
+      name: "weaveJourneyChapters",
+      title: "Chapter Scroll Images",
+      type: "array",
+      group: "homepage",
+      description: "Controls the Chapter I / II / III / IV horizontal Our Story journey.",
       of: [
         defineArrayMember({
           name: "chapter",
