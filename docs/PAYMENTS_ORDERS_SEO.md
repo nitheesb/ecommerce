@@ -23,7 +23,7 @@ https://YOUR-VERCEL-PREVIEW-DOMAIN/api/webhooks/razorpay
 
 7. Generate a strong, unique webhook secret in Razorpay and save the same value as `RAZORPAY_WEBHOOK_SECRET` in Vercel.
 8. Subscribe the webhook to `order.paid` and `payment.failed`. The code also safely understands `payment.captured`, but subscribing to both success events is unnecessary.
-9. After the complete test checklist passes, switch Razorpay to **Live Mode**, generate separate live keys, add the live production webhook `https://thazhuval.com/api/webhooks/razorpay`, and replace only the Production environment values in Vercel.
+9. After the complete test checklist passes, switch Razorpay to **Live Mode**, generate separate live keys, add the live production webhook `https://www.thazhuval.com/api/webhooks/razorpay`, and replace only the Production environment values in Vercel.
 
 Official references:
 
@@ -53,7 +53,7 @@ ORDER_NOTIFICATION_EMAIL=houseofthazhuval@gmail.com
 SHIPPING_FEE_INR=0
 FREE_SHIPPING_THRESHOLD_INR=2000
 
-NEXT_PUBLIC_SITE_URL=https://thazhuval.com
+NEXT_PUBLIC_SITE_URL=https://www.thazhuval.com
 ```
 
 Add them in **Vercel → Project → Settings → Environment Variables**. Test keys belong in Development/Preview; live keys belong only in Production. Redeploy after changing environment variables.
@@ -133,7 +133,7 @@ Before enabling the public Razorpay checkout, add request-rate protection for `/
 ## SEO Launch Checklist
 
 1. Add `thazhuval.com` as a **Domain property** in Google Search Console and verify it with the DNS TXT record at Namecheap.
-2. Submit `https://thazhuval.com/sitemap.xml` in Search Console.
+2. Submit `https://www.thazhuval.com/sitemap.xml` in Search Console.
 3. Inspect the homepage and several product URLs in Search Console after the production deployment.
 4. Add the same domain to Bing Webmaster Tools; it can import the Search Console property.
 5. Complete every active Sanity product's SEO title, meta description, image alt text, SKU, price, stock, and social image.
@@ -146,8 +146,8 @@ Before enabling the public Razorpay checkout, add request-rate protection for `/
 Useful live checks:
 
 ```text
-https://thazhuval.com/robots.txt
-https://thazhuval.com/sitemap.xml
+https://www.thazhuval.com/robots.txt
+https://www.thazhuval.com/sitemap.xml
 https://search.google.com/test/rich-results
 https://search.google.com/search-console
 ```

@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://thazhuval.com").replace(/\/$/, "")
+export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.thazhuval.com").replace(/\/$/, "")
 
 export function absoluteUrl(path: string) {
   if (/^https?:\/\//i.test(path)) return path
