@@ -10,6 +10,7 @@ export type {
 
 export type {
   ICartItem,
+  ICartProductInput,
   ICartActions,
   ICartState,
   ICartComputed,
@@ -20,11 +21,6 @@ export type {
   ICategoryItem,
   ICollectionCategory,
 } from "./collection";
-
-export type {
-  ISnipcartCustomField,
-  ISnipcartItem,
-} from "./snipcart";
 
 export type {
   ISiteCollectionCardImage,

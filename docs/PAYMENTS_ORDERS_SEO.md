@@ -4,9 +4,9 @@ This guide is the production operating checklist for House of Thazhuval. Never p
 
 ## Current Checkout Status
 
-The storefront currently uses Snipcart for its visible cart and checkout. The repository now also contains the secure Razorpay order APIs, signed webhook handler, Sanity `Order` schema, inventory adjustment, and Resend notification logic.
+The storefront uses its own persistent cart and Razorpay Standard Checkout. The server creates Razorpay orders from current published Sanity prices and stock, verifies browser signatures, stores orders in Sanity, adjusts inventory from signed webhooks, and sends notifications through Resend.
 
-Do not remove Snipcart or enable a live Razorpay button until the Razorpay **Test Mode** checkout has completed the test checklist below. The `razorpay.me` payment handle is useful for manual payments, but it is not the ecommerce checkout because it does not securely bind a payment to server-validated cart prices and inventory.
+Keep Razorpay in **Test Mode** until the checklist below passes. The `razorpay.me` payment handle is useful for manual payments, but it is not the ecommerce checkout because it does not securely bind a payment to server-validated cart prices and inventory.
 
 ## Razorpay Dashboard Setup
 
@@ -116,7 +116,7 @@ If Resend is not configured, payment and Sanity order processing still work, but
 9. Try an invalid signature and confirm it is rejected.
 10. Try an out-of-stock item and confirm order creation is rejected.
 11. Test payment failure/cancellation and confirm the order is not fulfilment-ready.
-12. Repeat on mobile and desktop before replacing Snipcart in production.
+12. Repeat on mobile and desktop before replacing Test Mode keys with Live Mode keys.
 
 Before enabling the public Razorpay checkout, add request-rate protection for `/api/checkout/create-order` using Vercel Firewall or a durable rate-limit store. The route validates all server-side prices and stock, but rate limiting prevents automated creation of large numbers of unpaid Razorpay/Sanity orders.
 
@@ -166,4 +166,4 @@ git commit -m "Add Razorpay orders and SEO foundations"
 git push origin main
 ```
 
-Deploying the Studio schema does not turn on Razorpay payments. The live checkout changes only after production keys, webhook, email sender, and end-to-end tests are complete.
+Deploying the Studio schema does not turn on live payments. The storefront remains in Razorpay Test Mode until Vercel Production receives Live Mode keys and the live webhook is configured after end-to-end testing.

@@ -4,11 +4,12 @@ import * as React from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Heart, Plus, Eye } from "lucide-react"
-import { absoluteUrl, cn, formatCurrency } from "@/lib/utils"
+import { cn, formatCurrency } from "@/lib/utils"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Badge } from "@/components/ui/badge"
 import type { Product } from "@/lib/products"
 import { useUiStore } from "@/hooks/use-ui-store"
+import { AddToCartButton } from "@/components/add-to-cart-button"
 
 interface ProductCardProps {
   product: Product
@@ -23,8 +24,6 @@ export function ProductCard({ product, className, priority, onQuickView, hideQui
   const wishlisted = isWishlisted(product.id)
   const [imageLoaded, setImageLoaded] = React.useState(false)
 
-  const productUrl = absoluteUrl(`/product/${product.slug}`)
-  const productImage = absoluteUrl(product.image)
   const isOutOfStock = product.stockStatus === "outOfStock" || product.stockQuantity === 0
 
   const badgeVariant =
@@ -124,34 +123,34 @@ export function ProductCard({ product, className, priority, onQuickView, hideQui
           )}
         </div>
 
-        {/* Quick Add — Snipcart add-to-cart button */}
+        {/* Quick add */}
         {!hideQuickAdd && (
-          <button
-            type="button"
-            onClick={(e) => e.preventDefault()}
-            disabled={isOutOfStock}
-            aria-disabled={isOutOfStock}
+          <AddToCartButton
+            product={{
+              productId: product.id,
+              title: product.name,
+              slug: product.slug,
+              price: product.price,
+              imageUrl: product.image,
+              description: product.description,
+              stockQuantity: product.stockQuantity,
+            }}
+            outOfStock={isOutOfStock}
+            onClick={(event) => {
+              event.preventDefault()
+              event.stopPropagation()
+            }}
             className={cn(
               "absolute inset-x-3 bottom-3 hidden items-center justify-center gap-2 py-3 text-[11px] uppercase tracking-[0.22em] transition-all duration-500 lg:flex lg:translate-y-2 lg:opacity-0 lg:group-hover:translate-y-0 lg:group-hover:opacity-100",
               isOutOfStock
                 ? "cursor-not-allowed bg-background/90 text-muted-foreground backdrop-blur hover:bg-background/90"
-                : "snipcart-add-item bg-foreground text-background hover:bg-foreground/90",
+                : "bg-foreground text-background hover:bg-foreground/90",
             )}
             aria-label={isOutOfStock ? `${product.name} is out of stock` : `Quick add ${product.name}`}
-            {...(isOutOfStock
-              ? {}
-              : {
-                  "data-item-id": product.id,
-                  "data-item-name": product.name,
-                  "data-item-price": product.price,
-                  "data-item-url": productUrl,
-                  "data-item-image": productImage,
-                  "data-item-description": product.description,
-                })}
           >
             <Plus className="h-3.5 w-3.5" />
             {isOutOfStock ? "Out of Stock" : "Quick Add"}
-          </button>
+          </AddToCartButton>
         )}
       </div>
 

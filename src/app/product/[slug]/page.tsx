@@ -12,6 +12,7 @@ import type { IProduct } from "@/types"
 import { ProductActions } from "./product-actions"
 import { ProductGallery } from "./product-gallery"
 import { RecentlyViewedTracker } from "@/components/recently-viewed-tracker"
+import { StaticProductActions } from "@/components/static-product-actions"
 
 // ---------------------------------------------------------------------------
 // Static params
@@ -311,8 +312,6 @@ function StaticProductDetail({
   product: Product
   relatedProducts: Product[]
 }) {
-  const productUrl = absoluteUrl(`/product/${product.slug}`)
-  const productImage = absoluteUrl(product.image)
   const isOutOfStock = isStaticProductOutOfStock(product)
   const productKicker = getProductKicker(product.category, product.collection)
   const breadcrumbItems = [
@@ -415,34 +414,7 @@ function StaticProductDetail({
                 </p>
 
                 <div className="mt-7">
-                  <button
-                    type="button"
-                    disabled={isOutOfStock}
-                    aria-disabled={isOutOfStock}
-                    className={cn(
-                      "w-full rounded-full py-4 text-[11px] font-medium uppercase tracking-[0.22em] transition-colors",
-                      isOutOfStock
-                        ? "cursor-not-allowed bg-muted text-muted-foreground hover:bg-muted"
-                        : "snipcart-add-item bg-foreground text-background hover:bg-foreground/90",
-                    )}
-                    {...(isOutOfStock
-                      ? {}
-                      : {
-                          "data-item-id": product.id,
-                          "data-item-name": product.name,
-                          "data-item-price": product.price,
-                          "data-item-url": productUrl,
-                          "data-item-image": productImage,
-                          "data-item-description": product.description,
-                        })}
-                  >
-                    {isOutOfStock ? "Out of Stock" : `Add to Cart — ${formatCurrency(product.price)}`}
-                  </button>
-                  {isOutOfStock && (
-                    <p className="mt-3 rounded-full bg-red-50 px-4 py-2 text-center text-xs font-medium text-red-700">
-                      This saree is currently out of stock, but it stays visible for wishlists and restock enquiries.
-                    </p>
-                  )}
+                  <StaticProductActions product={product} />
                 </div>
 
                 <p className="mt-5 text-center text-xs leading-relaxed text-muted-foreground">

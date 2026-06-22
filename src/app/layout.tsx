@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next"
 import { Playfair_Display, Inter } from "next/font/google"
 import "./globals.css"
 import { absoluteUrl, cn, SITE_URL } from "@/lib/utils"
-import { SnipcartProvider } from "@/components/snipcart-provider"
 import { Toaster } from "@/components/ui/toaster"
 import { ClientOverlays } from "@/components/client-overlays"
 import { PageTransition } from "@/components/page-transition"
@@ -145,7 +144,6 @@ export default function RootLayout({
         </a>
         <ClientOverlays />
         <PageTransition>{children}</PageTransition>
-        <SnipcartProvider />
         <Toaster />
       </body>
     </html>

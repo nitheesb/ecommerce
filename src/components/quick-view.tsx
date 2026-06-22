@@ -5,9 +5,10 @@ import Image from "next/image"
 import Link from "next/link"
 import { X, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { absoluteUrl, cn, formatCurrency } from "@/lib/utils"
+import { cn, formatCurrency } from "@/lib/utils"
 import { useLenisStore } from "@/hooks/use-lenis"
 import type { Product } from "@/lib/products"
+import { AddToCartButton } from "@/components/add-to-cart-button"
 
 interface QuickViewProps {
   product: Product | null
@@ -35,8 +36,6 @@ export function QuickView({ product, onClose }: QuickViewProps) {
   }, [product, onClose])
 
   if (!product) return null
-  const productUrl = absoluteUrl(`/product/${product.slug}`)
-  const productImage = absoluteUrl(product.image)
   const isOutOfStock = product.stockStatus === "outOfStock" || product.stockQuantity === 0
 
   return (
@@ -92,30 +91,28 @@ export function QuickView({ product, onClose }: QuickViewProps) {
           </p>
 
           <div className="mt-6 flex flex-col gap-3">
-            <button
-              type="button"
-              disabled={isOutOfStock}
-              aria-disabled={isOutOfStock}
+            <AddToCartButton
+              product={{
+                productId: product.id,
+                title: product.name,
+                slug: product.slug,
+                price: product.price,
+                imageUrl: product.image,
+                description: product.description,
+                stockQuantity: product.stockQuantity,
+              }}
+              outOfStock={isOutOfStock}
+              onClick={onClose}
               className={cn(
                 "flex items-center justify-center gap-2 py-3.5 text-[11px] uppercase tracking-[0.22em] transition-colors",
                 isOutOfStock
                   ? "cursor-not-allowed bg-muted text-muted-foreground hover:bg-muted"
-                  : "snipcart-add-item bg-foreground text-background hover:bg-foreground/90",
+                  : "bg-foreground text-background hover:bg-foreground/90",
               )}
-              {...(isOutOfStock
-                ? {}
-                : {
-                    "data-item-id": product.id,
-                    "data-item-name": product.name,
-                    "data-item-price": product.price,
-                    "data-item-url": productUrl,
-                    "data-item-image": productImage,
-                    "data-item-description": product.description,
-                  })}
             >
               <Plus className="h-3.5 w-3.5" />
               {isOutOfStock ? "Out of Stock" : "Add to Cart"}
-            </button>
+            </AddToCartButton>
             <Button asChild variant="outline" size="lg" className="w-full">
               <Link href={`/product/${product.slug}`} onClick={onClose}>
                 View Full Details

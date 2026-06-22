@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { categories } from "@/lib/products"
+import { useCartStore } from "@/hooks/use-cart-store"
 
 const WORDMARK = "THAZHUVAL"
 
@@ -22,8 +23,13 @@ export function Navbar({
 }) {
   const [scrolled, setScrolled] = React.useState(solid)
   const [openMenu, setOpenMenu] = React.useState<string | null>(null)
+  const cartCount = useCartStore((state) =>
+    state.items.reduce((sum, item) => sum + item.quantity, 0),
+  )
+  const setCartOpen = useCartStore((state) => state.setOpen)
   const cartBtnRef = React.useRef<HTMLButtonElement>(null)
   const badgeRef = React.useRef<HTMLSpanElement>(null)
+  const previousCartCount = React.useRef(0)
   const wordmarkRef = React.useRef<HTMLDivElement>(null)
   const wordmarkLinkRef = React.useRef<HTMLAnchorElement>(null)
   const eyebrowRef = React.useRef<HTMLDivElement>(null)
@@ -50,28 +56,17 @@ export function Navbar({
   React.useEffect(() => {
     const badge = badgeRef.current
     const btn = cartBtnRef.current
-    if (!badge || !btn) return
+    const previous = previousCartCount.current
+    previousCartCount.current = cartCount
+    if (!badge || !btn || cartCount <= previous) return
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
 
-    let lastCount = badge.textContent ?? ""
-
-    const observer = new MutationObserver(() => {
-      const newCount = badge.textContent ?? ""
-      if (newCount === lastCount) return
-      const wasEmpty = lastCount === "" || lastCount === "0"
-      lastCount = newCount
-      if (wasEmpty && (newCount === "0" || newCount === "")) return
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
-
-      const icon = btn.querySelector("svg")
-      if (icon) {
-        gsap.fromTo(icon, { y: 0 }, { y: -4, duration: 0.15, ease: "power2.out", yoyo: true, repeat: 1 })
-      }
-      gsap.fromTo(badge, { scale: 0.5 }, { scale: 1, duration: 0.3, ease: "back.out(3)" })
-    })
-
-    observer.observe(badge, { childList: true, characterData: true, subtree: true })
-    return () => observer.disconnect()
-  }, [])
+    const icon = btn.querySelector("svg")
+    if (icon) {
+      gsap.fromTo(icon, { y: 0 }, { y: -4, duration: 0.15, ease: "power2.out", yoyo: true, repeat: 1 })
+    }
+    gsap.fromTo(badge, { scale: 0.5 }, { scale: 1, duration: 0.3, ease: "back.out(3)" })
+  }, [cartCount])
 
   // Center wordmark (logo-01 brush mark) — fun entrance, gentle float, and
   // a graceful hover wiggle.
@@ -337,14 +332,17 @@ export function Navbar({
             ref={cartBtnRef}
             variant="ghost"
             size="icon"
-            aria-label="Cart"
-            className={cn("snipcart-checkout relative h-9 w-9 md:h-10 md:w-10 transition-colors duration-300", textColor, iconHover)}
+            aria-label={cartCount ? `Cart with ${cartCount} ${cartCount === 1 ? "item" : "items"}` : "Cart"}
+            onClick={() => setCartOpen(true)}
+            className={cn("relative h-9 w-9 md:h-10 md:w-10 transition-colors duration-300", textColor, iconHover)}
           >
             <ShoppingBag className="h-[18px] w-[18px]" strokeWidth={1.5} />
-            <span ref={badgeRef} className={cn(
-              "snipcart-items-count absolute -right-0.5 -top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full px-1 text-[9px] font-medium leading-none transition-colors duration-300",
-              scrolled ? "bg-foreground text-background" : "bg-background text-foreground"
-            )} />
+            {cartCount > 0 && (
+              <span ref={badgeRef} className={cn(
+                "absolute -right-0.5 -top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full px-1 text-[9px] font-medium leading-none transition-colors duration-300",
+                scrolled ? "bg-foreground text-background" : "bg-background text-foreground"
+              )}>{cartCount > 99 ? "99+" : cartCount}</span>
+            )}
           </Button>
         </div>
       </div>
