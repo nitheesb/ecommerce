@@ -153,8 +153,11 @@ export function Footer() {
           </a>
         </div>
 
-        <div className="mt-8 text-xs text-background/50">
+        <div className="mt-8 flex flex-col gap-2 text-xs text-background/50 sm:flex-row sm:items-center sm:justify-between">
           <p>&copy; {new Date().getFullYear()} House of Thazhuval. All rights reserved.</p>
+          <p>
+            Designed by <span className="text-background/70">Nithees Balaji Mohan</span>
+          </p>
         </div>
       </div>
     </footer>
