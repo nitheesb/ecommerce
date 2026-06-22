@@ -10,6 +10,12 @@ Next.js storefront for House of Thazhuval, backed by Sanity Studio for product a
 - Hosting: Vercel, deployed from the `main` branch
 - Package manager: pnpm
 
+Production payment, order fulfilment, notification, and SEO setup is documented in:
+
+```text
+docs/PAYMENTS_ORDERS_SEO.md
+```
+
 ## Local Setup
 
 Create `.env.local` from `.env.example` and fill the available values:
@@ -66,6 +72,12 @@ Global site and homepage media are managed in:
 
 ```text
 Site Settings
+```
+
+Paid orders and fulfilment are managed in:
+
+```text
+Orders
 ```
 
 Homepage images are managed in:
@@ -158,3 +170,4 @@ Vercel deploys the production site from `main`.
 - Do not commit `.env.local` or API tokens.
 - Product images and homepage media should be managed from Sanity once seeded.
 - Keep local fallback images in `public/images/` so the site still renders safely if a Sanity field is empty.
+- The visible storefront checkout remains on Snipcart until the Razorpay Test Mode checklist in `docs/PAYMENTS_ORDERS_SEO.md` is complete.

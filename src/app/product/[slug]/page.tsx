@@ -55,10 +55,22 @@ export async function generateMetadata({
         title: `${title} · Thazhuval`,
         description,
         type: "website",
+        url: `/product/${params.slug}`,
+        siteName: "House of Thazhuval",
         images: sanityProduct.seo?.ogImage?.url
           ? [{ url: sanityProduct.seo.ogImage.url }]
           : sanityProduct.mainImage?.url
           ? [{ url: sanityProduct.mainImage.url }]
+          : undefined,
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: `${title} · Thazhuval`,
+        description,
+        images: sanityProduct.seo?.ogImage?.url
+          ? [sanityProduct.seo.ogImage.url]
+          : sanityProduct.mainImage?.url
+          ? [sanityProduct.mainImage.url]
           : undefined,
       },
     }
@@ -76,6 +88,16 @@ export async function generateMetadata({
     openGraph: {
       title: `${staticProduct.name} · Thazhuval`,
       description: staticProduct.description,
+      type: "website",
+      url: `/product/${params.slug}`,
+      siteName: "House of Thazhuval",
+      images: [{ url: staticProduct.image, alt: staticProduct.name }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${staticProduct.name} · Thazhuval`,
+      description: staticProduct.description,
+      images: [staticProduct.image],
     },
   }
 }
@@ -184,6 +206,7 @@ function SanityProductDetail({
     image: mainImageUrl,
     price: product.price,
     compareAtPrice: product.compareAtPrice ?? undefined,
+    sku: product.sku,
     slug: product.slug.current,
     category: product.category,
     collection: product.collection ?? product.weaveType ?? "Saree",
@@ -529,6 +552,7 @@ function buildProductSchema({
   image,
   price,
   compareAtPrice,
+  sku,
   slug,
   category,
   collection,
@@ -539,11 +563,16 @@ function buildProductSchema({
   image: string
   price: number
   compareAtPrice?: number
+  sku?: string
   slug: string
   category: string
   collection: string
   isOutOfStock: boolean
 }) {
+  const productCategory = [category !== "None" ? category : "", collection]
+    .filter(Boolean)
+    .join(" / ")
+
   return {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -554,7 +583,8 @@ function buildProductSchema({
       "@type": "Brand",
       name: "House of Thazhuval",
     },
-    category: `${category} / ${collection}`,
+    ...(sku ? { sku } : {}),
+    category: productCategory || "Saree",
     offers: {
       "@type": "Offer",
       url: absoluteUrl(`/product/${slug}`),
@@ -564,6 +594,10 @@ function buildProductSchema({
         ? "https://schema.org/OutOfStock"
         : "https://schema.org/InStock",
       itemCondition: "https://schema.org/NewCondition",
+      seller: {
+        "@type": "Organization",
+        name: "House of Thazhuval",
+      },
     },
     ...(compareAtPrice
       ? {

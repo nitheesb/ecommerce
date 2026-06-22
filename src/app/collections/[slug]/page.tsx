@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation"
+import type { Metadata } from "next"
 
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import { InnerPageShell } from "@/components/inner-page-shell"
@@ -343,10 +344,30 @@ export function generateStaticParams() {
 // ---------------------------------------------------------------------------
 // SEO metadata
 // ---------------------------------------------------------------------------
-export function generateMetadata({ params }: { params: { slug: string } }) {
+export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
   const meta = collectionMeta[params.slug]
-  if (!meta) return { title: "Collection" }
-  return { title: meta.title, description: meta.description }
+  if (!meta) return { title: "Collection", robots: { index: false, follow: true } }
+
+  const path = `/collections/${params.slug}`
+  return {
+    title: meta.title,
+    description: meta.description,
+    alternates: { canonical: path },
+    openGraph: {
+      title: `${meta.title} · Thazhuval`,
+      description: meta.description,
+      type: "website",
+      url: path,
+      siteName: "House of Thazhuval",
+      images: [{ url: "/images/cover-test-2.jpg", alt: `${meta.title} at House of Thazhuval` }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${meta.title} · Thazhuval`,
+      description: meta.description,
+      images: ["/images/cover-test-2.jpg"],
+    },
+  }
 }
 
 // ---------------------------------------------------------------------------

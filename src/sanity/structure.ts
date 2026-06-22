@@ -2,6 +2,7 @@ import type { StructureResolver } from "sanity/structure";
 
 const publishedOnly = '!(_id in path("drafts.**"))';
 const saree = `_type == "saree" && ${publishedOnly}`;
+const order = `_type == "order" && ${publishedOnly}`;
 
 const productList = (
   S: Parameters<StructureResolver>[0],
@@ -29,6 +30,61 @@ export const structure: StructureResolver = (S) =>
             .schemaType("siteSettings")
             .documentId("siteSettings")
             .title("Site Settings"),
+        ),
+      S.divider(),
+      S.listItem()
+        .title("Orders")
+        .id("orders")
+        .child(
+          S.list()
+            .title("Order Management")
+            .items([
+              S.listItem()
+                .title("All Orders")
+                .child(
+                  S.documentList()
+                    .title("All Orders")
+                    .schemaType("order")
+                    .filter(order)
+                    .defaultOrdering([{ field: "_createdAt", direction: "desc" }]),
+                ),
+              S.listItem()
+                .title("New Paid Orders")
+                .child(
+                  S.documentList()
+                    .title("New Paid Orders")
+                    .schemaType("order")
+                    .filter(`${order} && status == "paid" && fulfilmentStatus == "unfulfilled"`)
+                    .defaultOrdering([{ field: "paidAt", direction: "asc" }]),
+                ),
+              S.listItem()
+                .title("Processing & Packed")
+                .child(
+                  S.documentList()
+                    .title("Processing & Packed")
+                    .schemaType("order")
+                    .filter(`${order} && fulfilmentStatus in ["processing", "packed"]`)
+                    .defaultOrdering([{ field: "_updatedAt", direction: "asc" }]),
+                ),
+              S.listItem()
+                .title("Shipped")
+                .child(
+                  S.documentList()
+                    .title("Shipped Orders")
+                    .schemaType("order")
+                    .filter(`${order} && fulfilmentStatus == "shipped"`)
+                    .defaultOrdering([{ field: "_updatedAt", direction: "desc" }]),
+                ),
+              S.listItem()
+                .title("Payment Problems")
+                .child(
+                  S.documentList()
+                    .title("Payment Problems")
+                    .schemaType("order")
+                    .filter(`${order} && status in ["paymentPending", "paymentFailed"]`)
+                    .defaultOrdering([{ field: "_createdAt", direction: "desc" }]),
+                ),
+            ]),
         ),
       S.divider(),
       S.listItem()

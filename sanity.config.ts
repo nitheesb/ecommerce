@@ -20,6 +20,11 @@ export default defineConfig({
   },
   document: {
     actions: (actions, context) => {
+      if (context.schemaType === "order") {
+        return actions.filter(
+          (action) => !["delete", "duplicate", "unpublish"].includes(action.action ?? ""),
+        );
+      }
       if (context.schemaType !== "siteSettings") return actions;
       return actions.filter(
         (action) => !["delete", "duplicate", "unpublish"].includes(action.action ?? ""),
