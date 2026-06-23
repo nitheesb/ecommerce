@@ -1,5 +1,7 @@
 import "server-only";
 
+import { sendTransactionalEmail } from "@/lib/resend";
+
 type OrderForEmail = {
   orderNumber: string;
   customer?: { name?: string; email?: string };
@@ -30,36 +32,6 @@ function formatInr(value = 0) {
     currency: "INR",
     maximumFractionDigits: 0,
   }).format(value);
-}
-
-async function sendEmail(to: string, subject: string, html: string) {
-  const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.RESEND_FROM_EMAIL;
-  const replyTo = process.env.RESEND_REPLY_TO_EMAIL ?? process.env.ORDER_NOTIFICATION_EMAIL;
-  if (!apiKey || !from) return false;
-
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from,
-      to: [to],
-      subject,
-      html,
-      ...(replyTo ? { reply_to: replyTo } : {}),
-    }),
-    cache: "no-store",
-  });
-
-  if (!response.ok) {
-    console.error("Resend email failed", response.status, await response.text());
-    return false;
-  }
-
-  return true;
 }
 
 export async function sendPaidOrderNotifications(order: OrderForEmail) {
@@ -97,10 +69,10 @@ export async function sendPaidOrderNotifications(order: OrderForEmail) {
   const customerEmail = order.customer?.email;
   const adminEmail = process.env.ORDER_NOTIFICATION_EMAIL;
   if (customerEmail) {
-    recipients.push(sendEmail(customerEmail, `Order ${order.orderNumber} confirmed`, content));
+    recipients.push(sendTransactionalEmail(customerEmail, `Order ${order.orderNumber} confirmed`, content));
   }
   if (adminEmail) {
-    recipients.push(sendEmail(adminEmail, `New paid order: ${order.orderNumber}`, content));
+    recipients.push(sendTransactionalEmail(adminEmail, `New paid order: ${order.orderNumber}`, content));
   }
 
   if (recipients.length === 0) return false;

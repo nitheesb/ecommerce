@@ -20,7 +20,7 @@ export default defineConfig({
   },
   document: {
     actions: (actions, context) => {
-      if (context.schemaType === "order") {
+      if (["order", "newsletterSubscriber"].includes(context.schemaType)) {
         return actions.filter(
           (action) => !["delete", "duplicate", "unpublish"].includes(action.action ?? ""),
         );

@@ -21,6 +21,7 @@ export default function PrivacyPage() {
           <h1 className="font-serif text-4xl leading-[1.1] tracking-tight md:text-5xl">
             Privacy Policy
           </h1>
+          <p className="mt-3 text-xs uppercase tracking-[0.16em] text-muted-foreground">Last updated: June 22, 2026</p>
 
           <div className="mt-10 space-y-8 text-sm leading-relaxed text-muted-foreground">
             <div>
@@ -70,7 +71,10 @@ export default function PrivacyPage() {
               </p>
               <p className="mt-2">We may share your information only with:</p>
               <ul className="mt-2 list-disc space-y-1 pl-5">
-                <li>Payment gateways (for secure transactions)</li>
+                <li>Razorpay (secure payment processing; we do not store your full card or bank details)</li>
+                <li>Sanity (order, catalogue, and newsletter data)</li>
+                <li>Resend (transactional and opted-in newsletter email delivery)</li>
+                <li>Vercel (website hosting and request processing)</li>
                 <li>Courier and logistics partners (for delivery purposes)</li>
                 <li>Legal authorities, if required by law</li>
               </ul>

@@ -49,16 +49,26 @@ RESEND_FROM_EMAIL=House of Thazhuval <orders@thazhuval.com>
 RESEND_REPLY_TO_EMAIL=houseofthazhuval@gmail.com
 ORDER_NOTIFICATION_EMAIL=houseofthazhuval@gmail.com
 
+# Newsletter consent/unsubscribe signing. Generate a unique random value.
+NEWSLETTER_SIGNING_SECRET=...
+
 # Shipping amounts in INR
 SHIPPING_FEE_INR=0
 FREE_SHIPPING_THRESHOLD_INR=2000
 
 NEXT_PUBLIC_SITE_URL=https://www.thazhuval.com
+
+# Recommended for durable rate limiting at higher traffic volumes.
+UPSTASH_REDIS_REST_URL=...
+UPSTASH_REDIS_REST_TOKEN=...
+RATE_LIMIT_SALT=...
 ```
 
 Add them in **Vercel → Project → Settings → Environment Variables**. Test keys belong in Development/Preview; live keys belong only in Production. Redeploy after changing environment variables.
 
-The Sanity token needs permission to create/update orders and update product inventory. Use a dedicated production token rather than a personal administrator token.
+The Sanity token needs permission to create/update orders, newsletter subscribers, rate-limit counters, and product inventory. Use a dedicated production token rather than a personal administrator token.
+
+Checkout and newsletter endpoints use Upstash Redis when its REST variables are present. Until then, they use atomic Sanity counters as a durable low-volume fallback. Upstash is recommended before a high-traffic campaign because it keeps abuse traffic away from the content database.
 
 ## How the Payment Flow Works
 
@@ -118,7 +128,17 @@ If Resend is not configured, payment and Sanity order processing still work, but
 11. Test payment failure/cancellation and confirm the order is not fulfilment-ready.
 12. Repeat on mobile and desktop before replacing Test Mode keys with Live Mode keys.
 
-Before enabling the public Razorpay checkout, add request-rate protection for `/api/checkout/create-order` using Vercel Firewall or a durable rate-limit store. The route validates all server-side prices and stock, but rate limiting prevents automated creation of large numbers of unpaid Razorpay/Sanity orders.
+Request-rate protection is implemented for `/api/checkout/create-order` and `/api/newsletter`. Vercel Firewall can still be layered on top for bot campaigns. The route validates all server-side prices and stock, while rate limiting prevents automated creation of large numbers of unpaid Razorpay/Sanity orders.
+
+## Newsletter Operations
+
+Footer signups are stored in **Sanity Studio → Newsletter → Active Subscribers** with consent text and timestamps. A welcome email is sent through Resend, and every welcome email contains a signed one-click unsubscribe link. Unsubscribed addresses remain suppressed in Studio rather than being deleted, so they are not accidentally imported again.
+
+Generate `NEWSLETTER_SIGNING_SECRET` with a password manager or `openssl rand -base64 32`. Never change it casually: existing unsubscribe links depend on it.
+
+## Production Health Check
+
+Open `https://www.thazhuval.com/api/health/commerce` after every environment or deployment change. It returns only readiness booleans and the Razorpay mode, never secret values. Production should report `status: ready`; keep `paymentMode: test` until the full Test Checklist passes, then expect `paymentMode: live`.
 
 ## SEO Already Implemented
 

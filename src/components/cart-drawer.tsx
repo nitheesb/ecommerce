@@ -245,7 +245,10 @@ export function CartDrawer() {
                 <CheckoutInput label="City" name="city" value={details.city} onChange={updateDetails} autoComplete="address-level2" />
                 <CheckoutInput label="State" name="state" value={details.state} onChange={updateDetails} autoComplete="address-level1" />
                 <CheckoutInput label="PIN code" name="postalCode" value={details.postalCode} onChange={updateDetails} inputMode="numeric" autoComplete="postal-code" />
-                <CheckoutInput label="Country" name="country" value={details.country} onChange={updateDetails} autoComplete="country-name" />
+                <div className="flex flex-col gap-2">
+                  <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground">Country</span>
+                  <div className="h-12 border border-border/80 bg-muted/30 px-4 py-3 text-sm text-foreground">India</div>
+                </div>
               </fieldset>
               <input className="hidden" tabIndex={-1} autoComplete="off" name="website" value={details.website} onChange={updateDetails} />
             </div>

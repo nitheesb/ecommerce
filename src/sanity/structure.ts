@@ -3,6 +3,7 @@ import type { StructureResolver } from "sanity/structure";
 const publishedOnly = '!(_id in path("drafts.**"))';
 const saree = `_type == "saree" && ${publishedOnly}`;
 const order = `_type == "order" && ${publishedOnly}`;
+const subscriber = `_type == "newsletterSubscriber" && ${publishedOnly}`;
 
 const productList = (
   S: Parameters<StructureResolver>[0],
@@ -30,6 +31,34 @@ export const structure: StructureResolver = (S) =>
             .schemaType("siteSettings")
             .documentId("siteSettings")
             .title("Site Settings"),
+        ),
+      S.divider(),
+      S.listItem()
+        .title("Newsletter")
+        .id("newsletter")
+        .child(
+          S.list()
+            .title("Newsletter Subscribers")
+            .items([
+              S.listItem()
+                .title("Active Subscribers")
+                .child(
+                  S.documentList()
+                    .title("Active Subscribers")
+                    .schemaType("newsletterSubscriber")
+                    .filter(`${subscriber} && status == "subscribed"`)
+                    .defaultOrdering([{ field: "subscribedAt", direction: "desc" }]),
+                ),
+              S.listItem()
+                .title("Unsubscribed")
+                .child(
+                  S.documentList()
+                    .title("Unsubscribed")
+                    .schemaType("newsletterSubscriber")
+                    .filter(`${subscriber} && status == "unsubscribed"`)
+                    .defaultOrdering([{ field: "unsubscribedAt", direction: "desc" }]),
+                ),
+            ]),
         ),
       S.divider(),
       S.listItem()

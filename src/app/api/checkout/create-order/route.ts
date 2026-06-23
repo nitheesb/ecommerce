@@ -2,6 +2,7 @@ import { randomBytes } from "node:crypto";
 import { NextResponse } from "next/server";
 
 import { createRazorpayOrder, getRazorpayKeyId } from "@/lib/razorpay";
+import { rateLimit, rateLimitHeaders } from "@/lib/rate-limit";
 import { getSanityWriteClient } from "@/lib/sanity/write-client";
 
 export const runtime = "nodejs";
@@ -64,6 +65,14 @@ function getShippingAmount(subtotal: number) {
 
 export async function POST(request: Request) {
   try {
+    const limit = await rateLimit(request, { namespace: "checkout", limit: 5, windowSeconds: 600 });
+    if (!limit.allowed) {
+      return NextResponse.json(
+        { error: limit.configured ? "Too many checkout attempts. Please wait a few minutes and try again." : "Checkout is temporarily unavailable." },
+        { status: limit.configured ? 429 : 503, headers: rateLimitHeaders(limit) },
+      );
+    }
+
     const body = (await request.json()) as CheckoutBody;
     if (body.website) return NextResponse.json({ error: "Invalid checkout request." }, { status: 400 });
 
@@ -94,6 +103,10 @@ export async function POST(request: Request) {
     ) {
       return NextResponse.json({ error: "Please provide valid items, contact details, and delivery address." }, { status: 400 });
     }
+    if (shippingAddress.country.toLowerCase() !== "india") {
+      return NextResponse.json({ error: "Online checkout is currently available for delivery within India only." }, { status: 400 });
+    }
+    shippingAddress.country = "India";
 
     const combinedItems = new Map<string, { productId: string; variantSku: string; quantity: number }>();
     for (const item of rawItems) {

@@ -4,7 +4,7 @@ import { InnerPageShell } from "@/components/inner-page-shell"
 
 export const metadata: Metadata = {
   title: "Shipping Policy",
-  description: "House of Thazhuval shipping information for domestic and international orders.",
+  description: "House of Thazhuval shipping information for orders delivered within India.",
 }
 
 export default function ShippingPage() {
@@ -53,14 +53,10 @@ export default function ShippingPage() {
             </div>
 
             <div>
-              <h2 className="text-base font-medium text-foreground">International Shipping</h2>
-              <ul className="mt-2 list-disc space-y-1 pl-5">
-                <li>Shipping charges are <strong>calculated based on weight and number of products</strong></li>
-                <li>Orders are usually shipped within <strong>3&ndash;4 working days</strong></li>
-                <li>Estimated delivery time is <strong>10&ndash;15 business days</strong> (may vary based on location)</li>
-              </ul>
+              <h2 className="text-base font-medium text-foreground">International Enquiries</h2>
               <p className="mt-3">
-                Any <strong>customs duties or import taxes</strong> are to be borne by the customer.
+                Online checkout currently supports delivery within India only. For an international purchase,
+                contact us before ordering so availability, shipping charges, customs, and delivery timing can be confirmed.
               </p>
             </div>
 

@@ -19,6 +19,7 @@ const quickLinks = [
 
 export function Footer() {
   const [email, setEmail] = useState("")
+  const [website, setWebsite] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   async function handleSubscribe(e: React.FormEvent) {
@@ -36,6 +37,7 @@ export function Footer() {
         body: JSON.stringify({
           email: email.trim(),
           source: "footer",
+          website,
         }),
       })
 
@@ -51,6 +53,7 @@ export function Footer() {
         description: "We’ll share collection drops and launch notes when they’re ready.",
       })
       setEmail("")
+      setWebsite("")
     } catch (error) {
       toast.error("Newsletter signup unavailable", {
         description:
@@ -123,6 +126,16 @@ export function Footer() {
                 onChange={(e) => setEmail(e.target.value)}
                 className="flex-1 bg-transparent px-3 py-2.5 text-sm text-background placeholder:text-background/50 focus:outline-none"
               />
+              <input
+                type="text"
+                name="website"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+                className="hidden"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+              />
               <Button
                 type="submit"
                 variant="ghost"
@@ -135,10 +148,8 @@ export function Footer() {
               </Button>
             </div>
             <p className="mt-2 text-[11px] leading-relaxed text-background/50">
-              Your signup will activate once the newsletter webhook is connected. Until then, reach us via{" "}
-              <a href="mailto:houseofthazhuval@gmail.com" className="underline underline-offset-4">
-                email
-              </a>.
+              By joining, you agree to receive occasional emails. You can unsubscribe at any time. See our{" "}
+              <Link href="/privacy" className="underline underline-offset-4">privacy policy</Link>.
             </p>
           </form>
 
