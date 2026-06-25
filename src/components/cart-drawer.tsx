@@ -82,13 +82,29 @@ export function CartDrawer() {
   const [details, setDetails] = React.useState<DeliveryDetails>(initialDetails);
   const [loading, setLoading] = React.useState(false);
   const [orderNumber, setOrderNumber] = React.useState("");
+  const paymentActiveRef = React.useRef(false);
 
   const count = items.reduce((sum, item) => sum + item.quantity, 0);
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   React.useEffect(() => {
+    if (paymentActiveRef.current) return;
     if (!open && step !== "success") setStep("cart");
   }, [open, step]);
+
+  function releaseCheckoutDrawer() {
+    paymentActiveRef.current = true;
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+    setOpen(false);
+  }
+
+  function restoreCheckoutDrawer() {
+    if (!paymentActiveRef.current) return;
+    paymentActiveRef.current = false;
+    setLoading(false);
+    setStep("delivery");
+    setOpen(true);
+  }
 
   function updateDetails(event: React.ChangeEvent<HTMLInputElement>) {
     setDetails((current) => ({ ...current, [event.target.name]: event.target.value }));
@@ -143,7 +159,7 @@ export function CartDrawer() {
         prefill: { name: details.name, email: details.email, contact: details.phone },
         notes: { orderNumber: order.orderNumber },
         theme: { color: "#26313b" },
-        modal: { ondismiss: () => setLoading(false) },
+        modal: { ondismiss: restoreCheckoutDrawer },
         handler: async (payment) => {
           try {
             const verificationResponse = await fetch("/api/checkout/verify", {
@@ -161,20 +177,30 @@ export function CartDrawer() {
 
             setOrderNumber(order.orderNumber);
             clear();
+            paymentActiveRef.current = false;
             setStep("success");
+            setOpen(true);
             toast.success("Payment received", {
               description: "Your order confirmation will arrive by email shortly.",
             });
           } catch (error) {
+            restoreCheckoutDrawer();
             toast.error(error instanceof Error ? error.message : "Payment verification failed.");
           } finally {
             setLoading(false);
           }
         },
       });
+
+      releaseCheckoutDrawer();
+      await new Promise((resolve) => window.setTimeout(resolve, 120));
       checkout.open();
     } catch (error) {
-      setLoading(false);
+      if (paymentActiveRef.current) {
+        restoreCheckoutDrawer();
+      } else {
+        setLoading(false);
+      }
       toast.error(error instanceof Error ? error.message : "Checkout could not be started.");
     }
   }
