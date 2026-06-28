@@ -6,6 +6,10 @@ type OrderForEmail = {
   orderNumber: string;
   customer?: { name?: string; email?: string };
   lineItems?: Array<{ title?: string; quantity?: number; lineTotal?: number }>;
+  subtotal?: number;
+  couponCode?: string;
+  discountAmount?: number;
+  shippingAmount?: number;
   total?: number;
   shippingAddress?: {
     line1?: string;
@@ -60,6 +64,9 @@ export async function sendPaidOrderNotifications(order: OrderForEmail) {
       <h1 style="font-weight:400">Thank you, ${customerName}.</h1>
       <p>Payment for order <strong>${escapeHtml(order.orderNumber)}</strong> has been confirmed.</p>
       <ul>${items}</ul>
+      ${order.subtotal !== undefined ? `<p>Subtotal: ${escapeHtml(formatInr(order.subtotal))}</p>` : ""}
+      ${order.discountAmount ? `<p>Discount${order.couponCode ? ` (${escapeHtml(order.couponCode)})` : ""}: −${escapeHtml(formatInr(order.discountAmount))}</p>` : ""}
+      ${order.shippingAmount !== undefined ? `<p>Shipping: ${order.shippingAmount === 0 ? "Complimentary" : escapeHtml(formatInr(order.shippingAmount))}</p>` : ""}
       <p><strong>Total: ${escapeHtml(formatInr(order.total))}</strong></p>
       ${address ? `<p><strong>Delivery address:</strong><br>${address}</p>` : ""}
       <p>House of Thazhuval will contact you when your order is shipped.</p>

@@ -11,7 +11,9 @@ import {
   Plus,
   ShieldCheck,
   ShoppingBag,
+  Tag,
   Trash2,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -20,6 +22,14 @@ import { useCartStore } from "@/hooks/use-cart-store";
 import { cn, formatCurrency } from "@/lib/utils";
 
 type CheckoutStep = "cart" | "delivery" | "success";
+type AppliedCoupon = {
+  code: string;
+  discountAmount: number;
+  discountedSubtotal: number;
+  shippingAmount: number;
+  total: number;
+  cartSignature: string;
+};
 type DeliveryDetails = {
   name: string;
   email: string;
@@ -82,15 +92,36 @@ export function CartDrawer() {
   const [details, setDetails] = React.useState<DeliveryDetails>(initialDetails);
   const [loading, setLoading] = React.useState(false);
   const [orderNumber, setOrderNumber] = React.useState("");
+  const [couponCode, setCouponCode] = React.useState("");
+  const [appliedCoupon, setAppliedCoupon] = React.useState<AppliedCoupon | null>(null);
+  const [couponLoading, setCouponLoading] = React.useState(false);
+  const [couponError, setCouponError] = React.useState("");
   const paymentActiveRef = React.useRef(false);
 
   const count = items.reduce((sum, item) => sum + item.quantity, 0);
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const cartSignature = items
+    .map((item) => `${item.productId}:${item.variant?.sku ?? "base"}:${item.quantity}`)
+    .sort()
+    .join("|");
+
+  const checkoutItems = items.map((item) => ({
+    productId: item.productId,
+    variantSku: item.variant?.sku,
+    quantity: item.quantity,
+  }));
 
   React.useEffect(() => {
     if (paymentActiveRef.current) return;
     if (!open && step !== "success") setStep("cart");
   }, [open, step]);
+
+  React.useEffect(() => {
+    if (appliedCoupon && appliedCoupon.cartSignature !== cartSignature) {
+      setAppliedCoupon(null);
+      setCouponError("");
+    }
+  }, [appliedCoupon, cartSignature]);
 
   function releaseCheckoutDrawer() {
     paymentActiveRef.current = true;
@@ -110,6 +141,39 @@ export function CartDrawer() {
     setDetails((current) => ({ ...current, [event.target.name]: event.target.value }));
   }
 
+  async function applyCoupon(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!couponCode.trim() || couponLoading || !items.length) return;
+    setCouponLoading(true);
+    setCouponError("");
+
+    try {
+      const response = await fetch("/api/checkout/coupon", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: couponCode, items: checkoutItems }),
+      });
+      const result = (await response.json()) as Omit<AppliedCoupon, "cartSignature"> & { error?: string };
+      if (!response.ok) throw new Error(result.error || "This discount code could not be applied.");
+      setCouponCode(result.code);
+      setAppliedCoupon({ ...result, cartSignature });
+      toast.success(`${result.code} applied`, {
+        description: `You saved ${formatCurrency(result.discountAmount)}.`,
+      });
+    } catch (error) {
+      setAppliedCoupon(null);
+      setCouponError(error instanceof Error ? error.message : "This discount code could not be applied.");
+    } finally {
+      setCouponLoading(false);
+    }
+  }
+
+  function removeCoupon() {
+    setAppliedCoupon(null);
+    setCouponCode("");
+    setCouponError("");
+  }
+
   async function startCheckout(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!items.length || loading) return;
@@ -121,11 +185,8 @@ export function CartDrawer() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          items: items.map((item) => ({
-            productId: item.productId,
-            variantSku: item.variant?.sku,
-            quantity: item.quantity,
-          })),
+          items: checkoutItems,
+          couponCode: appliedCoupon?.code,
           customer: { name: details.name, email: details.email, phone: details.phone },
           shippingAddress: {
             line1: details.line1,
@@ -177,6 +238,8 @@ export function CartDrawer() {
 
             setOrderNumber(order.orderNumber);
             clear();
+            setAppliedCoupon(null);
+            setCouponCode("");
             paymentActiveRef.current = false;
             setStep("success");
             setOpen(true);
@@ -258,6 +321,12 @@ export function CartDrawer() {
         ) : step === "delivery" ? (
           <form onSubmit={startCheckout} className="flex min-h-0 flex-1 flex-col">
             <div className="flex-1 space-y-6 overflow-y-auto px-6 py-6 sm:px-8">
+              {appliedCoupon && (
+                <div className="flex items-center justify-between rounded-2xl border border-emerald-800/15 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
+                  <span className="flex items-center gap-2"><Tag className="h-4 w-4" /> {appliedCoupon.code} saves {formatCurrency(appliedCoupon.discountAmount)}</span>
+                  <button type="button" onClick={() => setStep("cart")} className="text-[10px] font-medium uppercase tracking-[0.16em]">Change</button>
+                </div>
+              )}
               <fieldset className="grid gap-4 sm:grid-cols-2">
                 <legend className="mb-4 text-[10px] font-medium uppercase tracking-[0.22em] text-muted-foreground">Contact</legend>
                 <CheckoutInput label="Full name" name="name" value={details.name} onChange={updateDetails} autoComplete="name" className="sm:col-span-2" />
@@ -327,10 +396,48 @@ export function CartDrawer() {
               ))}
             </div>
             <div className="border-t border-border/70 bg-background/75 px-6 py-5 backdrop-blur sm:px-8">
+              {appliedCoupon ? (
+                <div className="mb-4 rounded-2xl border border-emerald-800/15 bg-emerald-50/80 px-4 py-3 text-emerald-950">
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.14em]"><Tag className="h-3.5 w-3.5" /> {appliedCoupon.code}</span>
+                    <button type="button" onClick={removeCoupon} aria-label={`Remove ${appliedCoupon.code} discount code`} className="rounded-full p-1 transition-colors hover:bg-emerald-900/10"><X className="h-3.5 w-3.5" /></button>
+                  </div>
+                  <p className="mt-1 text-xs text-emerald-900/70">Discount confirmed at checkout.</p>
+                </div>
+              ) : (
+                <form onSubmit={applyCoupon} className="mb-4">
+                  <label htmlFor="coupon-code" className="mb-2 block text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">Offer code</label>
+                  <div className="flex h-12 overflow-hidden rounded-full border border-border bg-background">
+                    <input
+                      id="coupon-code"
+                      value={couponCode}
+                      onChange={(event) => {
+                        setCouponCode(event.target.value.toUpperCase().replace(/\s+/g, ""));
+                        setCouponError("");
+                      }}
+                      maxLength={40}
+                      autoComplete="off"
+                      spellCheck={false}
+                      placeholder="WELCOME10"
+                      className="min-w-0 flex-1 bg-transparent px-5 text-xs font-medium uppercase tracking-[0.14em] outline-none placeholder:text-muted-foreground/60"
+                    />
+                    <button type="submit" disabled={!couponCode || couponLoading} className="px-5 text-[10px] font-medium uppercase tracking-[0.18em] transition-opacity disabled:opacity-40">
+                      {couponLoading ? "Checking" : "Apply"}
+                    </button>
+                  </div>
+                  {couponError && <p role="alert" className="mt-2 text-xs leading-5 text-red-700">{couponError}</p>}
+                </form>
+              )}
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Subtotal</span>
                 <strong className="text-base font-medium tabular-nums">{formatCurrency(subtotal)}</strong>
               </div>
+              {appliedCoupon && (
+                <div className="mt-2 flex items-center justify-between text-emerald-800">
+                  <span className="text-sm">Discount</span>
+                  <strong className="text-sm font-medium tabular-nums">−{formatCurrency(appliedCoupon.discountAmount)}</strong>
+                </div>
+              )}
               <p className="mt-2 text-xs text-muted-foreground">Shipping is confirmed from your delivery details.</p>
               <button type="button" onClick={() => setStep("delivery")} className="mt-5 h-14 w-full rounded-full bg-foreground text-[11px] font-medium uppercase tracking-[0.22em] text-background">Continue to checkout</button>
               <div className="mt-3 flex items-center justify-center gap-2 text-[10px] uppercase tracking-[0.14em] text-muted-foreground"><ShieldCheck className="h-3.5 w-3.5" /> Secure payment by Razorpay</div>

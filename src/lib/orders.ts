@@ -25,6 +25,10 @@ type StoredOrder = {
   customer?: { name?: string; email?: string };
   shippingAddress?: Record<string, string>;
   lineItems?: OrderLineItem[];
+  subtotal?: number;
+  couponCode?: string;
+  discountAmount?: number;
+  shippingAmount?: number;
   total?: number;
 };
 
@@ -32,7 +36,7 @@ const orderByRazorpayIdQuery = `
   *[_type == "order" && razorpayOrderId == $razorpayOrderId][0] {
     _id, _rev, orderNumber, status, inventoryAdjusted, confirmationSentAt,
     notificationState, notificationStartedAt,
-    customer, shippingAddress, lineItems, total
+    customer, shippingAddress, lineItems, subtotal, couponCode, discountAmount, shippingAmount, total
   }
 `;
 
@@ -123,6 +127,10 @@ export async function recordSuccessfulPayment(
       customer: notificationOrder.customer,
       shippingAddress: notificationOrder.shippingAddress,
       lineItems: notificationOrder.lineItems,
+      subtotal: notificationOrder.subtotal,
+      couponCode: notificationOrder.couponCode,
+      discountAmount: notificationOrder.discountAmount,
+      shippingAmount: notificationOrder.shippingAmount,
       total: notificationOrder.total,
     });
     await client

@@ -3,6 +3,7 @@ import type { StructureResolver } from "sanity/structure";
 const publishedOnly = '!(_id in path("drafts.**"))';
 const saree = `_type == "saree" && ${publishedOnly}`;
 const order = `_type == "order" && ${publishedOnly}`;
+const coupon = `_type == "coupon" && ${publishedOnly}`;
 const subscriber = `_type == "newsletterSubscriber" && ${publishedOnly}`;
 
 const productList = (
@@ -57,6 +58,43 @@ export const structure: StructureResolver = (S) =>
                     .schemaType("newsletterSubscriber")
                     .filter(`${subscriber} && status == "unsubscribed"`)
                     .defaultOrdering([{ field: "unsubscribedAt", direction: "desc" }]),
+                ),
+            ]),
+        ),
+      S.divider(),
+      S.listItem()
+        .title("Discount Codes")
+        .id("discountCodes")
+        .child(
+          S.list()
+            .title("Discount Codes")
+            .items([
+              S.listItem()
+                .title("All Codes")
+                .child(
+                  S.documentList()
+                    .title("All Discount Codes")
+                    .schemaType("coupon")
+                    .filter(coupon)
+                    .defaultOrdering([{ field: "code", direction: "asc" }]),
+                ),
+              S.listItem()
+                .title("Active Codes")
+                .child(
+                  S.documentList()
+                    .title("Active Discount Codes")
+                    .schemaType("coupon")
+                    .filter(`${coupon} && active == true && (!defined(startsAt) || startsAt <= now()) && (!defined(expiresAt) || expiresAt > now())`)
+                    .defaultOrdering([{ field: "expiresAt", direction: "asc" }]),
+                ),
+              S.listItem()
+                .title("Inactive & Expired")
+                .child(
+                  S.documentList()
+                    .title("Inactive & Expired Codes")
+                    .schemaType("coupon")
+                    .filter(`${coupon} && (active != true || (defined(expiresAt) && expiresAt <= now()))`)
+                    .defaultOrdering([{ field: "_updatedAt", direction: "desc" }]),
                 ),
             ]),
         ),

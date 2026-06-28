@@ -1,15 +1,17 @@
 import { randomBytes } from "node:crypto";
 import { NextResponse } from "next/server";
 
+import { CheckoutError, resolveCheckoutItems, type CheckoutItemInput } from "@/lib/checkout-pricing";
+import { CouponError, normalizeCouponCode, validateCoupon } from "@/lib/coupons";
 import { createRazorpayOrder, getRazorpayKeyId } from "@/lib/razorpay";
 import { rateLimit, rateLimitHeaders } from "@/lib/rate-limit";
 import { getSanityWriteClient } from "@/lib/sanity/write-client";
 
 export const runtime = "nodejs";
 
-type CheckoutItemInput = { productId?: string; variantSku?: string; quantity?: number };
 type CheckoutBody = {
   items?: CheckoutItemInput[];
+  couponCode?: string;
   customer?: { name?: string; email?: string; phone?: string };
   shippingAddress?: {
     line1?: string;
@@ -21,33 +23,6 @@ type CheckoutBody = {
   };
   website?: string;
 };
-
-type CheckoutProduct = {
-  _id: string;
-  title: string;
-  slug: string;
-  sku?: string;
-  price: number;
-  stockStatus?: string;
-  stockQuantity?: number;
-  imageUrl?: string;
-  variants?: Array<{
-    _key: string;
-    sku: string;
-    price: number;
-    stockQuantity: number;
-  }>;
-};
-
-class CheckoutError extends Error {}
-
-const checkoutProductsQuery = `
-  *[_type == "saree" && !(_id in path("drafts.**")) && _id in $productIds && coalesce(status, "active") == "active"] {
-    _id, title, "slug": slug.current, sku, price, stockStatus, stockQuantity,
-    "imageUrl": mainImage.asset->url,
-    "variants": coalesce(variants[]{_key, sku, price, stockQuantity}, [])
-  }
-`;
 
 function clean(value: unknown, maxLength: number) {
   return typeof value === "string" ? value.trim().slice(0, maxLength) : "";
@@ -108,66 +83,35 @@ export async function POST(request: Request) {
     }
     shippingAddress.country = "India";
 
-    const combinedItems = new Map<string, { productId: string; variantSku: string; quantity: number }>();
-    for (const item of rawItems) {
-      const productId = clean(item.productId, 120);
-      const variantSku = clean(item.variantSku, 80);
-      const quantity = Math.floor(Number(item.quantity ?? 1));
-      const key = `${productId}::${variantSku}`;
-      const existing = combinedItems.get(key);
-      combinedItems.set(key, { productId, variantSku, quantity: (existing?.quantity ?? 0) + quantity });
-    }
-    const items = Array.from(combinedItems.values());
-    if (items.some((item) => !item.productId || item.quantity < 1 || item.quantity > 10)) {
-      return NextResponse.json({ error: "The cart contains an invalid item." }, { status: 400 });
-    }
-
     const client = getSanityWriteClient();
-    const productIds = Array.from(new Set(items.map((item) => item.productId)));
-    const products = await client.fetch<CheckoutProduct[]>(checkoutProductsQuery, { productIds });
-    const productMap = new Map(products.map((product) => [product._id, product]));
-
-    const lineItems = items.map((item, index) => {
-      const product = productMap.get(item.productId);
-      if (!product || product.stockStatus === "outOfStock") throw new CheckoutError("One or more products are no longer available.");
-
-      const variant = item.variantSku
-        ? product.variants?.find((candidate) => candidate.sku === item.variantSku)
-        : undefined;
-      if (product.variants?.length && !variant) throw new CheckoutError(`Please select an available option for ${product.title}.`);
-
-      const available = variant?.stockQuantity ?? product.stockQuantity;
-      if (typeof available === "number" && available < item.quantity) {
-        throw new CheckoutError(`Only ${available} of ${product.title} remain in stock.`);
-      }
-
-      const unitPrice = variant?.price ?? product.price;
-      if (!Number.isFinite(unitPrice) || unitPrice <= 0) throw new CheckoutError("One or more products have an invalid price.");
-
-      return {
+    const resolvedItems = await resolveCheckoutItems(client, rawItems);
+    const lineItems = resolvedItems.map((item, index) => ({
         _key: `item-${index}-${randomBytes(3).toString("hex")}`,
-        product: { _type: "reference", _ref: product._id, _weak: true },
-        productId: product._id,
-        title: product.title,
-        slug: product.slug,
-        sku: variant?.sku ?? product.sku ?? product._id,
-        variantSku: variant?.sku,
-        variantKey: variant?._key,
-        imageUrl: product.imageUrl,
-        quantity: item.quantity,
-        unitPrice,
-        lineTotal: unitPrice * item.quantity,
-      };
-    });
+        product: { _type: "reference", _ref: item.productId, _weak: true },
+        ...item,
+      }));
 
     const subtotal = lineItems.reduce((sum, item) => sum + item.lineTotal, 0);
+    const couponCode = normalizeCouponCode(body.couponCode);
+    const coupon = couponCode
+      ? await validateCoupon(client, {
+          code: couponCode,
+          subtotal,
+          lineItems: resolvedItems,
+          customerEmail: customer.email,
+        })
+      : null;
+    const discountAmount = coupon?.discountAmount ?? 0;
     const shippingAmount = getShippingAmount(subtotal);
-    const total = subtotal + shippingAmount;
+    const total = subtotal - discountAmount + shippingAmount;
+    if (!Number.isFinite(total) || total < 1) {
+      throw new CheckoutError("This discount would make the payable total invalid. Please contact us for help.");
+    }
     const orderNumber = `THZ-${new Date().toISOString().slice(0, 10).replaceAll("-", "")}-${randomBytes(3).toString("hex").toUpperCase()}`;
     const razorpayOrder = await createRazorpayOrder({
       amount: Math.round(total * 100),
       receipt: orderNumber,
-      notes: { orderNumber, customerEmail: customer.email },
+      notes: { orderNumber, customerEmail: customer.email, ...(coupon ? { couponCode: coupon.code } : {}) },
     });
 
     await client.create({
@@ -181,6 +125,15 @@ export async function POST(request: Request) {
       shippingAddress,
       lineItems,
       subtotal,
+      ...(coupon
+        ? {
+            coupon: { _type: "reference", _ref: coupon.couponId, _weak: true },
+            couponCode: coupon.code,
+            couponDiscountType: coupon.discountType,
+            couponDiscountValue: coupon.discountValue,
+            discountAmount,
+          }
+        : { discountAmount: 0 }),
       shippingAmount,
       total,
       currency: "INR",
@@ -196,18 +149,20 @@ export async function POST(request: Request) {
       amount: razorpayOrder.amount,
       currency: razorpayOrder.currency,
       customer,
+      couponCode: coupon?.code,
+      discountAmount,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Checkout could not be started.";
     const configurationError = /not configured/i.test(message);
-    const customerError = error instanceof CheckoutError || error instanceof SyntaxError;
+    const customerError = error instanceof CheckoutError || error instanceof CouponError || error instanceof SyntaxError;
     console.error("Checkout order error", error);
     return NextResponse.json(
       {
         error: configurationError
           ? "Checkout is temporarily unavailable."
           : customerError
-          ? error instanceof CheckoutError
+          ? error instanceof CheckoutError || error instanceof CouponError
             ? message
             : "Invalid checkout request."
           : "Checkout could not be started. Please try again.",

@@ -73,8 +73,8 @@ Checkout and newsletter endpoints use Upstash Redis when its REST variables are 
 ## How the Payment Flow Works
 
 1. The browser sends only product IDs, selected variant SKUs, quantities, customer details, and delivery address to `POST /api/checkout/create-order`.
-2. The server reads current published products from Sanity and recalculates price and stock. Browser-supplied prices are never trusted.
-3. The server creates a Razorpay Order in paise and stores an immutable order snapshot in Sanity.
+2. The server reads current published products and any submitted discount code from Sanity, then recalculates price, stock, coupon eligibility, and usage limits. Browser-supplied prices and discounts are never trusted.
+3. The server creates a Razorpay Order in paise for the final discounted total and stores an immutable order snapshot in Sanity.
 4. Razorpay Checkout returns payment IDs and a signature to the browser.
 5. `POST /api/checkout/verify` verifies the HMAC signature on the server for immediate customer feedback.
 6. Razorpay sends `order.paid` to `POST /api/webhooks/razorpay`.
@@ -127,6 +127,12 @@ If Resend is not configured, payment and Sanity order processing still work, but
 10. Try an out-of-stock item and confirm order creation is rejected.
 11. Test payment failure/cancellation and confirm the order is not fulfilment-ready.
 12. Repeat on mobile and desktop before replacing Test Mode keys with Live Mode keys.
+
+## Discount Code Operations
+
+Manage offers in **Sanity Studio → Discount Codes**. A code can provide a percentage or fixed-INR discount across all sarees, selected primary categories, or selected products. Optional controls include minimum subtotal, maximum percentage-discount cap, start/expiry timestamps, total paid-order redemptions, and uses per customer email.
+
+The original merchandise subtotal determines free-shipping eligibility, so applying a coupon never removes shipping that the cart had already qualified for. Redemption limits count paid orders only; abandoned or failed Razorpay checkouts do not consume a use. Disable a historical code instead of deleting it.
 
 Request-rate protection is implemented for `/api/checkout/create-order` and `/api/newsletter`. Vercel Firewall can still be layered on top for bot campaigns. The route validates all server-side prices and stock, while rate limiting prevents automated creation of large numbers of unpaid Razorpay/Sanity orders.
 

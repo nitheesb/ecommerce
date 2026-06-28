@@ -80,6 +80,14 @@ Paid orders and fulfilment are managed in:
 Orders
 ```
 
+Promotional codes are managed in:
+
+```text
+Discount Codes
+```
+
+Create and publish a code with its percentage or fixed INR value, eligibility, schedule, and optional usage limits. Codes are case-insensitive at checkout and stored uppercase. Do not delete a code that has been used; switch `Active` off instead so historical orders retain their reference.
+
 Homepage images are managed in:
 
 ```text
